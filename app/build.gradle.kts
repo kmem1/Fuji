@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -69,6 +70,9 @@ dependencies {
     implementation(Compose.tooling)
     implementation(Compose.navigation)
     implementation(Compose.hiltNavigation)
+
+    implementation(Hilt.android)
+    kapt(Hilt.compiler)
 
     testImplementation(Junit.junit4)
     androidTestImplementation(AndroidXTest.extJunit)

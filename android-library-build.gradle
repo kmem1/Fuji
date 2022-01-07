@@ -54,6 +54,8 @@ dependencies{
     implementation Compose.tooling
     implementation Compose.navigation
 
+    implementation Kotlinx.coroutinesCore
+
     implementation Google.material
 
     implementation Hilt.android
