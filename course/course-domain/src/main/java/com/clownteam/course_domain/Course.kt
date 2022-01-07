@@ -1,7 +1,8 @@
 package com.clownteam.course_domain
 
+import java.util.*
+
 data class Course(
-    val id: String,
     val title: String,
     val description: String,
     val price: Float,
@@ -12,5 +13,6 @@ data class Course(
     val hasCertificate: Boolean,
     val maxProgressPoints: Int,
     val currentPoints: Int,
-    val authorName: String
+    val authorName: String,
+    val id: String = UUID.randomUUID().toString(),
 )

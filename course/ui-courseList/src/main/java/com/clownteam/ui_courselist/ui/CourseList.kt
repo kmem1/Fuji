@@ -1,14 +1,12 @@
 package com.clownteam.ui_courselist.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -16,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.clownteam.components.DefaultScreenUI
 import com.clownteam.core.domain.EventHandler
+import com.clownteam.core.domain.ProgressBarState
 import com.clownteam.ui_courselist.R
 import com.clownteam.ui_courselist.components.ColumnCourseListItem
 import com.clownteam.ui_courselist.components.CourseListLazyRow
@@ -31,14 +30,16 @@ fun CourseList(
     eventHandler: EventHandler<CourseListEvent>,
     navigateToDetailScreen: (String) -> Unit
 ) {
-    DefaultScreenUI(progressBarState = state.progressBarState) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            AnimatedVisibility(visible = state.myCourses.isNotEmpty()) {
-                Column {
+    DefaultScreenUI(
+        progressBarState = if (state.isError) ProgressBarState.Idle else state.progressBarState
+    ) {
+        if (state.hasAllData && !state.isError) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                if (state.myCourses.isNotEmpty()) {
                     TitleText(stringResource(R.string.my_courses))
                     CourseListLazyRow(
                         modifier = Modifier.padding(top = 24.dp),
@@ -46,10 +47,8 @@ fun CourseList(
                         itemComposable = { item -> SimpleCourseListItem(item) }
                     )
                 }
-            }
 
-            AnimatedVisibility(visible = state.popularCourses.isNotEmpty()) {
-                Column {
+                if (state.popularCourses.isNotEmpty()) {
                     TitleText(stringResource(R.string.popular))
                     Column(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 24.dp),
@@ -60,6 +59,12 @@ fun CourseList(
                         }
                     }
                 }
+            }
+        }
+
+        if (state.isError) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Error")
             }
         }
     }
