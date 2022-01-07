@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,6 +20,7 @@ import com.clownteam.fuji.ui.navigation.bottom_navigation.BottomNavItem
 import com.clownteam.ui_courselist.ui.CourseList
 import com.clownteam.ui_courselist.ui.CourseListEvent
 import com.clownteam.ui_courselist.ui.CourseListState
+import com.clownteam.ui_courselist.ui.CourseListViewModel
 
 
 @ExperimentalAnimationApi
@@ -30,11 +32,10 @@ fun SetupNavGraph(navController: NavHostController) {
         startDestination = BottomNavItem.Home.route
     ) {
         composable(BottomNavItem.Home.route) {
+            val viewModel: CourseListViewModel = hiltViewModel()
             CourseList(
-                state = CourseListState(courses = testCourses),
-                eventHandler = object : EventHandler<CourseListEvent> {
-                    override fun obtainEvent(event: CourseListEvent) {}
-                },
+                state = viewModel.state.value,
+                eventHandler = viewModel,
                 navigateToDetailScreen = { _ -> }
             )
         }

@@ -15,7 +15,9 @@ import androidx.navigation.compose.rememberNavController
 import com.clownteam.fuji.ui.navigation.SetupNavGraph
 import com.clownteam.fuji.ui.navigation.bottom_navigation.AppBottomNavigation
 import com.clownteam.fuji.ui.theme.FujiTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 class MainActivity : AppCompatActivity() {

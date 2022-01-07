@@ -5,6 +5,7 @@ import com.clownteam.course_domain.Course
 
 data class CourseListState(
     val progressBarState: ProgressBarState = ProgressBarState.Idle,
-    val courses: List<Course> = emptyList(),
+    val myCourses: List<Course> = emptyList(),
+    val popularCourses: List<Course> = emptyList(),
     val isError: Boolean = false
 )
