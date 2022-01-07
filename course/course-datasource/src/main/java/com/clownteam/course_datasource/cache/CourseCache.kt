@@ -4,7 +4,13 @@ import com.clownteam.course_domain.Course
 
 interface CourseCache {
 
-    fun getCurrentCourse(): Course
+    suspend fun getPopularCourses(): List<Course>
 
-    fun getMyCourses(): List<Course>
+    suspend fun getMyCourses(): List<Course>
+
+    companion object Factory {
+        fun build(): CourseCache {
+            return CourseCacheImpl()
+        }
+    }
 }

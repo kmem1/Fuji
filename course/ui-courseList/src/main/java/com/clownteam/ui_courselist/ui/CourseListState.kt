@@ -8,4 +8,7 @@ data class CourseListState(
     val myCourses: List<Course> = emptyList(),
     val popularCourses: List<Course> = emptyList(),
     val isError: Boolean = false
-)
+) {
+    val hasAllData: Boolean
+        get() = myCourses.isNotEmpty() && popularCourses.isNotEmpty()
+}

@@ -9,15 +9,15 @@ import com.clownteam.course_domain.Course
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class GetMyCoursesUseCase(
+class GetPopularCoursesUseCase(
     private val cache: CourseCache
-) : IGetMyCoursesUseCase {
+) : IGetPopularCoursesUseCase {
 
     override fun invoke(): Flow<DataState<List<Course>>> = flow {
         try {
             emit(DataState.Loading(progressBarState = ProgressBarState.Loading))
 
-            val courses = cache.getMyCourses()
+            val courses = cache.getPopularCourses()
 
             emit(DataState.Data(data = courses))
         } catch (e: Exception) {
@@ -35,4 +35,4 @@ class GetMyCoursesUseCase(
     }
 }
 
-interface IGetMyCoursesUseCase : IUseCase.FlowOut<DataState<List<Course>>>
+interface IGetPopularCoursesUseCase : IUseCase.FlowOut<DataState<List<Course>>>
