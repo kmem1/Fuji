@@ -7,4 +7,6 @@ dependencies {
     "implementation"(project(Modules.core))
     "implementation"(project(Modules.courseDomain))
     "implementation"(project(Modules.courseInteractors))
+
+    "implementation"(Coil.coil)
 }

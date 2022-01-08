@@ -74,6 +74,8 @@ dependencies {
     implementation(Hilt.android)
     kapt(Hilt.compiler)
 
+    implementation(Coil.coil)
+
     testImplementation(Junit.junit4)
     androidTestImplementation(AndroidXTest.extJunit)
     androidTestImplementation(AndroidXTest.espressoCore)

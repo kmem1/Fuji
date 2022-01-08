@@ -5,6 +5,7 @@ import com.clownteam.course_domain.Course
 data class CourseEntity(
     val id: String,
     val title: String,
+    val imgUrl: String,
     val description: String,
     val price: Float,
     val durationInMinutes: Int,
@@ -21,6 +22,7 @@ internal fun CourseEntity.toCourse(): Course =
     Course(
         id = id,
         title = title,
+        imgUrl = imgUrl,
         description = description,
         price = price,
         durationInMinutes = durationInMinutes,

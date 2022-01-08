@@ -13,20 +13,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.clownteam.core.domain.EventHandler
-import com.clownteam.course_domain.Course
-import com.clownteam.fuji.ui.SplashScreen
+import coil.ImageLoader
 import com.clownteam.fuji.ui.navigation.bottom_navigation.BottomNavItem
 import com.clownteam.ui_courselist.ui.CourseList
-import com.clownteam.ui_courselist.ui.CourseListEvent
-import com.clownteam.ui_courselist.ui.CourseListState
 import com.clownteam.ui_courselist.ui.CourseListViewModel
-
 
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @Composable
-fun SetupNavGraph(navController: NavHostController) {
+fun SetupNavGraph(navController: NavHostController, imageLoader: ImageLoader) {
     NavHost(
         navController = navController,
         startDestination = BottomNavItem.Home.route
@@ -36,7 +31,8 @@ fun SetupNavGraph(navController: NavHostController) {
             CourseList(
                 state = viewModel.state.value,
                 eventHandler = viewModel,
-                navigateToDetailScreen = { _ -> }
+                navigateToDetailScreen = { _ -> },
+                imageLoader = imageLoader
             )
         }
 
@@ -61,90 +57,3 @@ fun SetupNavGraph(navController: NavHostController) {
         }
     }
 }
-
-private val testCourses = listOf(
-    Course(
-        id = "583hgfhfgdsdfjtgj",
-        title = "Основы программирования на C++",
-        description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
-        price = 100054654F,
-        durationInMinutes = 3676,
-        rating = 4.6F,
-        marksCount = 33456,
-        membersAmount = 3965,
-        hasCertificate = true,
-        maxProgressPoints = 65,
-        currentPoints = 23,
-        authorName = "Академия Яндекс fdsf eqwfasdqwdas d"
-    ),
-    Course(
-        id = "583hgfhfgdsdfjtgj",
-        title = "Основы программирования на C++",
-        description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
-        price = 0F,
-        durationInMinutes = 3676,
-        rating = 4.6F,
-        marksCount = 33456,
-        membersAmount = 396565,
-        hasCertificate = true,
-        maxProgressPoints = 65,
-        currentPoints = 23,
-        authorName = "Академия Яндекс"
-    ),
-    Course(
-        id = "583hgfhfgdsdfjtgj",
-        title = "Основы программирования на C++",
-        description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
-        price = 1000F,
-        durationInMinutes = 36764,
-        rating = 4.6F,
-        marksCount = 6574,
-        membersAmount = 39657,
-        hasCertificate = true,
-        maxProgressPoints = 65,
-        currentPoints = 23,
-        authorName = "Академия Яндекс"
-    ),
-    Course(
-        id = "583hgfhfgdsdfjtgj",
-        title = "Основы программирования на C++",
-        description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
-        price = 100054654F,
-        durationInMinutes = 3676,
-        rating = 4.6F,
-        marksCount = 33456,
-        membersAmount = 3965,
-        hasCertificate = true,
-        maxProgressPoints = 65,
-        currentPoints = 23,
-        authorName = "Академия Яндекс fdsf eqwfasdqwdas d"
-    ),
-    Course(
-        id = "583hgfhfgdsdfjtgj",
-        title = "Основы программирования на C++",
-        description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
-        price = 0F,
-        durationInMinutes = 3676,
-        rating = 4.6F,
-        marksCount = 33456,
-        membersAmount = 396565,
-        hasCertificate = true,
-        maxProgressPoints = 65,
-        currentPoints = 23,
-        authorName = "Академия Яндекс"
-    ),
-    Course(
-        id = "583hgfhfgdsdfjtgj",
-        title = "Основы программирования на C++",
-        description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
-        price = 1000F,
-        durationInMinutes = 36764,
-        rating = 4.6F,
-        marksCount = 6574,
-        membersAmount = 39657,
-        hasCertificate = true,
-        maxProgressPoints = 65,
-        currentPoints = 23,
-        authorName = "Академия Яндекс"
-    )
-)

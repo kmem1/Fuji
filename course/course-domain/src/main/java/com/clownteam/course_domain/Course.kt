@@ -4,6 +4,7 @@ import java.util.*
 
 data class Course(
     val title: String,
+    val imgUrl: String,
     val description: String,
     val price: Float,
     val durationInMinutes: Int,

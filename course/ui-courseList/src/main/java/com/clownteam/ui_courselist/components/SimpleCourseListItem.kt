@@ -1,5 +1,6 @@
 package com.clownteam.ui_courselist.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
@@ -10,22 +11,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
+import coil.compose.rememberImagePainter
 import com.clownteam.course_domain.Course
-import com.clownteam.ui_courselist.test_data.TestData
+import com.clownteam.ui_courselist.R
 
 @Composable
-internal fun SimpleCourseListItem(course: Course) {
-    Column(modifier = Modifier.width(250.dp)) {
-        Box(
+internal fun SimpleCourseListItem(course: Course, imageLoader: ImageLoader) {
+    Column(modifier = Modifier.width(240.dp)) {
+        Image(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(122.dp)
+                .height(125.dp)
                 .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
-                .background(Color.LightGray)
+                .background(Color.LightGray),
+            painter = rememberImagePainter(
+                course.imgUrl,
+                imageLoader = imageLoader
+            ),
+            contentDescription = stringResource(R.string.course_image_content_description),
+            contentScale = ContentScale.Crop
         )
         Text(
             modifier = Modifier
@@ -44,10 +54,4 @@ internal fun SimpleCourseListItem(course: Course) {
             fontWeight = FontWeight.Medium
         )
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun SimpleCourseListItem_Preview() {
-    SimpleCourseListItem(TestData.testCourse)
 }

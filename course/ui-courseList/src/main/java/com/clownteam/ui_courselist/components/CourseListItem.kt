@@ -11,26 +11,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
+import coil.compose.rememberImagePainter
 import com.clownteam.components.utils.pluralResource
 import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.R
-import com.clownteam.ui_courselist.test_data.TestData
 
 @Composable
-internal fun CourseListItem(course: Course) {
+internal fun CourseListItem(course: Course, imageLoader: ImageLoader) {
     Column(modifier = Modifier.width(250.dp)) {
-        Box(
+        Image(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(122.dp)
                 .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
-                .background(Color.LightGray)
+                .background(Color.LightGray),
+            painter = rememberImagePainter(
+                course.imgUrl,
+                imageLoader = imageLoader
+            ),
+            contentDescription = stringResource(R.string.course_image_content_description),
+            contentScale = ContentScale.Fit
         )
         Text(
             modifier = Modifier
@@ -50,7 +57,11 @@ internal fun CourseListItem(course: Course) {
         RatingRow(rating = course.rating, marksCount = course.marksCount)
         Text(
             modifier = Modifier.padding(top = 6.dp),
-            text = pluralResource(R.plurals.price_rubles, course.price.toInt(), course.price.toInt()),
+            text = pluralResource(
+                R.plurals.price_rubles,
+                course.price.toInt(),
+                course.price.toInt()
+            ),
             style = MaterialTheme.typography.body1,
             fontWeight = FontWeight.W600
         )
@@ -82,10 +93,4 @@ private fun RatingRow(
             fontWeight = FontWeight.Light
         )
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun CourseListItem_Preview() {
-    CourseListItem(TestData.testCourse)
 }

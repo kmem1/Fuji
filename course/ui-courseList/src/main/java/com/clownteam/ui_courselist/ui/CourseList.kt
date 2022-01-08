@@ -10,8 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
 import com.clownteam.components.DefaultScreenUI
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.ProgressBarState
@@ -20,7 +20,6 @@ import com.clownteam.ui_courselist.components.ColumnCourseListItem
 import com.clownteam.ui_courselist.components.CourseListLazyRow
 import com.clownteam.ui_courselist.components.SimpleCourseListItem
 import com.clownteam.ui_courselist.components.TitleText
-import com.clownteam.ui_courselist.test_data.TestData
 
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
@@ -28,7 +27,8 @@ import com.clownteam.ui_courselist.test_data.TestData
 fun CourseList(
     state: CourseListState,
     eventHandler: EventHandler<CourseListEvent>,
-    navigateToDetailScreen: (String) -> Unit
+    navigateToDetailScreen: (String) -> Unit,
+    imageLoader: ImageLoader
 ) {
     DefaultScreenUI(
         progressBarState = if (state.isError) ProgressBarState.Idle else state.progressBarState
@@ -44,7 +44,7 @@ fun CourseList(
                     CourseListLazyRow(
                         modifier = Modifier.padding(top = 24.dp),
                         itemList = state.myCourses,
-                        itemComposable = { item -> SimpleCourseListItem(item) }
+                        itemComposable = { item -> SimpleCourseListItem(item, imageLoader) }
                     )
                 }
 
@@ -55,7 +55,7 @@ fun CourseList(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         for (course in state.popularCourses) {
-                            ColumnCourseListItem(course)
+                            ColumnCourseListItem(course, imageLoader)
                         }
                     }
                 }
@@ -68,18 +68,4 @@ fun CourseList(
             }
         }
     }
-}
-
-@ExperimentalComposeUiApi
-@ExperimentalAnimationApi
-@Composable
-@Preview(showBackground = true)
-fun CourseListPreview() {
-    CourseList(
-        state = CourseListState(myCourses = TestData.testCourses),
-        eventHandler = object : EventHandler<CourseListEvent> {
-            override fun obtainEvent(event: CourseListEvent) {}
-        },
-        navigateToDetailScreen = { _ -> }
-    )
 }

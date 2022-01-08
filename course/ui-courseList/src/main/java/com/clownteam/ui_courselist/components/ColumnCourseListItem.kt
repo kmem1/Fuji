@@ -17,14 +17,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
+import coil.compose.rememberImagePainter
 import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.R
-import com.clownteam.ui_courselist.test_data.TestData
 
 @Composable
-internal fun ColumnCourseListItem(course: Course) {
+internal fun ColumnCourseListItem(course: Course, imageLoader: ImageLoader) {
     // Main Row
     Row {
         // Avatar
@@ -35,7 +35,10 @@ internal fun ColumnCourseListItem(course: Course) {
                 .clip(RoundedCornerShape(corner = CornerSize(12.dp)))
                 .background(Color.LightGray)
                 .align(Alignment.CenterVertically),
-            painter = painterResource(id = R.drawable.cpp_course_image),
+            painter = rememberImagePainter(
+                course.imgUrl,
+                imageLoader = imageLoader
+            ),
             contentDescription = stringResource(R.string.course_image_content_description),
             contentScale = ContentScale.Crop
         )
@@ -120,9 +123,3 @@ private fun getMembersCountString(count: Int) =
     } else {
         "$count"
     }
-
-@Composable
-@Preview(showBackground = true)
-private fun ColumnCourseListItem_Preview() {
-    ColumnCourseListItem(TestData.testCourse)
-}

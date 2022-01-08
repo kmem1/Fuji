@@ -13,6 +13,7 @@ class CourseCacheImpl : CourseCache {
             Course(
                 title = "Основы программирования на C++",
                 description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
+                imgUrl = "https://i.ibb.co/LdhM7Bp/10.png",
                 price = 1000F,
                 durationInMinutes = 3676,
                 rating = 4.6F,
@@ -26,6 +27,7 @@ class CourseCacheImpl : CourseCache {
             Course(
                 title = "Основы программирования на C++",
                 description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
+                imgUrl = "https://i.ibb.co/9hhTj2Q/12.jpg",
                 price = 1000F,
                 durationInMinutes = 3676,
                 rating = 4.6F,
@@ -39,6 +41,7 @@ class CourseCacheImpl : CourseCache {
             Course(
                 title = "Основы программирования на C++",
                 description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
+                imgUrl = "https://i.ibb.co/9hhTj2Q/12.jpg",
                 price = 1000F,
                 durationInMinutes = 3676,
                 rating = 4.6F,
@@ -51,6 +54,7 @@ class CourseCacheImpl : CourseCache {
             ), Course(
                 title = "Основы программирования на C++",
                 description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
+                imgUrl = "https://i.ibb.co/LdhM7Bp/10.png",
                 price = 1000F,
                 durationInMinutes = 3676,
                 rating = 4.6F,
@@ -64,6 +68,7 @@ class CourseCacheImpl : CourseCache {
             Course(
                 title = "Основы программирования на C++",
                 description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
+                imgUrl = "https://i.ibb.co/LdhM7Bp/10.png",
                 price = 1000F,
                 durationInMinutes = 3676,
                 rating = 4.6F,
@@ -75,8 +80,9 @@ class CourseCacheImpl : CourseCache {
                 authorName = "Академия Яндекс"
             ),
             Course(
-                title = "Основы программирования на C++",
+                title = "Android Development",
                 description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
+                imgUrl = "https://i.ibb.co/9hhTj2Q/12.jpg",
                 price = 1000F,
                 durationInMinutes = 3676,
                 rating = 4.6F,
@@ -95,8 +101,9 @@ class CourseCacheImpl : CourseCache {
 
         return listOf(
             Course(
-                title = "Основы программирования на C++",
+                title = "Android Development",
                 description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
+                imgUrl = "https://i.ibb.co/LdhM7Bp/10.png",
                 price = 1000F,
                 durationInMinutes = 3676,
                 rating = 4.6F,
@@ -110,6 +117,7 @@ class CourseCacheImpl : CourseCache {
             Course(
                 title = "Основы программирования на C++",
                 description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
+                imgUrl = "https://i.ibb.co/9hhTj2Q/12.jpg",
                 price = 1000F,
                 durationInMinutes = 3676,
                 rating = 4.6F,
@@ -123,6 +131,7 @@ class CourseCacheImpl : CourseCache {
             Course(
                 title = "Основы программирования на C++",
                 description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
+                imgUrl = "https://i.ibb.co/LdhM7Bp/10.png",
                 price = 1000F,
                 durationInMinutes = 3676,
                 rating = 4.6F,

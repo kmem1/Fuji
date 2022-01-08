@@ -12,16 +12,21 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
+import coil.ImageLoader
 import com.clownteam.fuji.ui.navigation.SetupNavGraph
 import com.clownteam.fuji.ui.navigation.bottom_navigation.AppBottomNavigation
 import com.clownteam.fuji.ui.theme.FujiTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
+
+    @Inject
+    lateinit var imageLoader: ImageLoader
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +45,7 @@ class MainActivity : AppCompatActivity() {
                         modifier = Modifier
                             .padding(bottom = innerPadding.calculateBottomPadding())
                     ) {
-                        SetupNavGraph(navController)
+                        SetupNavGraph(navController, imageLoader)
                     }
                 }
             }
