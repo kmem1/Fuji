@@ -4,14 +4,18 @@ import com.clownteam.course_datasource.cache.CourseCache
 
 class CourseInteractors private constructor(
     val getMyCourses: IGetMyCoursesUseCase,
-    val getPopularCourses: IGetPopularCoursesUseCase
+    val getPopularCourses: IGetPopularCoursesUseCase,
+    val getCourseById: IGetCourseByIdUseCase,
+    val getCourseInfoById: IGetCourseInfoByIdUseCase
 ) {
     companion object Factory {
         fun build(): CourseInteractors {
             val cache = CourseCache.build()
             return CourseInteractors(
                 GetMyCoursesUseCase(cache),
-                GetPopularCoursesUseCase(cache)
+                GetPopularCoursesUseCase(cache),
+                GetCourseByIdUseCase(cache),
+                GetCourseInfoByIdUseCase(cache)
             )
         }
     }

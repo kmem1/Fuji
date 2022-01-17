@@ -2,7 +2,6 @@ package com.clownteam.fuji.ui
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
@@ -16,9 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.clownteam.fuji.ui.navigation.Screen
+import com.clownteam.fuji.ui.navigation.Route
 import com.clownteam.fuji.ui.theme.Montserrat
-import com.clownteam.fuji.ui.theme.Purple
 import kotlinx.coroutines.delay
 
 @Composable
@@ -35,7 +33,7 @@ fun SplashScreen(navController: NavHostController) {
         startAnimation = true
         delay(4000)
         navController.popBackStack()
-        navController.navigate(Screen.MainTab.route)
+        navController.navigate(Route.HomeRoute.route)
     }
 
     Splash(alpha = alphaAnim.value)

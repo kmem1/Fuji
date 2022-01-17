@@ -3,7 +3,7 @@ package com.clownteam.course_datasource.cache.model
 import com.clownteam.course_domain.Course
 
 data class CourseEntity(
-    val id: String,
+    val id: Int,
     val title: String,
     val imgUrl: String,
     val description: String,
@@ -15,7 +15,8 @@ data class CourseEntity(
     val hasCertificate: Boolean,
     val maxProgressPoints: Int,
     val currentPoints: Int,
-    val authorName: String
+    val authorName: String,
+    val courseDurationInHours: Int
 )
 
 internal fun CourseEntity.toCourse(): Course =
@@ -32,5 +33,6 @@ internal fun CourseEntity.toCourse(): Course =
         hasCertificate = hasCertificate,
         maxProgressPoints = maxProgressPoints,
         currentPoints = currentPoints,
-        authorName = authorName
+        authorName = authorName,
+        courseDurationInHours = courseDurationInHours
     )

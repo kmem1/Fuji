@@ -13,6 +13,6 @@ object Modules {
     const val courseDataSourceTest = ":course:course-datasource-test"
     const val courseDomain = ":course:course-domain"
     const val courseInteractors = ":course:course-interactors"
-    const val ui_courseDetail = ":course:ui-courseDetail"
+    const val ui_courseDetailed = ":course:ui-courseDetailed"
     const val ui_courseList = ":course:ui-courseList"
 }

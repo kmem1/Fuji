@@ -4,6 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +28,7 @@ import com.clownteam.ui_courselist.components.TitleText
 fun CourseList(
     state: CourseListState,
     eventHandler: EventHandler<CourseListEvent>,
-    navigateToDetailScreen: (String) -> Unit,
+    navigateToDetailScreen: (Int) -> Unit,
     imageLoader: ImageLoader
 ) {
     DefaultScreenUI(
@@ -44,7 +45,13 @@ fun CourseList(
                     CourseListLazyRow(
                         modifier = Modifier.padding(top = 24.dp),
                         itemList = state.myCourses,
-                        itemComposable = { item -> SimpleCourseListItem(item, imageLoader) }
+                        itemComposable = { item ->
+                            SimpleCourseListItem(
+                                item,
+                                imageLoader,
+                                navigateToDetailScreen
+                            )
+                        }
                     )
                 }
 
@@ -64,7 +71,9 @@ fun CourseList(
 
         if (state.isError) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Error")
+                Button(onClick = {eventHandler.obtainEvent(CourseListEvent.GetCourses)}) {
+                    Text("Retry")
+                }
             }
         }
     }

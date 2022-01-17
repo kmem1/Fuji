@@ -8,6 +8,10 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -40,12 +44,16 @@ class MainActivity : AppCompatActivity() {
         setContent {
             FujiTheme {
                 val navController = rememberNavController()
-                Scaffold(bottomBar = { AppBottomNavigation(navController) }) { innerPadding ->
+                var bottomBarState by remember { mutableStateOf(true) }
+                Scaffold(bottomBar = { if (bottomBarState) AppBottomNavigation(navController) }) { innerPadding ->
+
                     Box(
                         modifier = Modifier
                             .padding(bottom = innerPadding.calculateBottomPadding())
                     ) {
-                        SetupNavGraph(navController, imageLoader)
+                        SetupNavGraph(navController, imageLoader) { value ->
+                            bottomBarState = value
+                        }
                     }
                 }
             }

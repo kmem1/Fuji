@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="star_icon_content_description">Star Icon</string>
+    <string name="back_button_content_description">Back button</string>
+    <string name="triangle_icon_content_description">Triangle icon</string>
+    <string name="clock_icon_content_description">Clock Icon</string>
+    <string name="hide_steps_button_content_description">Hide steps button</string>
+    <string name="show_steps_button_content_description">Show steps button</string>
+    <string name="who_is_this_course_for">Кому подойдёт этот курс</string>
+    <string name="what_will_learn">Чему научитесь</string>
+    <string name="course_program">Программа курса</string>
+    <string name="course_duration_hours">%1$dч</string>
+    <string name="all_program">Вся программа</string>
+    <string name="reviews">Отзывы</string>
+    <string name="all_reviews">Все отзывы</string>
+</resources>

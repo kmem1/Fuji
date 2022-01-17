@@ -9,7 +9,7 @@ import com.clownteam.course_domain.Course
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class GetMyCoursesUseCase(
+internal class GetMyCoursesUseCase(
     private val cache: CourseCache
 ) : IGetMyCoursesUseCase {
 

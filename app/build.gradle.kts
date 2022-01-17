@@ -54,6 +54,7 @@ dependencies {
     implementation(project(Modules.courseInteractors))
 
     implementation(project(Modules.ui_courseList))
+    implementation(project(Modules.ui_courseDetailed))
 
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.coreSplashScreen)
