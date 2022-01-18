@@ -62,7 +62,7 @@ fun CourseList(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         for (course in state.popularCourses) {
-                            ColumnCourseListItem(course, imageLoader)
+                            ColumnCourseListItem(course, imageLoader, navigateToDetailScreen)
                         }
                     }
                 }

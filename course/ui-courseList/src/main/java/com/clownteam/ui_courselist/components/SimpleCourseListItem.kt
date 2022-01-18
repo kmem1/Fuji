@@ -23,13 +23,24 @@ import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.R
 
 @Composable
-internal fun SimpleCourseListItem(course: Course, imageLoader: ImageLoader, onClick: (Int) -> Unit) {
-    Column(modifier = Modifier.width(240.dp).clickable { onClick(course.id) }) {
+internal fun SimpleCourseListItem(
+    course: Course,
+    imageLoader: ImageLoader,
+    onClick: (Int) -> Unit
+) {
+    val roundedTopCornersShape = RoundedCornerShape(
+        topStart = CornerSize(16.dp),
+        topEnd = CornerSize(16.dp),
+        bottomEnd = CornerSize(0.dp),
+        bottomStart = CornerSize(0.dp)
+    )
+    Column(modifier = Modifier.width(240.dp).clip(roundedTopCornersShape)
+        .clickable { onClick(course.id) }) {
         Image(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(125.dp)
-                .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
+                .clip(RoundedCornerShape(CornerSize(16.dp)))
                 .background(Color.LightGray),
             painter = rememberImagePainter(
                 course.imgUrl,

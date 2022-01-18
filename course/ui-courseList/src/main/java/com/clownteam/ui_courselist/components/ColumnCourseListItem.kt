@@ -2,6 +2,7 @@ package com.clownteam.ui_courselist.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,10 +25,14 @@ import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.R
 
 @Composable
-internal fun ColumnCourseListItem(course: Course, imageLoader: ImageLoader) {
+internal fun ColumnCourseListItem(
+    course: Course,
+    imageLoader: ImageLoader,
+    onClick: (Int) -> Unit
+) {
     // Main Row
-    Row {
-        // Avatar
+    Row(modifier = Modifier.clickable { onClick(course.id) }) {
+        // Logo
         Image(
             modifier = Modifier
                 .width(148.dp)
