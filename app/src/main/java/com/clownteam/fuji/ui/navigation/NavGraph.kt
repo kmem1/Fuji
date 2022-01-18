@@ -43,7 +43,10 @@ fun SetupNavGraph(
             arguments = Route.CourseRoute.arguments
         ) {
             showBottomBar(false)
-            CourseScreen(imageLoader)
+            CourseScreen(
+                imageLoader,
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(BottomNavItem.Search.route) {

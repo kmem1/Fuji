@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.ImageLoader
+import coil.compose.rememberImagePainter
 import com.clownteam.components.DefaultScreenUI
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.ProgressBarState
@@ -32,13 +34,14 @@ import com.example.ui_coursedetailed.components.*
 fun CourseDetailed(
     state: CourseDetailedState,
     eventHandler: EventHandler<CourseDetailedEvent>,
-    imageLoader: ImageLoader
+    imageLoader: ImageLoader,
+    onBack: () -> Unit
 ) {
     DefaultScreenUI(
         progressBarState = if (state.isError) ProgressBarState.Idle else state.progressBarState
     ) {
         if (state.hasAllData && !state.isError) {
-            MainContent(state, imageLoader)
+            MainContent(state, imageLoader, onBack)
         }
 
         if (state.isError) {
@@ -52,12 +55,12 @@ fun CourseDetailed(
 }
 
 @Composable
-private fun MainContent(state: CourseDetailedState, imageLoader: ImageLoader) {
+private fun MainContent(state: CourseDetailedState, imageLoader: ImageLoader, onBack: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         Column(modifier = Modifier.padding(horizontal = 14.dp)) {
             IconButton(
                 modifier = Modifier.padding(vertical = 24.dp).size(34.dp),
-                onClick = {}
+                onClick = { onBack() }
             ) {
                 Icon(
                     modifier = Modifier.size(34.dp),
@@ -66,11 +69,17 @@ private fun MainContent(state: CourseDetailedState, imageLoader: ImageLoader) {
                 )
             }
 
-            Box(
+            Image(
                 modifier = Modifier.fillMaxWidth()
                     .height(204.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color.LightGray),
+                painter = rememberImagePainter(
+                    state.course?.imgUrl ?: "",
+                    imageLoader = imageLoader
+                ),
+                contentDescription = stringResource(R.string.course_image_content_description),
+                contentScale = ContentScale.Crop
             )
 
             Text(
@@ -256,7 +265,8 @@ private fun MainContent(state: CourseDetailedState, imageLoader: ImageLoader) {
 
             ReviewsView(
                 state.courseInfo?.reviewItems ?: emptyList(),
-                modifier = Modifier.padding(top = 30.dp, start = 10.dp)
+                modifier = Modifier.padding(top = 30.dp, start = 10.dp),
+                imageLoader = imageLoader
             )
 
             ShowAllButton(

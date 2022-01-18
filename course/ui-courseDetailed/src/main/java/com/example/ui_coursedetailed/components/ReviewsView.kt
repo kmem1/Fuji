@@ -1,5 +1,6 @@
 package com.example.ui_coursedetailed.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -13,15 +14,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
+import coil.compose.rememberImagePainter
 import com.example.ui_coursedetailed.R
 import com.example.ui_coursedetailed.domain.ReviewItemUI
 
 @Composable
-internal fun ReviewsView(reviewItems: List<ReviewItemUI>, modifier: Modifier = Modifier) {
+internal fun ReviewsView(
+    reviewItems: List<ReviewItemUI>,
+    modifier: Modifier = Modifier,
+    imageLoader: ImageLoader
+) {
     var isFirst = true
     Column(modifier = modifier) {
         for (item in reviewItems) {
@@ -34,10 +42,16 @@ internal fun ReviewsView(reviewItems: List<ReviewItemUI>, modifier: Modifier = M
 
             Column(modifier = Modifier.padding(top = topPadding)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
+                    Image(
                         modifier = Modifier.size(41.dp)
                             .clip(CircleShape)
-                            .background(Color.LightGray)
+                            .background(Color.LightGray),
+                        painter = rememberImagePainter(
+                            item.avatarUrl,
+                            imageLoader = imageLoader
+                        ),
+                        contentDescription = stringResource(R.string.user_avatar_content_description),
+                        contentScale = ContentScale.Crop
                     )
 
                     Column(modifier = Modifier.padding(start = 16.dp)) {

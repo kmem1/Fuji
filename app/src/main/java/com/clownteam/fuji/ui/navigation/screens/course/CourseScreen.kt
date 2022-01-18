@@ -7,11 +7,12 @@ import com.example.ui_coursedetailed.ui.CourseDetailed
 import com.example.ui_coursedetailed.ui.CourseDetailedViewModel
 
 @Composable
-fun CourseScreen(imageLoader: ImageLoader) {
+fun CourseScreen(imageLoader: ImageLoader, onBack: () -> Unit) {
     val viewModel: CourseDetailedViewModel = hiltViewModel()
     CourseDetailed(
         viewModel.state.value,
         viewModel,
-        imageLoader
+        imageLoader,
+        onBack
     )
 }
