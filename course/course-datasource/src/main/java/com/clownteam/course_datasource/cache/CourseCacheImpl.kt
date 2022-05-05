@@ -1,34 +1,41 @@
 package com.clownteam.course_datasource.cache
 
+import com.clownteam.core.domain.SResult
+import com.clownteam.core.utils.extensions.emptyFailed
+import com.clownteam.core.utils.extensions.toSuccessResult
 import com.clownteam.course_domain.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
-class CourseCacheImpl : CourseCache {
+internal class CourseCacheImpl : CourseCache {
 
-    override suspend fun getPopularCourses(): List<Course> {
+    override suspend fun getPopularCourses(): SResult<List<Course>> = withContext(Dispatchers.IO) {
         delay(Random.nextLong(500, 2000))
 
-        return courses
+        courses.toSuccessResult()
     }
 
-    override suspend fun getMyCourses(): List<Course> {
+    override suspend fun getMyCourses(): SResult<List<Course>> = withContext(Dispatchers.IO) {
         delay(Random.nextLong(500, 2000))
 
-        return courses.subList(0, 3)
+        courses.subList(0, 3).toSuccessResult()
     }
 
-    override suspend fun getCourse(id: Int): Course? {
+    override suspend fun getCourse(id: Int): SResult<Course> = withContext(Dispatchers.IO) {
         delay(Random.nextLong(500, 2000))
 
-        return courses.firstOrNull { it.id == id }
+        courses.firstOrNull { it.id == id }?.toSuccessResult() ?: emptyFailed()
     }
 
-    override suspend fun getCourseInfo(courseId: Int): CourseInfo? {
-        delay(Random.nextLong(500, 2000))
+    override suspend fun getCourseInfo(courseId: Int): SResult<CourseInfo> =
+        withContext(Dispatchers.IO) {
+            delay(Random.nextLong(500, 2000))
 
-        return courseInfoList.firstOrNull { it.courseId == courseId }
-    }
+            courseInfoList.firstOrNull { it.courseId == courseId }?.toSuccessResult()
+                ?: emptyFailed()
+        }
 
     private val courses = listOf(
         Course(

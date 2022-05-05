@@ -9,4 +9,13 @@ dependencies {
     "implementation"(project(Modules.courseInteractors))
 
     "implementation"(Coil.coil)
+
+    "testImplementation"(Junit.junit4)
+    "testImplementation"(Mockito.mockitoKotlin)
+    "testImplementation"(Testing.coroutines)
+    "testImplementation"(Testing.coreTesting)
+    "testImplementation"(ComposeTest.uiTestJunit4)
+    androidTestImplementation(ComposeTest.uiTestJunit4)
+    androidTestImplementation(Mockito.mockitoAndroid)
+    debugImplementation(ComposeTest.uiTestManifest)
 }

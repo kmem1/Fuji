@@ -32,49 +32,54 @@ fun CourseList(
     imageLoader: ImageLoader
 ) {
     DefaultScreenUI(
-        progressBarState = if (state.isError) ProgressBarState.Idle else state.progressBarState
+        progressBarState = if (state is CourseListState.Loading) ProgressBarState.Loading else ProgressBarState.Idle
     ) {
-        if (state.hasAllData && !state.isError) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                if (state.myCourses.isNotEmpty()) {
-                    TitleText(stringResource(R.string.my_courses))
-                    CourseListLazyRow(
-                        modifier = Modifier.padding(top = 24.dp),
-                        itemList = state.myCourses,
-                        itemComposable = { item ->
-                            SimpleCourseListItem(
-                                item,
-                                imageLoader,
-                                navigateToDetailScreen
-                            )
-                        }
-                    )
-                }
+        when(state) {
+            is CourseListState.Data -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    if (state.myCourses.isNotEmpty()) {
+                        TitleText(stringResource(R.string.my_courses))
+                        CourseListLazyRow(
+                            modifier = Modifier.padding(top = 24.dp),
+                            itemList = state.myCourses,
+                            itemComposable = { item ->
+                                SimpleCourseListItem(
+                                    item,
+                                    imageLoader,
+                                    navigateToDetailScreen
+                                )
+                            }
+                        )
+                    }
 
-                if (state.popularCourses.isNotEmpty()) {
-                    TitleText(stringResource(R.string.popular))
-                    Column(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 24.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        for (course in state.popularCourses) {
-                            ColumnCourseListItem(course, imageLoader, navigateToDetailScreen)
+                    if (state.popularCourses.isNotEmpty()) {
+                        TitleText(stringResource(R.string.popular))
+                        Column(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 24.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            for (course in state.popularCourses) {
+                                ColumnCourseListItem(course, imageLoader, navigateToDetailScreen)
+                            }
                         }
                     }
                 }
             }
-        }
 
-        if (state.isError) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Button(onClick = {eventHandler.obtainEvent(CourseListEvent.GetCourses)}) {
-                    Text("Retry")
+            is CourseListState.Error -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Button(onClick = { eventHandler.obtainEvent(CourseListEvent.GetCourses) }) {
+                        Text("Retry")
+                    }
                 }
             }
+
+            is CourseListState.Loading -> { }
         }
+
     }
 }

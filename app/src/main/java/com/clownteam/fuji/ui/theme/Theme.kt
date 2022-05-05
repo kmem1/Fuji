@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 //)
 
 private val LightColorPalette = lightColors(
-    primary = DarkGray,
+    primary = BlackLight3,
     primaryVariant = Color.Black,
     onPrimary = Color.White,
     secondary = Color.Black,
@@ -31,7 +31,7 @@ private val LightColorPalette = lightColors(
     onSecondary = Color.White,
     error = RedErrorLight,
     onError = RedErrorDark,
-    background = Purple,
+    background = BlackLight1,
     onBackground = Color.White,
     surface = Color.White,
     onSurface = Color.Black,
