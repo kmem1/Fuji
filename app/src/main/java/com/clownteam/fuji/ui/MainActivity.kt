@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         installSplashScreen().apply {
-            setKeepVisibleCondition {
+            setKeepOnScreenCondition {
                 viewModel.isLoading.value
             }
         }

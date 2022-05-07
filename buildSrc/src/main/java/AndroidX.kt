@@ -2,7 +2,7 @@ object AndroidX {
     private const val coreKtxVersion = "1.6.0"
     const val coreKtx = "androidx.core:core-ktx:$coreKtxVersion"
 
-    private const val coreSplashScreenVersion = "1.0.0-alpha02"
+    private const val coreSplashScreenVersion = "1.0.0-beta02"
     const val coreSplashScreen = "androidx.core:core-splashscreen:$coreSplashScreenVersion"
 
     private const val appCompatVersion = "1.3.0"
