@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.clownteam.fuji.ui.navigation.Route
-import com.clownteam.fuji.ui.theme.Montserrat
+import com.clownteam.fuji.ui.theme.Gotham
 import kotlinx.coroutines.delay
 
 @Composable
@@ -52,7 +52,7 @@ fun Splash(alpha: Float) {
             color = Color.White,
             fontSize = 36.sp,
             letterSpacing = 0.6.em,
-            fontFamily = Montserrat,
+            fontFamily = Gotham,
             fontWeight = FontWeight.Bold
         )
     }

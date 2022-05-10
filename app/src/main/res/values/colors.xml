@@ -9,4 +9,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="purple">#FF6E4AFF</color>
     <color name="silver">#bdc3c7</color>
+
+    <color name="black_light_1">#1A1A1A</color>
+    <color name="black_light_2">#1F1F1F</color>
+    <color name="black_light_3">#282828</color>
 </resources>

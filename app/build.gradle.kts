@@ -49,12 +49,17 @@ android {
 dependencies {
 
     implementation(project(Modules.core))
+
     implementation(project(Modules.courseDataSource))
     implementation(project(Modules.courseDomain))
     implementation(project(Modules.courseInteractors))
-
     implementation(project(Modules.ui_courseList))
     implementation(project(Modules.ui_courseDetailed))
+
+    implementation(project(Modules.authorizationDataSource))
+    implementation(project(Modules.authorizationDomain))
+    implementation(project(Modules.authorizationInteractors))
+    implementation(project(Modules.ui_authorization))
 
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.coreSplashScreen)
@@ -67,6 +72,7 @@ dependencies {
 
     implementation(Compose.activity)
     implementation(Compose.ui)
+    implementation(Compose.constraintLayout)
     implementation(Compose.material)
     implementation(Compose.tooling)
     implementation(Compose.navigation)

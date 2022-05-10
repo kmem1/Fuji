@@ -7,6 +7,9 @@ object Compose {
     const val material = "androidx.compose.material:material:$composeVersion"
     const val tooling = "androidx.compose.ui:ui-tooling:$composeVersion"
 
+    private const val constraintLayoutVersion = "1.0.0"
+    const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:$constraintLayoutVersion"
+
     private const val navigationVersion = "2.4.2"
     const val navigation = "androidx.navigation:navigation-compose:$navigationVersion"
 

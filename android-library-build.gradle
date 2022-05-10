@@ -57,6 +57,7 @@ dependencies{
 
     implementation Compose.activity
     implementation Compose.ui
+    implementation Compose.constraintLayout
     implementation Compose.material
     implementation Compose.tooling
     implementation Compose.navigation

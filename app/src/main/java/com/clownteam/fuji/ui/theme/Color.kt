@@ -2,7 +2,7 @@ package com.clownteam.fuji.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple = Color(0xFF6E4AFF)
+val Purple = Color(0xFF7B61FF)
 val DarkGray = Color(0xFF282828)
 
 val BlackLight1 = Color(0xFF1A1A1A)

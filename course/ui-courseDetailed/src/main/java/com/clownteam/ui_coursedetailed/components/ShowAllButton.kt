@@ -18,11 +18,11 @@ import androidx.compose.ui.unit.sp
 @Composable
 internal fun ShowAllButton(onClick: () -> Unit, text: String, modifier: Modifier = Modifier) {
     Button(
-        onClick = {},
+        onClick = onClick,
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.background,
-            contentColor = MaterialTheme.colors.onBackground,
+            backgroundColor = MaterialTheme.colors.secondary,
+            contentColor = MaterialTheme.colors.onSecondary,
         ),
         shape = RectangleShape,
         contentPadding = PaddingValues(horizontal = 40.dp, vertical = 16.dp)

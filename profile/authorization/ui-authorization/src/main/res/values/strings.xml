@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="blank_email_error_string">Адрес электронной почты не может быть пустым</string>
+    <string name="invalid_email_error">Неправильный формат электронной почты</string>
+    <string name="password_length_error">Пароль должен содержать минимум %1$d символов</string>
+    <string name="password_should_contain_letters_and_digits_error">Пароль должен иметь буквы и числа</string>
+    <string name="login_title">Вход</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="restore_password_question">Забыли пароль?</string>
+    <string name="login_action">Войти</string>
+    <string name="create_account_question">Нет аккаунта?</string>
+    <string name="registration_action">Зарегистрироваться</string>
+</resources>
