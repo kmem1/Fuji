@@ -17,6 +17,8 @@ import com.clownteam.fuji.ui.navigation.screens.home.HomeViewModel
 import com.clownteam.fuji.ui.navigation.screens.search.SearchScreen
 import com.clownteam.ui_authorization.login.LoginScreen
 import com.clownteam.ui_authorization.login.LoginViewModel
+import com.clownteam.ui_authorization.registration.RegistrationScreen
+import com.clownteam.ui_authorization.registration.RegistrationViewModel
 
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi
@@ -32,7 +34,7 @@ fun SetupNavGraph(
     ) {
         composable(BottomNavItem.Home.route) {
             showBottomBar(true)
-            val viewModel: HomeViewModel = hiltViewModel()
+//            val viewModel: HomeViewModel = hiltViewModel()
             HomeScreen(
                 navigateToCourse = { courseId ->
                     navController.navigate("${Route.CourseRoute.route}/$courseId")
@@ -58,12 +60,20 @@ fun SetupNavGraph(
 
         composable(BottomNavItem.Profile.route) {
             val context = LocalContext.current
-            val viewModel: LoginViewModel = hiltViewModel()
-            LoginScreen(
+//            val viewModel: LoginViewModel = hiltViewModel()
+//            LoginScreen(
+//                state = viewModel.state,
+//                eventHandler = viewModel,
+//                viewModel = viewModel,
+//                onSuccessLogin = { Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show() }
+//            )
+
+            val viewModel: RegistrationViewModel = hiltViewModel()
+            RegistrationScreen(
                 state = viewModel.state,
                 eventHandler = viewModel,
                 viewModel = viewModel,
-                onSuccessLogin = { Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show() }
+                onSuccessRegistration = { Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show() }
             )
         }
     }

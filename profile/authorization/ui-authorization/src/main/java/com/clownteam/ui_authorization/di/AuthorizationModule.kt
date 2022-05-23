@@ -1,8 +1,6 @@
 package com.clownteam.ui_authorization.di
 
-import com.clownteam.authorization_interactors.AuthorizationInteractors
-import com.clownteam.authorization_interactors.IValidateEmailUseCase
-import com.clownteam.authorization_interactors.IValidatePasswordUseCase
+import com.clownteam.authorization_interactors.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +13,12 @@ object AuthorizationModule {
 
     @Singleton
     @Provides
+    fun provideValidateLoginUseCase(interactors: AuthorizationInteractors): IValidateLoginUseCase {
+        return interactors.validateLogin
+    }
+
+    @Singleton
+    @Provides
     fun provideValidateEmailUseCase(interactors: AuthorizationInteractors): IValidateEmailUseCase {
         return interactors.validateEmail
     }
@@ -23,5 +27,11 @@ object AuthorizationModule {
     @Provides
     fun provideValidatePasswordUseCase(interactors: AuthorizationInteractors): IValidatePasswordUseCase {
         return interactors.validatePassword
+    }
+
+    @Singleton
+    @Provides
+    fun provideValidateRepeatedPasswordUseCase(interactors: AuthorizationInteractors): IValidateRepeatedPasswordUseCase {
+        return interactors.validateRepeatedPassword
     }
 }

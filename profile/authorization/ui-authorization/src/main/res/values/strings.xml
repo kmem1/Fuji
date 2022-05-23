@@ -5,10 +5,21 @@
     <string name="password_length_error">Пароль должен содержать минимум %1$d символов</string>
     <string name="password_should_contain_letters_and_digits_error">Пароль должен иметь буквы и числа</string>
     <string name="login_title">Вход</string>
-    <string name="email">Email</string>
-    <string name="password">Пароль</string>
+
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Пароль</string>
+    <string name="repeated_password_hint">Подтвердите пароль</string>
+    <string name="login_hint">Псевдоним</string>
+
     <string name="restore_password_question">Забыли пароль?</string>
+    <string name="already_have_account_question">Уже есть аккаунт?</string>
     <string name="login_action">Войти</string>
     <string name="create_account_question">Нет аккаунта?</string>
     <string name="registration_action">Зарегистрироваться</string>
+    <string name="blank_login_error">Поле не должно быть пустым</string>
+    <string name="login_length_error">Псевдоним должен содержать минимум %1$d символов</string>
+    <string name="blank_repeated_password_error">Поле не должно быть пустым</string>
+    <string name="passwords_dont_match">Пароли не совпадают</string>
+    <string name="registration_title">Регистрация</string>
+
 </resources>

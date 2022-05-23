@@ -1,4 +1,4 @@
-package com.clownteam.ui_authorization.login
+package com.clownteam.ui_authorization.registration
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -27,18 +27,18 @@ import com.clownteam.ui_authorization.components.AuthorizationTextField
 import kotlinx.coroutines.flow.collect
 
 @Composable
-fun LoginScreen(
-    state: LoginState,
-    eventHandler: EventHandler<LoginEvent>,
-    viewModel: LoginViewModel,
-    onSuccessLogin: () -> Unit
+fun RegistrationScreen(
+    state: RegistrationState,
+    eventHandler: EventHandler<RegistrationEvent>,
+    viewModel: RegistrationViewModel,
+    onSuccessRegistration: () -> Unit
 ) {
     val context = LocalContext.current
 
     LaunchedEffect(key1 = context) {
         viewModel.validationEvents.collect { event ->
             when (event) {
-                is LoginViewModel.ValidationEvent.Success -> onSuccessLogin()
+                is RegistrationViewModel.ValidationEvent.Success -> onSuccessRegistration()
             }
         }
     }
@@ -53,7 +53,7 @@ fun LoginScreen(
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             },
-            text = stringResource(R.string.login_title),
+            text = stringResource(R.string.registration_title),
             fontSize = 36.sp,
             fontWeight = FontWeight.Bold
         )
@@ -66,8 +66,19 @@ fun LoginScreen(
         }) {
             AuthorizationTextField(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                value = state.login,
+                onValueChange = { eventHandler.obtainEvent(RegistrationEvent.LoginChanged(it)) },
+                hint = stringResource(R.string.login_hint),
+                isError = state.loginError != null,
+                errorText = state.loginError?.asString(context) ?: ""
+            )
+
+            Spacer(modifier = Modifier.size(18.dp))
+
+            AuthorizationTextField(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
                 value = state.email,
-                onValueChange = { eventHandler.obtainEvent(LoginEvent.EmailChanged(it)) },
+                onValueChange = { eventHandler.obtainEvent(RegistrationEvent.EmailChanged(it)) },
                 hint = stringResource(R.string.email_hint),
                 isError = state.emailError != null,
                 errorText = state.emailError?.asString(context) ?: "",
@@ -79,7 +90,7 @@ fun LoginScreen(
             AuthorizationTextField(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
                 value = state.password,
-                onValueChange = { eventHandler.obtainEvent(LoginEvent.PasswordChanged(it)) },
+                onValueChange = { eventHandler.obtainEvent(RegistrationEvent.PasswordChanged(it)) },
                 hint = stringResource(R.string.password_hint),
                 isError = state.passwordError != null,
                 errorText = state.passwordError?.asString(context) ?: "",
@@ -87,10 +98,17 @@ fun LoginScreen(
                 visualTransformation = PasswordVisualTransformation()
             )
 
-            AuthorizationTextClickable(
-                text = stringResource(R.string.restore_password_question),
-                modifier = Modifier.align(Alignment.End).padding(top = 8.dp, end = 32.dp),
-                onClick = { Toast.makeText(context, "Restore password", Toast.LENGTH_SHORT).show() }
+            Spacer(modifier = Modifier.size(18.dp))
+
+            AuthorizationTextField(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                value = state.repeatedPassword,
+                onValueChange = { eventHandler.obtainEvent(RegistrationEvent.RepeatedPasswordChanged(it)) },
+                hint = stringResource(R.string.repeated_password_hint),
+                isError = state.repeatedPasswordError != null,
+                errorText = state.repeatedPasswordError?.asString(context) ?: "",
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = PasswordVisualTransformation()
             )
         }
 
@@ -101,19 +119,19 @@ fun LoginScreen(
             end.linkTo(parent.end)
         }, horizontalAlignment = Alignment.CenterHorizontally) {
             DefaultButton(
-                onClick = { eventHandler.obtainEvent(LoginEvent.Submit) },
-                text = stringResource(R.string.login_action)
+                onClick = { eventHandler.obtainEvent(RegistrationEvent.Submit) },
+                text = stringResource(R.string.registration_action)
             )
 
             Spacer(modifier = Modifier.size(16.dp))
 
             Row {
-                AuthorizationText(text = stringResource(R.string.create_account_question))
+                AuthorizationText(text = stringResource(R.string.already_have_account_question))
 
                 Spacer(modifier = Modifier.size(4.dp))
 
                 AuthorizationTextClickable(
-                    text = stringResource(R.string.registration_action),
+                    text = stringResource(R.string.login_action),
                     onClick = {
                         Toast.makeText(context, "Registration", Toast.LENGTH_SHORT).show()
                     })
