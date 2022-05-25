@@ -31,7 +31,8 @@ fun RegistrationScreen(
     state: RegistrationState,
     eventHandler: EventHandler<RegistrationEvent>,
     viewModel: RegistrationViewModel,
-    onSuccessRegistration: () -> Unit
+    navigateToLogin: () -> Unit = {},
+    onSuccessRegistration: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -132,9 +133,8 @@ fun RegistrationScreen(
 
                 AuthorizationTextClickable(
                     text = stringResource(R.string.login_action),
-                    onClick = {
-                        Toast.makeText(context, "Registration", Toast.LENGTH_SHORT).show()
-                    })
+                    onClick = { navigateToLogin() }
+                )
             }
 
             Spacer(modifier = Modifier.size(16.dp))

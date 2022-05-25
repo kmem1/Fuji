@@ -83,6 +83,9 @@ dependencies {
 
     implementation(Coil.coil)
 
+    implementation(Retrofit.retrofit)
+    implementation(Retrofit.retrofitGsonConverter)
+
     testImplementation(Junit.junit4)
     androidTestImplementation(AndroidXTest.extJunit)
     androidTestImplementation(AndroidXTest.espressoCore)

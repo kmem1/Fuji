@@ -31,7 +31,9 @@ fun LoginScreen(
     state: LoginState,
     eventHandler: EventHandler<LoginEvent>,
     viewModel: LoginViewModel,
-    onSuccessLogin: () -> Unit
+    navigateToRegistration: () -> Unit = {},
+    navigateToRestorePassword: () -> Unit = {},
+    onSuccessLogin: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -90,7 +92,7 @@ fun LoginScreen(
             AuthorizationTextClickable(
                 text = stringResource(R.string.restore_password_question),
                 modifier = Modifier.align(Alignment.End).padding(top = 8.dp, end = 32.dp),
-                onClick = { Toast.makeText(context, "Restore password", Toast.LENGTH_SHORT).show() }
+                onClick = { navigateToRestorePassword() }
             )
         }
 
@@ -114,9 +116,8 @@ fun LoginScreen(
 
                 AuthorizationTextClickable(
                     text = stringResource(R.string.registration_action),
-                    onClick = {
-                        Toast.makeText(context, "Registration", Toast.LENGTH_SHORT).show()
-                    })
+                    onClick = { navigateToRegistration() }
+                )
             }
 
             Spacer(modifier = Modifier.size(16.dp))

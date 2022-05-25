@@ -21,5 +21,7 @@
     <string name="blank_repeated_password_error">Поле не должно быть пустым</string>
     <string name="passwords_dont_match">Пароли не совпадают</string>
     <string name="registration_title">Регистрация</string>
-
+    <string name="restore_password_button_text">Отправить</string>
+    <string name="restore_password_info_text">Введите email для восстановления пароля</string>
+    <string name="restore_password_success_text">Данные для восстановления пароля отправлены на введенную электронную почту</string>
 </resources>
