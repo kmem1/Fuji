@@ -21,21 +21,22 @@ fun ProfileContainer(externalRouter: Router) {
         router = externalRouter,
         screens = listOf(
             Pair(Route.LoginRoute.route) { navController, _, _ ->
-                openLoginScreen(navController)
+                OpenLoginScreen(navController)
             },
 
             Pair(Route.RegistrationRoute.route) { navController, _, _ ->
-                openRegistrationScreen(navController)
+                OpenRegistrationScreen(navController)
             },
 
             Pair(Route.RestorePasswordRoute.route) { navController, _, _ ->
-                openRestorePasswordScreen(navController)
+                OpenRestorePasswordScreen(navController)
             }
         )
     )
 }
 
-private fun openLoginScreen(navController: NavController) {
+@Composable
+private fun OpenLoginScreen(navController: NavController) {
     val viewModel: LoginViewModel = hiltViewModel()
     LoginScreen(
         state = viewModel.state,
@@ -45,7 +46,8 @@ private fun openLoginScreen(navController: NavController) {
         navigateToRestorePassword = { navController.navigate(Route.RestorePasswordRoute.route) })
 }
 
-private fun openRegistrationScreen(navController: NavController) {
+@Composable
+private fun OpenRegistrationScreen(navController: NavController) {
     val viewModel: RegistrationViewModel = hiltViewModel()
     RegistrationScreen(
         state = viewModel.state,
@@ -62,7 +64,8 @@ private fun openRegistrationScreen(navController: NavController) {
     )
 }
 
-private fun openRestorePasswordScreen(navController: NavController) {
+@Composable
+private fun OpenRestorePasswordScreen(navController: NavController) {
     val viewModel: RestorePasswordViewModel = hiltViewModel()
     RestorePasswordScreen(
         state = viewModel.state,
