@@ -6,8 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +35,7 @@ fun LoginScreen(
     onSuccessLogin: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    var isNavigated by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = context) {
         viewModel.validationEvents.collect { event ->
@@ -92,7 +92,13 @@ fun LoginScreen(
             AuthorizationTextClickable(
                 text = stringResource(R.string.restore_password_question),
                 modifier = Modifier.align(Alignment.End).padding(top = 8.dp, end = 32.dp),
-                onClick = { navigateToRestorePassword() }
+                onClick = {
+                    if (!isNavigated) {
+                        navigateToRestorePassword()
+                    }
+
+                    isNavigated = true
+                }
             )
         }
 
@@ -116,7 +122,13 @@ fun LoginScreen(
 
                 AuthorizationTextClickable(
                     text = stringResource(R.string.registration_action),
-                    onClick = { navigateToRegistration() }
+                    onClick = {
+                        if (!isNavigated) {
+                            navigateToRegistration()
+                        }
+
+                        isNavigated = true
+                    }
                 )
             }
 
