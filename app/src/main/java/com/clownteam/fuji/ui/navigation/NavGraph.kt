@@ -1,11 +1,8 @@
 package com.clownteam.fuji.ui.navigation
 
-import android.widget.Toast
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,15 +10,8 @@ import coil.ImageLoader
 import com.clownteam.fuji.ui.navigation.bottom_navigation.BottomNavItem
 import com.clownteam.fuji.ui.navigation.screens.HomeScreen
 import com.clownteam.fuji.ui.navigation.screens.course.CourseScreen
-import com.clownteam.fuji.ui.navigation.screens.home.HomeViewModel
 import com.clownteam.fuji.ui.navigation.screens.profile.ProfileContainer
 import com.clownteam.fuji.ui.navigation.screens.search.SearchScreen
-import com.clownteam.ui_authorization.login.LoginScreen
-import com.clownteam.ui_authorization.login.LoginViewModel
-import com.clownteam.ui_authorization.registration.RegistrationScreen
-import com.clownteam.ui_authorization.registration.RegistrationViewModel
-import com.clownteam.ui_authorization.restore_password.RestorePasswordScreen
-import com.clownteam.ui_authorization.restore_password.RestorePasswordViewModel
 
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi

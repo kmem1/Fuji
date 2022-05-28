@@ -27,6 +27,10 @@ android {
         kotlinCompilerExtensionVersion = Compose.composeVersion
     }
 
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
