@@ -11,13 +11,18 @@ class AuthorizationServiceImpl(private val fujiService: FujiService) : Authoriza
 
     @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun register(data: RegistrationData): Boolean = withContext(Dispatchers.IO) {
-        val request = RegisterRequest(
-            username = data.username,
-            email = data.email,
-            password = data.password,
-            repeatPassword = data.password
-        )
+        try {
+            val request = RegisterRequest(
+                username = data.username,
+                email = data.email,
+                password = data.password,
+                repeatPassword = data.password
+            )
 
-        fujiService.register(request).execute().isSuccessful
+            fujiService.register(request).execute().isSuccessful
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 }
