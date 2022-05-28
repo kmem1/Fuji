@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.clownteam.authorization_domain.registration.RegistrationData
 import com.clownteam.authorization_interactors.*
 import com.clownteam.components.UiText
 import com.clownteam.core.domain.EventHandler
@@ -20,13 +21,14 @@ class RegistrationViewModel @Inject constructor(
     private val validateLogin: IValidateLoginUseCase,
     private val validateEmail: IValidateEmailUseCase,
     private val validatePassword: IValidatePasswordUseCase,
-    private val validateRepeatedPassword: IValidateRepeatedPasswordUseCase
+    private val validateRepeatedPassword: IValidateRepeatedPasswordUseCase,
+    private val registerUserCase: IRegisterUseCase
 ) : ViewModel(), EventHandler<RegistrationEvent> {
 
     var state by mutableStateOf(RegistrationState())
 
-    private val validationEventChannel = Channel<ValidationEvent>()
-    val validationEvents = validationEventChannel.receiveAsFlow()
+    private val registrationResultChannel = Channel<RegistrationResult>()
+    val registrationResults = registrationResultChannel.receiveAsFlow()
 
     override fun obtainEvent(event: RegistrationEvent) {
         when (event) {
@@ -57,7 +59,21 @@ class RegistrationViewModel @Inject constructor(
                 handleRepeatedPasswordValidationResult(state.password, state.repeatedPassword)
 
             if (isEmailValid && isPasswordValid && isLoginValid && isRepeatedPasswordValid) {
-                validationEventChannel.send(ValidationEvent.Success)
+                tryToRegister()
+            }
+        }
+    }
+
+    private suspend fun tryToRegister() {
+        val data = RegistrationData(state.login, state.email, state.password)
+
+        when(registerUserCase.invoke(data)) {
+            RegistrationUseCaseResult.Failed -> {
+                registrationResultChannel.send(RegistrationResult.Failed)
+            }
+
+            RegistrationUseCaseResult.Success -> {
+                registrationResultChannel.send(RegistrationResult.Success)
             }
         }
     }
@@ -171,7 +187,9 @@ class RegistrationViewModel @Inject constructor(
         return false
     }
 
-    sealed class ValidationEvent {
-        object Success : ValidationEvent()
+    sealed class RegistrationResult {
+        object Success : RegistrationResult()
+
+        object Failed : RegistrationResult()
     }
 }

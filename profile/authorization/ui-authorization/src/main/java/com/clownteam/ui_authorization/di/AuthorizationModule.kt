@@ -34,4 +34,10 @@ object AuthorizationModule {
     fun provideValidateRepeatedPasswordUseCase(interactors: AuthorizationInteractors): IValidateRepeatedPasswordUseCase {
         return interactors.validateRepeatedPassword
     }
+
+    @Singleton
+    @Provides
+    fun provideRegisterUseCase(interactors: AuthorizationInteractors): IRegisterUseCase {
+        return interactors.register
+    }
 }

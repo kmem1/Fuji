@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -37,6 +38,7 @@ internal fun AuthorizationTextField(
     isError: Boolean,
     errorText: String = "",
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     Column(modifier = modifier) {
@@ -56,6 +58,7 @@ internal fun AuthorizationTextField(
             textStyle = TextStyle(fontSize = 16.sp, color = Color.White),
             cursorBrush = SolidColor(Color.White),
             keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
             visualTransformation = visualTransformation,
             maxLines = 1,
             singleLine = true,

@@ -1,6 +1,8 @@
 object Retrofit {
-    private const val version = "2.9.0"
+    private const val retrofitVersion = "2.9.0"
+    const val retrofit = "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    const val retrofitGsonConverter = "com.squareup.retrofit2:converter-gson:$retrofitVersion"
 
-    const val retrofit = "com.squareup.retrofit2:retrofit:$version"
-    const val retrofitGsonConverter = "com.squareup.retrofit2:converter-gson:$version"
+    private const val loggerVersion = "4.9.3"
+    const val okhttpLoggingInterceptor = "com.squareup.okhttp3:logging-interceptor:$loggerVersion"
 }

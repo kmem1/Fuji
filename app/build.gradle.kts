@@ -85,6 +85,7 @@ dependencies {
 
     implementation(Retrofit.retrofit)
     implementation(Retrofit.retrofitGsonConverter)
+    implementation(Retrofit.okhttpLoggingInterceptor)
 
     testImplementation(Junit.junit4)
     androidTestImplementation(AndroidXTest.extJunit)
