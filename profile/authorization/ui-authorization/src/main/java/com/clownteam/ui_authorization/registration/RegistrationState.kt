@@ -3,6 +3,7 @@ package com.clownteam.ui_authorization.registration
 import com.clownteam.components.UiText
 
 data class RegistrationState(
+    val isLoading: Boolean = false,
     val login: String = "",
     val loginError: UiText? = null,
     val email: String = "",

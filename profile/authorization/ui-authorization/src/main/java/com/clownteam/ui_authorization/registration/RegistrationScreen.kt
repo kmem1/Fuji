@@ -7,6 +7,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,6 +68,13 @@ fun RegistrationScreen(
                 }
             }
         }
+    }
+
+    if (state.isLoading) {
+        LinearProgressIndicator(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colors.secondary
+        )
     }
 
     ConstraintLayout(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
@@ -160,7 +169,10 @@ fun RegistrationScreen(
                 hint = stringResource(R.string.repeated_password_hint),
                 isError = state.repeatedPasswordError != null,
                 errorText = state.repeatedPasswordError?.asString(context) ?: "",
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
                 keyboardActions = KeyboardActions(
                     onDone = {
                         Log.d("Kmem", "onDone")
@@ -181,7 +193,8 @@ fun RegistrationScreen(
 
             DefaultButton(
                 onClick = { onRegisterButtonClick() },
-                text = stringResource(R.string.registration_action)
+                text = stringResource(R.string.registration_action),
+                enabled = !state.isLoading
             )
 
             Spacer(modifier = Modifier.size(16.dp))

@@ -65,6 +65,8 @@ class RegistrationViewModel @Inject constructor(
     }
 
     private suspend fun tryToRegister() {
+        state = state.copy(isLoading = true)
+
         val data = RegistrationData(state.login, state.email, state.password)
 
         when(registerUserCase.invoke(data)) {
@@ -76,6 +78,8 @@ class RegistrationViewModel @Inject constructor(
                 registrationResultChannel.send(RegistrationResult.Success)
             }
         }
+
+        state = state.copy(isLoading = false)
     }
 
     private suspend fun handleEmailValidationResult(email: String): Boolean {

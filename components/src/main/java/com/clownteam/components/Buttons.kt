@@ -12,7 +12,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DefaultButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun DefaultButton(
+    text: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
     Button(
         onClick = onClick,
         modifier = modifier,
@@ -21,7 +26,8 @@ fun DefaultButton(text: String, modifier: Modifier = Modifier, onClick: () -> Un
             contentColor = MaterialTheme.colors.onSecondary,
         ),
         shape = RoundedCornerShape(12.dp),
-        contentPadding = PaddingValues(horizontal = 70.dp, vertical = 10.dp)
+        contentPadding = PaddingValues(horizontal = 70.dp, vertical = 10.dp),
+        enabled = enabled
     ) {
         Text(
             text = text,
