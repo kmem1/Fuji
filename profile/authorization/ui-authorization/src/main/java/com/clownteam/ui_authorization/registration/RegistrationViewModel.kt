@@ -22,7 +22,7 @@ class RegistrationViewModel @Inject constructor(
     private val validateEmail: IValidateEmailUseCase,
     private val validatePassword: IValidatePasswordUseCase,
     private val validateRepeatedPassword: IValidateRepeatedPasswordUseCase,
-    private val registerUserCase: IRegisterUseCase
+    private val registerUserCase: IRegistrationUseCase
 ) : ViewModel(), EventHandler<RegistrationEvent> {
 
     var state by mutableStateOf(RegistrationState())
@@ -70,12 +70,16 @@ class RegistrationViewModel @Inject constructor(
         val data = RegistrationData(state.login, state.email, state.password)
 
         when(registerUserCase.invoke(data)) {
-            RegistrationUseCaseResult.Failed -> {
+            is RegistrationUseCaseResult.Failed -> {
                 registrationResultChannel.send(RegistrationResult.Failed)
             }
 
             RegistrationUseCaseResult.Success -> {
                 registrationResultChannel.send(RegistrationResult.Success)
+            }
+
+            RegistrationUseCaseResult.NetworkError -> {
+                registrationResultChannel.send(RegistrationResult.NetworkError)
             }
         }
 
@@ -195,5 +199,7 @@ class RegistrationViewModel @Inject constructor(
         object Success : RegistrationResult()
 
         object Failed : RegistrationResult()
+
+        object NetworkError : RegistrationResult()
     }
 }

@@ -1,7 +1,6 @@
 package com.clownteam.fuji.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -17,18 +16,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import coil.ImageLoader
-import com.clownteam.fuji.api.FujiApi
-import com.clownteam.fuji.api.register.RegisterRequest
 import com.clownteam.fuji.ui.navigation.SetupNavGraph
 import com.clownteam.fuji.ui.navigation.bottom_navigation.AppBottomNavigation
 import com.clownteam.fuji.ui.theme.FujiTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint

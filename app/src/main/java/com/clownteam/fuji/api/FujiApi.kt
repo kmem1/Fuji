@@ -38,5 +38,7 @@ object FujiApi {
             .build()
     }
 
-    val service by lazy { retrofit.create(FujiService::class.java) }
+    fun <T> createService(service: Class<T>): T {
+        return retrofit.create(service)
+    }
 }

@@ -66,6 +66,11 @@ fun RegistrationScreen(
                     Toast.makeText(context, "Ошибка во время регистрации", Toast.LENGTH_SHORT)
                         .show()
                 }
+
+                RegistrationViewModel.RegistrationResult.NetworkError -> {
+                    Toast.makeText(context, "Ошибка сети", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
         }
     }

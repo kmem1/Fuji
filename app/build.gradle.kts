@@ -65,6 +65,11 @@ dependencies {
     implementation(project(Modules.authorizationInteractors))
     implementation(project(Modules.ui_authorization))
 
+    implementation(project(Modules.profileDatasource))
+    implementation(project(Modules.profileDomain))
+    implementation(project(Modules.profileInteractors))
+    implementation(project(Modules.ui_profile))
+
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.coreSplashScreen)
     implementation(AndroidX.appCompat)
@@ -90,6 +95,8 @@ dependencies {
     implementation(Retrofit.retrofit)
     implementation(Retrofit.retrofitGsonConverter)
     implementation(Retrofit.okhttpLoggingInterceptor)
+
+    implementation(Kotpref.core)
 
     testImplementation(Junit.junit4)
     androidTestImplementation(AndroidXTest.extJunit)

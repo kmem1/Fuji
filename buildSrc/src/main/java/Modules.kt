@@ -17,6 +17,11 @@ object Modules {
     const val ui_courseList = ":course:ui-courseList"
 
     const val profile = ":profile"
+    const val profileDatasource = ":profile:profile-datasource"
+    const val profileDomain = ":profile:profile-domain"
+    const val profileInteractors = ":profile:profile-interactors"
+    const val ui_profile = ":profile:ui-profile"
+
     const val authorizationDataSource = ":profile:authorization:authorization-datasource"
     const val authorizationDomain = ":profile:authorization:authorization-domain"
     const val authorizationInteractors = ":profile:authorization:authorization-interactors"

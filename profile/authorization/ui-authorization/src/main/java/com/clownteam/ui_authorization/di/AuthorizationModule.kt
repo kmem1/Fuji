@@ -37,7 +37,13 @@ object AuthorizationModule {
 
     @Singleton
     @Provides
-    fun provideRegisterUseCase(interactors: AuthorizationInteractors): IRegisterUseCase {
+    fun provideRegisterUseCase(interactors: AuthorizationInteractors): IRegistrationUseCase {
         return interactors.register
+    }
+
+    @Singleton
+    @Provides
+    fun provideLoginUseCase(interactors: AuthorizationInteractors): ILoginUseCase {
+        return interactors.login
     }
 }

@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,17 +34,28 @@ fun LoginScreen(
     viewModel: LoginViewModel,
     navigateToRegistration: () -> Unit = {},
     navigateToRestorePassword: () -> Unit = {},
-    onSuccessLogin: () -> Unit = {}
+    onSuccessLogin: (access: String, refresh: String) -> Unit
 ) {
     val context = LocalContext.current
     var isNavigated by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = context) {
-        viewModel.validationEvents.collect { event ->
+        viewModel.events.collect { event ->
             when (event) {
-                is LoginViewModel.ValidationEvent.Success -> onSuccessLogin()
+                is LoginViewModel.LoginViewModelEvent.Success -> onSuccessLogin(
+                    event.access,
+                    event.refresh
+                )
+
+                LoginViewModel.LoginViewModelEvent.Failed -> {
+                    Toast.makeText(context, "Неправильные данные", Toast.LENGTH_SHORT).show()
+                }
             }
         }
+    }
+
+    if (state.isLoading) {
+        LinearProgressIndicator(color = MaterialTheme.colors.secondary)
     }
 
     ConstraintLayout(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
@@ -68,11 +81,11 @@ fun LoginScreen(
         }) {
             AuthorizationTextField(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
-                value = state.email,
+                value = state.username,
                 onValueChange = { eventHandler.obtainEvent(LoginEvent.EmailChanged(it)) },
                 hint = stringResource(R.string.email_hint),
-                isError = state.emailError != null,
-                errorText = state.emailError?.asString(context) ?: "",
+                isError = state.usernameError != null,
+                errorText = state.usernameError?.asString(context) ?: "",
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 
@@ -93,7 +106,7 @@ fun LoginScreen(
                 text = stringResource(R.string.restore_password_question),
                 modifier = Modifier.align(Alignment.End).padding(top = 8.dp, end = 32.dp),
                 onClick = {
-                    if (!isNavigated) {
+                    if (!isNavigated && !state.isLoading) {
                         navigateToRestorePassword()
                     }
 
@@ -123,7 +136,7 @@ fun LoginScreen(
                 AuthorizationTextClickable(
                     text = stringResource(R.string.registration_action),
                     onClick = {
-                        if (!isNavigated) {
+                        if (!isNavigated && !state.isLoading) {
                             navigateToRegistration()
                         }
 
