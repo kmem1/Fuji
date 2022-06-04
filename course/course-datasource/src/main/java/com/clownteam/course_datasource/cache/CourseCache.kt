@@ -10,9 +10,9 @@ interface CourseCache {
 
     suspend fun getMyCourses(): SResult<List<Course>>
 
-    suspend fun getCourse(id: Int): SResult<Course>
+    suspend fun getCourse(id: String): SResult<Course>
 
-    suspend fun getCourseInfo(courseId: Int): SResult<CourseInfo>
+    suspend fun getCourseInfo(courseId: String): SResult<CourseInfo>
 
     companion object Factory {
         fun build(): CourseCache {

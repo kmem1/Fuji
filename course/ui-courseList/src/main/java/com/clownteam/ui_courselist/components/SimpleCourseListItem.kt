@@ -26,7 +26,7 @@ import com.clownteam.ui_courselist.R
 internal fun SimpleCourseListItem(
     course: Course,
     imageLoader: ImageLoader,
-    onClick: (Int) -> Unit
+    onClick: (String) -> Unit
 ) {
     val roundedTopCornersShape = RoundedCornerShape(
         topStart = CornerSize(16.dp),

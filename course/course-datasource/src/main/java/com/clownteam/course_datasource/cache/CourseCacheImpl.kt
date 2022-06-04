@@ -23,13 +23,13 @@ internal class CourseCacheImpl : CourseCache {
         courses.subList(0, 3).toSuccessResult()
     }
 
-    override suspend fun getCourse(id: Int): SResult<Course> = withContext(Dispatchers.IO) {
+    override suspend fun getCourse(id: String): SResult<Course> = withContext(Dispatchers.IO) {
         delay(Random.nextLong(500, 2000))
 
         courses.firstOrNull { it.id == id }?.toSuccessResult() ?: emptyFailed()
     }
 
-    override suspend fun getCourseInfo(courseId: Int): SResult<CourseInfo> =
+    override suspend fun getCourseInfo(courseId: String): SResult<CourseInfo> =
         withContext(Dispatchers.IO) {
             delay(Random.nextLong(500, 2000))
 
@@ -39,7 +39,7 @@ internal class CourseCacheImpl : CourseCache {
 
     private val courses = listOf(
         Course(
-            id = 1,
+            id = "1",
             title = "Основы программирования на C++",
             description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
             imgUrl = "https://i.ibb.co/LdhM7Bp/10.png",
@@ -55,7 +55,7 @@ internal class CourseCacheImpl : CourseCache {
             courseDurationInHours = 89
         ),
         Course(
-            id = 2,
+            id = "2",
             title = "Основы программирования на C++",
             description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
             imgUrl = "https://i.ibb.co/9hhTj2Q/12.jpg",
@@ -71,7 +71,7 @@ internal class CourseCacheImpl : CourseCache {
             courseDurationInHours = 89
         ),
         Course(
-            id = 3,
+            id = "3",
             title = "Основы программирования на C++",
             description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
             imgUrl = "https://i.ibb.co/9hhTj2Q/12.jpg",
@@ -86,7 +86,7 @@ internal class CourseCacheImpl : CourseCache {
             authorName = "Академия Яндекс",
             courseDurationInHours = 89
         ), Course(
-            id = 4,
+            id = "4",
             title = "Основы программирования на C++",
             description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
             imgUrl = "https://i.ibb.co/LdhM7Bp/10.png",
@@ -102,7 +102,7 @@ internal class CourseCacheImpl : CourseCache {
             courseDurationInHours = 89
         ),
         Course(
-            id = 5,
+            id = "5",
             title = "Основы программирования на C++",
             description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
             imgUrl = "https://i.ibb.co/LdhM7Bp/10.png",
@@ -118,7 +118,7 @@ internal class CourseCacheImpl : CourseCache {
             courseDurationInHours = 89
         ),
         Course(
-            id = 6,
+            id = "6",
             title = "Android Development",
             description = "Здесь последовательно излагаются понятия языка и постепенно усваиваются типовые алгоритмы.",
             imgUrl = "https://i.ibb.co/9hhTj2Q/12.jpg",
@@ -223,7 +223,7 @@ internal class CourseCacheImpl : CourseCache {
 
     private val courseInfoList = listOf(
         CourseInfo(
-            courseId = 1,
+            courseId = "1",
             goalDescription = goalDescription,
             forWhomCourseDescriptionItems = forWhomItems,
             learningSkillsDescriptionItems = learningSkills,
@@ -232,7 +232,7 @@ internal class CourseCacheImpl : CourseCache {
             reviewItems = reviewItems
         ),
         CourseInfo(
-            courseId = 2,
+            courseId = "2",
             goalDescription = goalDescription,
             forWhomCourseDescriptionItems = forWhomItems,
             learningSkillsDescriptionItems = learningSkills,
@@ -241,7 +241,7 @@ internal class CourseCacheImpl : CourseCache {
             reviewItems = reviewItems
         ),
         CourseInfo(
-            courseId = 3,
+            courseId = "3",
             goalDescription = goalDescription,
             forWhomCourseDescriptionItems = forWhomItems,
             learningSkillsDescriptionItems = learningSkills,
@@ -250,7 +250,7 @@ internal class CourseCacheImpl : CourseCache {
             reviewItems = reviewItems
         ),
         CourseInfo(
-            courseId = 4,
+            courseId = "4",
             goalDescription = goalDescription,
             forWhomCourseDescriptionItems = forWhomItems,
             learningSkillsDescriptionItems = learningSkills,
@@ -259,7 +259,7 @@ internal class CourseCacheImpl : CourseCache {
             reviewItems = reviewItems
         ),
         CourseInfo(
-            courseId = 5,
+            courseId = "5",
             goalDescription = goalDescription,
             forWhomCourseDescriptionItems = forWhomItems,
             learningSkillsDescriptionItems = learningSkills,
@@ -268,7 +268,7 @@ internal class CourseCacheImpl : CourseCache {
             reviewItems = reviewItems
         ),
         CourseInfo(
-            courseId = 6,
+            courseId = "6",
             goalDescription = goalDescription,
             forWhomCourseDescriptionItems = forWhomItems,
             learningSkillsDescriptionItems = learningSkills,

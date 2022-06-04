@@ -28,7 +28,7 @@ import com.clownteam.ui_courselist.components.TitleText
 fun CourseList(
     state: CourseListState,
     eventHandler: EventHandler<CourseListEvent>,
-    navigateToDetailScreen: (Int) -> Unit,
+    navigateToDetailScreen: (String) -> Unit,
     imageLoader: ImageLoader
 ) {
     DefaultScreenUI(

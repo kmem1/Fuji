@@ -1,4 +1,4 @@
-package com.clownteam.fuji.ui.navigation.screens
+package com.clownteam.fuji.ui.navigation.screens.home
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
@@ -11,7 +11,7 @@ import com.clownteam.ui_courselist.ui.CourseListViewModel
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @Composable
-fun HomeScreen(navigateToCourse: (Int) -> Unit, imageLoader: ImageLoader) {
+fun HomeScreen(navigateToCourse: (String) -> Unit, imageLoader: ImageLoader) {
     val viewModel: CourseListViewModel = hiltViewModel()
     CourseList(
         state = viewModel.state.value,

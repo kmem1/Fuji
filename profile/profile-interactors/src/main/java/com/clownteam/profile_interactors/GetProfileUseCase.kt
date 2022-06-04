@@ -14,7 +14,7 @@ internal class GetProfileUseCase(private val profileService: ProfileService) : I
         if (result.isNetworkError) return GetProfileUseCaseResult.NetworkError
 
         return if (result.isSuccessCode && result.data != null) {
-            val myProfile = result.data?.first { it.isSubscribed == null }
+            val myProfile = result.data?.results?.first { it.isSubscribed == null }
                 ?: return GetProfileUseCaseResult.Failed
 
             GetProfileUseCaseResult.Success(ProfileDataMapper.map(myProfile))

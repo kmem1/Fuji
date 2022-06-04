@@ -14,7 +14,7 @@ sealed class Route(val route: String, val arguments: List<NamedNavArgument> = em
     object CourseRoute: Route(
         route = "course_route",
         arguments = listOf(navArgument(CourseDetailedViewModel.COURSE_ID_ARG_KEY) {
-            type = NavType.IntType
+            type = NavType.StringType
         })
     )
 

@@ -1,7 +1,7 @@
 package com.clownteam.course_domain
 
 data class CourseInfo(
-    val courseId: Int,
+    val courseId: String,
     val goalDescription: String,
     val forWhomCourseDescriptionItems: List<ForWhomCourseDescriptionItem>,
     val learningSkillsDescriptionItems: List<String>,

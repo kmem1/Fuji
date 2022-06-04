@@ -1,6 +1,9 @@
 package com.clownteam.course_interactors
 
 import com.clownteam.course_datasource.cache.CourseCache
+import com.clownteam.course_datasource.network.CourseApi
+import com.clownteam.course_datasource.network.CourseService
+import com.clownteam.course_datasource.network.CourseServiceImpl
 
 class CourseInteractors private constructor(
     val getMyCourses: IGetMyCoursesUseCase,
@@ -9,11 +12,12 @@ class CourseInteractors private constructor(
     val getCourseInfoById: IGetCourseInfoByIdUseCase
 ) {
     companion object Factory {
-        fun build(): CourseInteractors {
+        fun build(api: CourseApi, baseUrl: String): CourseInteractors {
             val cache = CourseCache.build()
+            val service = CourseServiceImpl(api)
             return CourseInteractors(
                 GetMyCoursesUseCase(cache),
-                GetPopularCoursesUseCase(cache),
+                GetPopularCoursesUseCase(cache, service, baseUrl),
                 GetCourseByIdUseCase(cache),
                 GetCourseInfoByIdUseCase(cache)
             )

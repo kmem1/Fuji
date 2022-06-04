@@ -3,7 +3,7 @@ package com.clownteam.course_datasource.cache.model
 import com.clownteam.course_domain.Course
 
 data class CourseEntity(
-    val id: Int,
+    val id: String,
     val title: String,
     val imgUrl: String,
     val description: String,

@@ -1,5 +1,5 @@
 package com.clownteam.profile_datasource.network.models
 
-import com.google.gson.annotations.SerializedName
+import com.clownteam.core.network.PaginationResponse
 
-class ProfilesResponse : ArrayList<ProfilesResponseItem>()
+class ProfilesResponse : PaginationResponse<ProfilesResponseItem>()

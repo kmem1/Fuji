@@ -9,9 +9,9 @@ internal class GetCourseByIdUseCase(
     private val cache: CourseCache
 ) : IGetCourseByIdUseCase {
 
-    override suspend fun invoke(param: Int): SResult<Course> {
+    override suspend fun invoke(param: String): SResult<Course> {
         return cache.getCourse(param)
     }
 }
 
-interface IGetCourseByIdUseCase : IUseCase.InOut<Int, SResult<Course>>
+interface IGetCourseByIdUseCase : IUseCase.InOut<String, SResult<Course>>

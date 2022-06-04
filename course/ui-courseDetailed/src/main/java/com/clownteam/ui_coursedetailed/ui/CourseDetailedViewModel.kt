@@ -34,7 +34,7 @@ class CourseDetailedViewModel @Inject constructor(
 
     override val state: MutableState<CourseDetailedState> =
         mutableStateOf(CourseDetailedState.Loading)
-    private val courseId = savedStateHandle.get<Int>(COURSE_ID_ARG_KEY)
+    private val courseId = savedStateHandle.get<String>(COURSE_ID_ARG_KEY)
 
     private var listener: Listener? = null
 

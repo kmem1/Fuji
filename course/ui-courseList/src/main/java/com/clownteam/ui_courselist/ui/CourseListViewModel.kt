@@ -7,9 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.SResult
 import com.clownteam.core.domain.StateHolder
+import com.clownteam.core.network.TokenManager
+import com.clownteam.course_domain.Course
+import com.clownteam.course_interactors.GetPopularCoursesUseCaseResult
 import com.clownteam.course_interactors.IGetMyCoursesUseCase
 import com.clownteam.course_interactors.IGetPopularCoursesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,14 +46,40 @@ class CourseListViewModel @Inject constructor(
             val myCoursesResult = getMyCourses.invoke()
             val popularCoursesResult = getPopularCourses.invoke()
 
-            if (myCoursesResult is SResult.Success && popularCoursesResult is SResult.Success) {
-                state.value = CourseListState.Data(
-                    myCourses = myCoursesResult.data,
-                    popularCourses = popularCoursesResult.data
-                )
-            } else {
-                state.value = CourseListState.Error(message = "Error while retrieving data")
+            handleMyCoursesResult(myCoursesResult)
+            handleGetCoursesResult(popularCoursesResult)
+        }
+    }
+
+    private fun handleGetCoursesResult(result: GetPopularCoursesUseCaseResult) {
+        when(result) {
+            GetPopularCoursesUseCaseResult.Failed -> {
+                state.value = CourseListState.Error(message = "Ошибка при получении данных")
             }
+
+            GetPopularCoursesUseCaseResult.NetworkError -> {
+                state.value = CourseListState.Error(message = "Проблемы с интернет соединением")
+            }
+
+            is GetPopularCoursesUseCaseResult.Success -> {
+                val myCourses = (state.value as? CourseListState.Data)?.myCourses ?: emptyList()
+                state.value = CourseListState.Data(
+                    myCourses = myCourses,
+                    popularCourses = result.data
+                )
+            }
+        }
+    }
+
+    private fun handleMyCoursesResult(result: SResult<List<Course>>) {
+        if (result is SResult.Success) {
+            val popularCourses = (state.value as? CourseListState.Data)?.popularCourses ?: emptyList()
+            state.value = CourseListState.Data(
+                myCourses = result.data,
+                popularCourses = popularCourses
+            )
+        } else {
+            state.value = CourseListState.Error(message = "Error while retrieving data")
         }
     }
 }

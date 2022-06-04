@@ -28,7 +28,7 @@ import com.clownteam.ui_courselist.R
 internal fun ColumnCourseListItem(
     course: Course,
     imageLoader: ImageLoader,
-    onClick: (Int) -> Unit
+    onClick: (String) -> Unit
 ) {
     // Main Row
     Row(modifier = Modifier.clickable { onClick(course.id) }) {

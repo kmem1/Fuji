@@ -1,7 +1,7 @@
 package com.clownteam.course_domain
 
 data class Course(
-    val id: Int,
+    val id: String,
     val title: String,
     val imgUrl: String,
     val description: String,
