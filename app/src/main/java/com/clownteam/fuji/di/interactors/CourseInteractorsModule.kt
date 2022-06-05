@@ -1,5 +1,7 @@
 package com.clownteam.fuji.di.interactors
 
+import com.clownteam.core.network.token.TokenManager
+import com.clownteam.core.user_data.UserDataManager
 import com.clownteam.course_datasource.network.CourseApi
 import com.clownteam.course_interactors.CourseInteractors
 import com.clownteam.fuji.api.FujiApi
@@ -16,10 +18,15 @@ object CourseInteractorsModule {
 
     @Provides
     @Singleton
-    fun provideCourseInteractors(): CourseInteractors {
+    fun provideCourseInteractors(
+        tokenManager: TokenManager,
+        userDataManager: UserDataManager
+    ): CourseInteractors {
         return CourseInteractors.build(
-            FujiApi.createService(CourseApi::class.java),
-            FujiApi.BASE_URL
+            api = FujiApi.createService(CourseApi::class.java),
+            baseUrl = FujiApi.BASE_URL,
+            tokenManager = tokenManager,
+            userDataManager = userDataManager
         )
     }
 }

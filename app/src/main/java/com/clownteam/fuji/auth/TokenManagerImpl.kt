@@ -1,8 +1,8 @@
 package com.clownteam.fuji.auth
 
-import android.media.session.MediaSession
+import android.util.Log
 import com.clownteam.core.network.NetworkResponse
-import com.clownteam.core.network.TokenManager
+import com.clownteam.core.network.token.TokenManager
 import com.clownteam.fuji.api.token.TokenService
 import com.clownteam.fuji.api.token.models.get_token.GetTokenRequest
 import com.clownteam.fuji.api.token.models.refresh_token.RefreshTokenRequest
@@ -70,6 +70,7 @@ class TokenManagerImpl(private val tokenService: TokenService) : TokenManager {
                 val accessToken = response.body()?.access
                 TokenPreferences.accessToken = accessToken
 
+                Log.d("Kmem", "Token refreshed: $accessToken")
                 NetworkResponse(statusCode = response.code(), data = accessToken)
             } else {
                 NetworkResponse(statusCode = response.code(), data = null)

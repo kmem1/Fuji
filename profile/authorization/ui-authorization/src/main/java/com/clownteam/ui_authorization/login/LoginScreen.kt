@@ -1,5 +1,6 @@
 package com.clownteam.ui_authorization.login
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -34,7 +35,7 @@ fun LoginScreen(
     viewModel: LoginViewModel,
     navigateToRegistration: () -> Unit = {},
     navigateToRestorePassword: () -> Unit = {},
-    onSuccessLogin: (access: String, refresh: String) -> Unit
+    onSuccessLogin: (access: String, refresh: String, username: String) -> Unit
 ) {
     val context = LocalContext.current
     var isNavigated by remember { mutableStateOf(false) }
@@ -42,10 +43,13 @@ fun LoginScreen(
     LaunchedEffect(key1 = context) {
         viewModel.events.collect { event ->
             when (event) {
-                is LoginViewModel.LoginViewModelEvent.Success -> onSuccessLogin(
-                    event.access,
-                    event.refresh
-                )
+                is LoginViewModel.LoginViewModelEvent.Success -> {
+                    onSuccessLogin(
+                        event.access,
+                        event.refresh,
+                        event.username
+                    )
+                }
 
                 LoginViewModel.LoginViewModelEvent.Failed -> {
                     Toast.makeText(context, "Неправильные данные", Toast.LENGTH_SHORT).show()

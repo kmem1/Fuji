@@ -32,7 +32,7 @@ fun LearnignSkillsColumn(skillStrings: List<String>, modifier: Modifier = Modifi
                 Icon(
                     painter = painterResource(id = R.drawable.ic_baseline_triangle_24),
                     contentDescription = stringResource(R.string.triangle_icon_content_description),
-                    tint = MaterialTheme.colors.background,
+                    tint = MaterialTheme.colors.secondary,
                     modifier = Modifier.size(36.dp).align(Alignment.CenterVertically)
                 )
 
@@ -40,7 +40,7 @@ fun LearnignSkillsColumn(skillStrings: List<String>, modifier: Modifier = Modifi
                     text = skillString,
                     style = MaterialTheme.typography.body2,
                     fontWeight = FontWeight.W600,
-                    modifier = Modifier.padding(start = 8.dp)
+                    modifier = Modifier.padding(start = 8.dp).align(Alignment.CenterVertically)
                 )
             }
         }

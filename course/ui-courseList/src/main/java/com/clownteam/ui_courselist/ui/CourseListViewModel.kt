@@ -5,16 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clownteam.core.domain.EventHandler
-import com.clownteam.core.domain.SResult
 import com.clownteam.core.domain.StateHolder
-import com.clownteam.core.network.TokenManager
-import com.clownteam.course_domain.Course
+import com.clownteam.course_interactors.GetMyCoursesUseCaseResult
 import com.clownteam.course_interactors.GetPopularCoursesUseCaseResult
 import com.clownteam.course_interactors.IGetMyCoursesUseCase
 import com.clownteam.course_interactors.IGetPopularCoursesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,7 +48,7 @@ class CourseListViewModel @Inject constructor(
     }
 
     private fun handleGetCoursesResult(result: GetPopularCoursesUseCaseResult) {
-        when(result) {
+        when (result) {
             GetPopularCoursesUseCaseResult.Failed -> {
                 state.value = CourseListState.Error(message = "Ошибка при получении данных")
             }
@@ -71,15 +67,28 @@ class CourseListViewModel @Inject constructor(
         }
     }
 
-    private fun handleMyCoursesResult(result: SResult<List<Course>>) {
-        if (result is SResult.Success) {
-            val popularCourses = (state.value as? CourseListState.Data)?.popularCourses ?: emptyList()
-            state.value = CourseListState.Data(
-                myCourses = result.data,
-                popularCourses = popularCourses
-            )
-        } else {
-            state.value = CourseListState.Error(message = "Error while retrieving data")
+    private fun handleMyCoursesResult(result: GetMyCoursesUseCaseResult) {
+        when (result) {
+            GetMyCoursesUseCaseResult.Failed -> {
+                state.value = CourseListState.Error(message = "Error while retrieving data")
+            }
+
+            GetMyCoursesUseCaseResult.NetworkError -> {
+                state.value = CourseListState.Error(message = "Network error")
+            }
+
+            is GetMyCoursesUseCaseResult.Success -> {
+                val popularCourses =
+                    (state.value as? CourseListState.Data)?.popularCourses ?: emptyList()
+                state.value = CourseListState.Data(
+                    myCourses = result.data,
+                    popularCourses = popularCourses
+                )
+            }
+
+            GetMyCoursesUseCaseResult.Unauthorized -> {
+                state.value = CourseListState.Error(message = "Необходимо авторизоваться")
+            }
         }
     }
 }

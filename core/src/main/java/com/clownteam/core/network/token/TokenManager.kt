@@ -1,4 +1,6 @@
-package com.clownteam.core.network
+package com.clownteam.core.network.token
+
+import com.clownteam.core.network.NetworkResponse
 
 interface TokenManager {
 

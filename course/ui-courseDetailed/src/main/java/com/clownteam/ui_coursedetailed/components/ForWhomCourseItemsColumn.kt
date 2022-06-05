@@ -34,7 +34,7 @@ internal fun ForWhomCourseItemsColumn(
                     )
                     Box(
                         modifier = Modifier.fillMaxWidth().height(1.dp)
-                            .background(MaterialTheme.colors.background)
+                            .background(MaterialTheme.colors.secondary)
                     )
                 }
 

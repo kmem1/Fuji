@@ -32,10 +32,10 @@ internal fun ReviewsPercentageView(percentageMap: Map<Int, Int>, modifier: Modif
             ) {
                 Text(
                     text = "$mark",
-                    modifier = Modifier.padding(end = 4.dp).width(12.dp),
+                    modifier = Modifier.padding(end = 8.dp).width(12.dp),
                     style = MaterialTheme.typography.subtitle2,
                     maxLines = 1,
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.End
                 )
 
                 if (filledBoxWeight > 0F) {
@@ -43,7 +43,7 @@ internal fun ReviewsPercentageView(percentageMap: Map<Int, Int>, modifier: Modif
                         modifier = Modifier
                             .height(12.dp)
                             .weight(filledBoxWeight)
-                            .background(MaterialTheme.colors.background)
+                            .background(MaterialTheme.colors.secondary)
                     )
                 }
 

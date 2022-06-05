@@ -1,15 +1,14 @@
 package com.clownteam.ui_profile
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clownteam.core.domain.EventHandler
-import com.clownteam.core.network.TokenManager
 import com.clownteam.profile_interactors.GetProfileUseCaseResult
 import com.clownteam.profile_interactors.IGetProfileUseCase
+import com.clownteam.profile_interactors.ISignOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -19,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getProfileUseCase: IGetProfileUseCase,
-    private val tokenManager: TokenManager
+    private val signOut: ISignOutUseCase
 ) : ViewModel(), EventHandler<ProfileEvent> {
 
     var state by mutableStateOf(ProfileState())
@@ -31,34 +30,24 @@ class ProfileViewModel @Inject constructor(
         when (event) {
             ProfileEvent.SignOut -> {
                 viewModelScope.launch {
-                    tokenManager.clearTokens()
+                    signOut.invoke()
 
                     eventChannel.send(ProfileViewModelEvent.NavigateToLoginEvent)
                 }
             }
 
             is ProfileEvent.GetProfile -> {
-                if (event.accessToken == null) {
-                    getProfile(tokenManager.getToken())
-                } else {
-                    getProfile(event.accessToken)
-                }
+                getProfile()
             }
         }
     }
 
-    private fun getProfile(token: String?) {
+    private fun getProfile() {
         state = state.copy(isLoading = true, isNetworkError = false)
 
-        Log.d("Kmem", "token: $token")
-
         viewModelScope.launch {
-            if (token == null) {
-                eventChannel.send(ProfileViewModelEvent.UnauthorizedEvent)
-                return@launch
-            }
 
-            val result = getProfileUseCase.invoke(token)
+            val result = getProfileUseCase.invoke()
 
             handleProfileUseCaseResult(result)
         }
@@ -84,25 +73,10 @@ class ProfileViewModel @Inject constructor(
                 )
             }
 
-            GetProfileUseCaseResult.TokenExpired -> {
-                tryToRefreshToken()
-            }
-        }
-    }
-
-    private fun tryToRefreshToken() {
-        viewModelScope.launch {
-            val newTokenResponse = tokenManager.refreshToken()
-
-            if (newTokenResponse.isNetworkError) {
-                state = state.copy(isNetworkError = true)
-                return@launch
-            }
-
-            if (newTokenResponse.isSuccessCode && newTokenResponse.data != null) {
-                getProfile(newTokenResponse.data)
-            } else {
-                eventChannel.send(ProfileViewModelEvent.UnauthorizedEvent)
+            GetProfileUseCaseResult.Unauthorized -> {
+                viewModelScope.launch {
+                    eventChannel.send(ProfileViewModelEvent.UnauthorizedEvent)
+                }
             }
         }
     }

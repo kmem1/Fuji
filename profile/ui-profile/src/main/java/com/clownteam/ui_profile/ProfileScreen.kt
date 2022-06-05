@@ -21,7 +21,6 @@ fun ProfileScreen(
     state: ProfileState,
     eventHandler: EventHandler<ProfileEvent>,
     viewModel: ProfileViewModel,
-    accessToken: String? = null,
     navigateToLogin: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -29,7 +28,7 @@ fun ProfileScreen(
     Log.d("Kmem", "ProfileScreen")
 
     LaunchedEffect(key1 = context) {
-        eventHandler.obtainEvent(ProfileEvent.GetProfile(accessToken))
+        eventHandler.obtainEvent(ProfileEvent.GetProfile)
 
         viewModel.events.collectLatest { event ->
             Log.d("Kmem", "$event")
@@ -49,7 +48,7 @@ fun ProfileScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             DefaultButton(
                 text = "Retry",
-                onClick = { eventHandler.obtainEvent(ProfileEvent.GetProfile()) })
+                onClick = { eventHandler.obtainEvent(ProfileEvent.GetProfile) })
         }
     } else {
         if (state.isLoading) {

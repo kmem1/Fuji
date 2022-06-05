@@ -125,14 +125,19 @@ class LoginViewModel @Inject constructor(
 
             is LoginUseCaseResult.Success -> {
                 eventChannel.send(
-                    LoginViewModelEvent.Success(result.accessToken, result.refreshToken)
+                    LoginViewModelEvent.Success(
+                        result.accessToken,
+                        result.refreshToken,
+                        state.username
+                    )
                 )
             }
         }
     }
 
     sealed class LoginViewModelEvent {
-        class Success(val access: String, val refresh: String) : LoginViewModelEvent()
+        class Success(val access: String, val refresh: String, val username: String) :
+            LoginViewModelEvent()
 
         object Failed : LoginViewModelEvent()
     }

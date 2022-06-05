@@ -10,4 +10,6 @@ sealed class CourseDetailedState {
     data class Data(val course: Course, val courseInfo: CourseInfoUI) : CourseDetailedState()
 
     object Error : CourseDetailedState()
+
+    object Unauthorized : CourseDetailedState()
 }

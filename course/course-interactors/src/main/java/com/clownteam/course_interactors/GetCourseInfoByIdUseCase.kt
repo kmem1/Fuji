@@ -1,26 +1,67 @@
 package com.clownteam.course_interactors
 
 import com.clownteam.core.domain.IUseCase
-import com.clownteam.core.domain.SResult
-import com.clownteam.core.utils.extensions.emptyFailed
-import com.clownteam.core.utils.extensions.toSuccessResult
-import com.clownteam.course_datasource.cache.CourseCache
+import com.clownteam.core.network.token.TokenManager
+import com.clownteam.course_datasource.network.CourseService
+import com.clownteam.course_domain.Course
 import com.clownteam.course_domain.CourseInfoUI
-import com.clownteam.course_domain.toUIModel
+import com.clownteam.course_interactors.mappers.CourseInfoResponseMapper
 
 internal class GetCourseInfoByIdUseCase(
-    private val cache: CourseCache
+    private val service: CourseService,
+    private val tokenManager: TokenManager,
+    private val baseUrl: String
 ) : IGetCourseInfoByIdUseCase {
 
-    override suspend fun invoke(param: String): SResult<CourseInfoUI> {
-        val courseInfoResult = cache.getCourseInfo(param)
+    override suspend fun invoke(param: String): GetCourseInfoByIdUseCaseResult {
+        val token = tokenManager.getToken() ?: return GetCourseInfoByIdUseCaseResult.Unauthorized
 
-        return if (courseInfoResult is SResult.Success) {
-            courseInfoResult.data.toUIModel().toSuccessResult()
+        var result = service.getCourseInfo(token, param)
+
+        if (result.statusCode == 401) {
+            val newTokenResponse = tokenManager.refreshToken()
+
+            if (newTokenResponse.isNetworkError) {
+                return GetCourseInfoByIdUseCaseResult.NetworkError
+            }
+
+            if (newTokenResponse.isSuccessCode && newTokenResponse.data != null) {
+                newTokenResponse.data?.let {
+                    result = service.getCourseInfo(it, param)
+                } ?: GetCourseInfoByIdUseCaseResult.Unauthorized
+            } else {
+                return GetCourseInfoByIdUseCaseResult.Unauthorized
+            }
+        }
+
+        if (result.isNetworkError) return GetCourseInfoByIdUseCaseResult.NetworkError
+
+        return if (result.isSuccessCode && result.data != null) {
+            result.data?.let {
+                val mappedResult = CourseInfoResponseMapper.map(it, baseUrl)
+                GetCourseInfoByIdUseCaseResult.Success(
+                    mappedResult.course,
+                    mappedResult.courseInfoUI
+                )
+            } ?: GetCourseInfoByIdUseCaseResult.Failed
         } else {
-            emptyFailed()
+            GetCourseInfoByIdUseCaseResult.Failed
         }
     }
 }
 
-interface IGetCourseInfoByIdUseCase : IUseCase.InOut<String, SResult<CourseInfoUI>>
+
+interface IGetCourseInfoByIdUseCase :
+    IUseCase.InOut<String, GetCourseInfoByIdUseCaseResult>
+
+sealed class GetCourseInfoByIdUseCaseResult {
+
+    class Success(val course: Course, val courseInfo: CourseInfoUI) :
+        GetCourseInfoByIdUseCaseResult()
+
+    object Failed : GetCourseInfoByIdUseCaseResult()
+
+    object Unauthorized : GetCourseInfoByIdUseCaseResult()
+
+    object NetworkError : GetCourseInfoByIdUseCaseResult()
+}

@@ -1,6 +1,5 @@
 package com.clownteam.fuji.ui.navigation.screens.profile
 
-import android.os.Bundle
 import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInHorizontally
@@ -12,7 +11,11 @@ import androidx.navigation.NavOptions
 import com.clownteam.fuji.api.FujiApi
 import com.clownteam.fuji.api.token.TokenService
 import com.clownteam.fuji.auth.TokenManagerImpl
-import com.clownteam.fuji.ui.navigation.*
+import com.clownteam.fuji.auth.UserDataManagerImpl
+import com.clownteam.fuji.ui.navigation.NavigationController
+import com.clownteam.fuji.ui.navigation.NavigationControllerScreen
+import com.clownteam.fuji.ui.navigation.Route
+import com.clownteam.fuji.ui.navigation.Router
 import com.clownteam.ui_authorization.login.LoginScreen
 import com.clownteam.ui_authorization.login.LoginViewModel
 import com.clownteam.ui_authorization.registration.RegistrationScreen
@@ -55,18 +58,17 @@ private fun createProfileNavigationControllerScreen(): NavigationControllerScree
 
         Log.d("Kmem", "bundle: $bundle bundleToken: $token")
 
-        OpenProfileScreen(navController, token)
+        OpenProfileScreen(navController)
     }
 }
 
 @Composable
-private fun OpenProfileScreen(navController: NavController, token: String? = null) {
+private fun OpenProfileScreen(navController: NavController) {
     val viewModel: ProfileViewModel = hiltViewModel()
     ProfileScreen(
         state = viewModel.state,
         eventHandler = viewModel,
         viewModel = viewModel,
-        accessToken = token,
         navigateToLogin = { navController.navigate(Route.LoginRoute.route) }
     )
 }
@@ -106,17 +108,17 @@ private fun OpenLoginScreen(navController: NavController) {
         viewModel = viewModel,
         navigateToRegistration = { navController.navigate(Route.RegistrationRoute.route) },
         navigateToRestorePassword = { navController.navigate(Route.RestorePasswordRoute.route) },
-        onSuccessLogin = { access, refresh ->
-            Log.d("Kmem", "access: $access")
-
+        onSuccessLogin = { access, refresh, username ->
             val tokenManager = TokenManagerImpl(FujiApi.createService(TokenService::class.java))
+            val userDataManager = UserDataManagerImpl()
 
             tokenManager.setToken(access)
             tokenManager.setRefresh(refresh)
 
-            val args = Bundle().apply { putString(PROFILE_SCREEN_TOKEN_KEY, access) }
+            Log.d("kmem", "setUsername: $username")
+            userDataManager.setUsername(username)
 
-            navController.navigate(Route.ProfileRoute.route, args)
+            navController.navigate(Route.ProfileRoute.route)
         }
     )
 }

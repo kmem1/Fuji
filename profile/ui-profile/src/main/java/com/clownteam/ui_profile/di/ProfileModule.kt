@@ -1,6 +1,7 @@
 package com.clownteam.ui_profile.di
 
 import com.clownteam.profile_interactors.IGetProfileUseCase
+import com.clownteam.profile_interactors.ISignOutUseCase
 import com.clownteam.profile_interactors.ProfileInteractors
 import dagger.Module
 import dagger.Provides
@@ -16,5 +17,11 @@ object ProfileModule {
     @Singleton
     fun provideGetProfileUseCase(interactors: ProfileInteractors): IGetProfileUseCase {
         return interactors.getProfile
+    }
+
+    @Provides
+    @Singleton
+    fun provideSignOutUseCase(interactors: ProfileInteractors): ISignOutUseCase {
+        return interactors.signOut
     }
 }

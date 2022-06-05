@@ -51,6 +51,12 @@ fun CourseDetailed(
                 }
             }
         }
+
+        if (state is CourseDetailedState.Unauthorized) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Необходима авторизация")
+            }
+        }
     }
 }
 
@@ -169,14 +175,16 @@ private fun MainContent(
                 .background(MaterialTheme.colors.primary)
                 .padding(horizontal = 14.dp, vertical = 30.dp)
         ) {
-            TitleText("Цель курса")
-            Text(
-                text = state.courseInfo.goalDescription,
-                style = MaterialTheme.typography.body2,
-                fontWeight = FontWeight.Medium,
-                lineHeight = 17.sp,
-                modifier = Modifier.padding(start = 14.dp, top = 6.dp)
-            )
+            if (state.courseInfo.goalDescription.isNotEmpty()) {
+                TitleText("Цель курса")
+                Text(
+                    text = state.courseInfo.goalDescription,
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = 17.sp,
+                    modifier = Modifier.padding(start = 14.dp, top = 6.dp)
+                )
+            }
 
             TitleText(
                 stringResource(R.string.who_is_this_course_for),
@@ -198,41 +206,44 @@ private fun MainContent(
                 modifier = Modifier.padding(top = 8.dp)
             )
 
-            TitleText(
-                stringResource(R.string.course_program),
-                modifier = Modifier.padding(top = 12.dp)
-            )
-
-            Row(modifier = Modifier.padding(top = 10.dp)) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_baseline_schedule_24),
-                    contentDescription = stringResource(id = R.string.clock_icon_content_description),
-                    tint = Color(0xFF6CA7FF)
+            if (state.courseInfo.moduleItems.isNotEmpty()) {
+                TitleText(
+                    stringResource(R.string.course_program),
+                    modifier = Modifier.padding(top = 12.dp)
                 )
-                Text(
-                    text = stringResource(
-                        R.string.course_duration_hours,
-                        state.course.courseDurationInHours
-                    ),
-                    modifier = Modifier.padding(start = 2.dp),
-                    style = MaterialTheme.typography.body1,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF6CA7FF)
+
+                Row(modifier = Modifier.padding(top = 10.dp)) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_baseline_schedule_24),
+                        contentDescription = stringResource(id = R.string.clock_icon_content_description),
+                        tint = Color(0xFF6CA7FF)
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.course_duration_hours,
+                            state.course.courseDurationInHours
+                        ),
+                        modifier = Modifier.padding(start = 2.dp),
+                        style = MaterialTheme.typography.body1,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF6CA7FF)
+                    )
+                }
+
+                ModulesColumn(
+                    state.courseInfo.moduleItems,
+                    modifier = Modifier.padding(top = 24.dp)
+                )
+
+                ShowAllButton(
+                    modifier = Modifier.padding(vertical = 32.dp)
+                        .align(Alignment.CenterHorizontally),
+                    onClick = {},
+                    text = stringResource(R.string.all_program)
                 )
             }
 
-            ModulesColumn(
-                state.courseInfo.moduleItems,
-                modifier = Modifier.padding(top = 24.dp)
-            )
-
-            ShowAllButton(
-                modifier = Modifier.padding(vertical = 32.dp).align(Alignment.CenterHorizontally),
-                onClick = {},
-                text = stringResource(R.string.all_program)
-            )
-
-            TitleText(stringResource(R.string.reviews))
+            TitleText(stringResource(R.string.reviews), modifier = Modifier.padding(top = 12.dp))
 
             Row(
                 modifier = Modifier.height(IntrinsicSize.Min).padding(top = 16.dp, start = 10.dp),
@@ -267,17 +278,19 @@ private fun MainContent(
                 modifier = Modifier.padding(top = 16.dp, start = 10.dp)
             )
 
-            ReviewsView(
-                state.courseInfo.reviewItems,
-                modifier = Modifier.padding(top = 30.dp, start = 10.dp),
-                imageLoader = imageLoader
-            )
+            if (state.courseInfo.reviewItems.isNotEmpty()) {
+                ReviewsView(
+                    state.courseInfo.reviewItems,
+                    modifier = Modifier.padding(top = 30.dp, start = 10.dp),
+                    imageLoader = imageLoader
+                )
 
-            ShowAllButton(
-                modifier = Modifier.padding(top = 32.dp).align(Alignment.CenterHorizontally),
-                onClick = {},
-                text = stringResource(R.string.all_reviews)
-            )
+                ShowAllButton(
+                    modifier = Modifier.padding(top = 32.dp).align(Alignment.CenterHorizontally),
+                    onClick = {},
+                    text = stringResource(R.string.all_reviews)
+                )
+            }
         }
     }
 }
