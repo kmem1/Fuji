@@ -23,7 +23,7 @@ class CourseInteractors private constructor(
             val service = CourseServiceImpl(api)
             return CourseInteractors(
                 GetMyCoursesUseCase(service, userDataManager, tokenManager, baseUrl),
-                GetPopularCoursesUseCase(cache, service, baseUrl),
+                GetPopularCoursesUseCase(service, tokenManager, baseUrl),
                 GetCourseByIdUseCase(cache),
                 GetCourseInfoByIdUseCase(service, tokenManager, baseUrl)
             )

@@ -57,6 +57,10 @@ class CourseListViewModel @Inject constructor(
                 state.value = CourseListState.Error(message = "Проблемы с интернет соединением")
             }
 
+            GetPopularCoursesUseCaseResult.Unauthorized -> {
+                state.value = CourseListState.Error(message = "Необходима авторизация")
+            }
+
             is GetPopularCoursesUseCaseResult.Success -> {
                 val myCourses = (state.value as? CourseListState.Data)?.myCourses ?: emptyList()
                 state.value = CourseListState.Data(
@@ -87,7 +91,7 @@ class CourseListViewModel @Inject constructor(
             }
 
             GetMyCoursesUseCaseResult.Unauthorized -> {
-                state.value = CourseListState.Error(message = "Необходимо авторизоваться")
+                state.value = CourseListState.Error(message = "Необходима авторизация")
             }
         }
     }

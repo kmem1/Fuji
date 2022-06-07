@@ -7,11 +7,11 @@ import com.clownteam.course_datasource.network.models.get_user_courses.GetUserCo
 
 interface CourseService {
 
-    suspend fun getCourses(): NetworkResponse<GetCoursesResponse>
+    suspend fun getCourses(token: String): NetworkResponse<GetCoursesResponse>
 
     suspend fun getUserCourses(
         token: String,
-        username: String
+        userPath: String
     ): NetworkResponse<GetUserCoursesResponse>
 
     suspend fun getCourseInfo(token: String, id: String): NetworkResponse<CourseInfoResponse>

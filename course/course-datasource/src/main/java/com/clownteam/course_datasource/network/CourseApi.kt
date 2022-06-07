@@ -11,12 +11,12 @@ import retrofit2.http.Path
 interface CourseApi {
 
     @GET("api/courses/")
-    fun getCourses(): Call<GetCoursesResponse>
+    fun getCourses(@Header("Authorization") token: String): Call<GetCoursesResponse>
 
-    @GET("api/courses/all/{username}")
+    @GET("api/courses/all/{user_path}")
     fun getUserCourses(
         @Header("Authorization") token: String,
-        @Path("username") username: String
+        @Path("user_path") userPath: String
     ): Call<GetUserCoursesResponse>
 
     @GET("api/courses/page/{id}")

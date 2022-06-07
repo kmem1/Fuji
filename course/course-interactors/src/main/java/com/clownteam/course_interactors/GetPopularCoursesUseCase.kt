@@ -1,20 +1,38 @@
 package com.clownteam.course_interactors
 
 import com.clownteam.core.domain.IUseCase
-import com.clownteam.course_datasource.cache.CourseCache
+import com.clownteam.core.network.token.TokenManager
 import com.clownteam.course_datasource.network.CourseService
 import com.clownteam.course_datasource.network.models.get_courses.CourseInfoRemoteModel
 import com.clownteam.course_domain.Course
 import com.clownteam.course_interactors.mappers.CourseInfoRemoteModelMapper
 
 internal class GetPopularCoursesUseCase(
-    private val cache: CourseCache,
     private val service: CourseService,
+    private val tokenManager: TokenManager,
     private val baseUrl: String
 ) : IGetPopularCoursesUseCase {
 
     override suspend fun invoke(): GetPopularCoursesUseCaseResult {
-        val result = service.getCourses()
+        val token = tokenManager.getToken() ?: return GetPopularCoursesUseCaseResult.Unauthorized
+
+        var result = service.getCourses(token)
+
+        if (result.statusCode == 401) {
+            val newTokenResponse = tokenManager.refreshToken()
+
+            if (newTokenResponse.isNetworkError) {
+                return GetPopularCoursesUseCaseResult.NetworkError
+            }
+
+            if (newTokenResponse.isSuccessCode && newTokenResponse.data != null) {
+                newTokenResponse.data?.let {
+                    result = service.getCourses(token)
+                } ?: GetPopularCoursesUseCaseResult.Unauthorized
+            } else {
+                return GetPopularCoursesUseCaseResult.Unauthorized
+            }
+        }
 
         if (result.isNetworkError) return GetPopularCoursesUseCaseResult.NetworkError
 
@@ -40,6 +58,8 @@ sealed class GetPopularCoursesUseCaseResult {
     class Success(val data: List<Course>) : GetPopularCoursesUseCaseResult()
 
     object Failed : GetPopularCoursesUseCaseResult()
+
+    object Unauthorized : GetPopularCoursesUseCaseResult()
 
     object NetworkError : GetPopularCoursesUseCaseResult()
 }

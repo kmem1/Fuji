@@ -9,14 +9,14 @@ import com.clownteam.course_datasource.network.models.get_user_courses.GetUserCo
 @Suppress("BlockingMethodInNonBlockingContext")
 class CourseServiceImpl(private val api: CourseApi) : CourseService {
 
-    override suspend fun getCourses(): NetworkResponse<GetCoursesResponse> =
-        baseRequest { api.getCourses() }
+    override suspend fun getCourses(token: String): NetworkResponse<GetCoursesResponse> =
+        baseRequest { api.getCourses("Bearer $token") }
 
     override suspend fun getUserCourses(
         token: String,
-        username: String
+        userPath: String
     ): NetworkResponse<GetUserCoursesResponse> =
-        baseRequest { api.getUserCourses("Bearer $token", username) }
+        baseRequest { api.getUserCourses("Bearer $token", userPath) }
 
     override suspend fun getCourseInfo(
         token: String,
