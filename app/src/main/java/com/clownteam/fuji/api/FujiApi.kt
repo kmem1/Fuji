@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object FujiApi {
 
-    const val BASE_URL = "http://192.168.0.105:8000/"
+    const val BASE_URL = "http://dmakger.beget.tech/api/"
 //    private const val API_KEY = "AIzaSyDTiD8EZVID327cQtmcATf4dBY_wRKxGp8"
 
     private val clientBuilder by lazy {

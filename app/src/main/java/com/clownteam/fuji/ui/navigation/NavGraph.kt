@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import coil.ImageLoader
 import com.clownteam.fuji.ui.navigation.bottom_navigation.BottomNavItem
+import com.clownteam.fuji.ui.navigation.screens.archive.ArchiveContainer
 import com.clownteam.fuji.ui.navigation.screens.home.HomeScreen
 import com.clownteam.fuji.ui.navigation.screens.course.CourseScreen
 import com.clownteam.fuji.ui.navigation.screens.profile.ProfileContainer
@@ -49,6 +50,12 @@ fun SetupNavGraph(
 
         composable(BottomNavItem.Search.route) {
             SearchScreen()
+        }
+
+        composable(BottomNavItem.Archive.route) {
+            ArchiveContainer(createExternalRouter { route, params ->
+                navController.navigate(route, params)
+            })
         }
 
         composable(BottomNavItem.Profile.route) {

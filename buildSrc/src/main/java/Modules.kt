@@ -26,4 +26,10 @@ object Modules {
     const val authorizationDomain = ":profile:authorization:authorization-domain"
     const val authorizationInteractors = ":profile:authorization:authorization-interactors"
     const val ui_authorization = ":profile:authorization:ui-authorization"
+
+    const val collection = ":collection"
+    const val collectionDatasource = ":collection:collection-datasource"
+    const val collectionDomain = ":collection:collection-domain"
+    const val collectionInteractors = ":collection:collection-interactors"
+    const val ui_collection = ":collection:ui-collection"
 }

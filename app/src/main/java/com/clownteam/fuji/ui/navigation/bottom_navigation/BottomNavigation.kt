@@ -15,6 +15,7 @@ fun AppBottomNavigation(navController: NavController) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Search,
+        BottomNavItem.Archive,
         BottomNavItem.Profile
     )
 
