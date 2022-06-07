@@ -17,7 +17,7 @@ internal class GetMyCoursesUseCase(
     override suspend fun invoke(): GetMyCoursesUseCaseResult {
         val token = tokenManager.getToken() ?: return GetMyCoursesUseCaseResult.Unauthorized
         val username =
-            userDataManager.getUsername() ?: return GetMyCoursesUseCaseResult.Unauthorized
+            userDataManager.getUserPath() ?: return GetMyCoursesUseCaseResult.Unauthorized
 
         println("username: $username")
 

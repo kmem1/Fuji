@@ -2,12 +2,14 @@ package com.clownteam.profile_interactors
 
 import com.clownteam.core.domain.IUseCase
 import com.clownteam.core.network.token.TokenManager
+import com.clownteam.core.user_data.UserDataManager
 import com.clownteam.profile_datasource.network.ProfileService
 import com.clownteam.profile_domain.ProfileData
 import com.clownteam.profile_interactors.mappers.ProfileDataMapper
 
 internal class GetProfileUseCase(
     private val profileService: ProfileService,
+    private val userDataManager: UserDataManager,
     private val tokenManager: TokenManager
 ) : IGetProfileUseCase {
 
@@ -35,11 +37,11 @@ internal class GetProfileUseCase(
         if (result.isNetworkError) return GetProfileUseCaseResult.NetworkError
 
         return if (result.isSuccessCode && result.data != null) {
-            val myProfile = result.data?.results?.first { it.isSubscribed == null }
-                ?: return GetProfileUseCaseResult.Failed
-
-            GetProfileUseCaseResult.Success(ProfileDataMapper.map(myProfile))
-        } else {
+            result.data?.let {
+                userDataManager.setUserPath(it.path ?: "")
+                GetProfileUseCaseResult.Success(ProfileDataMapper.map(it))
+            } ?: GetProfileUseCaseResult.Failed
+        }else {
             GetProfileUseCaseResult.Failed
         }
     }

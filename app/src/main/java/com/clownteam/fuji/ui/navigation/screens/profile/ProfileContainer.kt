@@ -116,7 +116,7 @@ private fun OpenLoginScreen(navController: NavController) {
             tokenManager.setRefresh(refresh)
 
             Log.d("kmem", "setUsername: $username")
-            userDataManager.setUsername(username)
+            userDataManager.setUserPath(username)
 
             navController.navigate(Route.ProfileRoute.route)
         }

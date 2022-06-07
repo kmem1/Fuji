@@ -16,7 +16,7 @@ class ProfileInteractors private constructor(
             val profileService = ProfileServiceImpl(profileApi)
 
             return ProfileInteractors(
-                GetProfileUseCase(profileService, tokenManager),
+                GetProfileUseCase(profileService, userDataManager, tokenManager),
                 SignOutUseCase(tokenManager, userDataManager)
             )
         }

@@ -40,7 +40,7 @@ class AuthorizationServiceImpl(private val api: AuthorizationApi) : Authorizatio
         withContext(Dispatchers.IO) {
             try {
                 val request = LoginRequest(
-                    username = data.username,
+                    email = data.email,
                     password = data.password,
                 )
 

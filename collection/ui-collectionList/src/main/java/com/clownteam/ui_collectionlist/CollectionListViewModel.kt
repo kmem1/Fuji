@@ -6,9 +6,10 @@ import androidx.lifecycle.ViewModel
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.StateHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 @HiltViewModel
-class CollectionListViewModel : ViewModel(), EventHandler<CollectionListEvent>,
+class CollectionListViewModel @Inject constructor() : ViewModel(), EventHandler<CollectionListEvent>,
     StateHolder<MutableState<CollectionListState>> {
 
     override fun obtainEvent(event: CollectionListEvent) {

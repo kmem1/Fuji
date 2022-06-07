@@ -30,7 +30,7 @@ class LoginViewModel @Inject constructor(
     override fun obtainEvent(event: LoginEvent) {
         when (event) {
             is LoginEvent.EmailChanged -> {
-                state = state.copy(username = event.email)
+                state = state.copy(email = event.email)
             }
 
             is LoginEvent.PasswordChanged -> {
@@ -47,7 +47,7 @@ class LoginViewModel @Inject constructor(
         state = state.copy(isLoading = true, isNetworkError = false)
 
         viewModelScope.launch {
-            val isEmailValid = handleEmailValidationResult(state.username)
+            val isEmailValid = handleEmailValidationResult(state.email)
 
             if (isEmailValid) {
                 tryToLogin()
@@ -61,16 +61,16 @@ class LoginViewModel @Inject constructor(
         when (validateEmail.invoke(email)) {
             is ValidateEmailResult.BlankEmailError -> {
                 state =
-                    state.copy(usernameError = UiText.StringResource(R.string.blank_email_error_string))
+                    state.copy(emailError = UiText.StringResource(R.string.blank_email_error_string))
             }
 
             ValidateEmailResult.InvalidEmailError -> {
                 state =
-                    state.copy(usernameError = UiText.StringResource(R.string.invalid_email_error))
+                    state.copy(emailError = UiText.StringResource(R.string.invalid_email_error))
             }
 
             ValidateEmailResult.Success -> {
-                state = state.copy(usernameError = null)
+                state = state.copy(emailError = null)
                 return true
             }
         }
@@ -79,7 +79,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private suspend fun tryToLogin() {
-        val data = LoginData(state.username, state.password)
+        val data = LoginData(state.email, state.password)
 
         when (val result = loginUseCase.invoke(data)) {
             is LoginUseCaseResult.Failed -> {
@@ -95,7 +95,7 @@ class LoginViewModel @Inject constructor(
                     LoginViewModelEvent.Success(
                         result.accessToken,
                         result.refreshToken,
-                        state.username
+                        state.email
                     )
                 )
             }

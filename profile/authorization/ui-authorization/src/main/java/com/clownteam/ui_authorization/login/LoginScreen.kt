@@ -1,6 +1,5 @@
 package com.clownteam.ui_authorization.login
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -85,11 +84,11 @@ fun LoginScreen(
         }) {
             AuthorizationTextField(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
-                value = state.username,
+                value = state.email,
                 onValueChange = { eventHandler.obtainEvent(LoginEvent.EmailChanged(it)) },
                 hint = stringResource(R.string.email_hint),
-                isError = state.usernameError != null,
-                errorText = state.usernameError?.asString(context) ?: "",
+                isError = state.emailError != null,
+                errorText = state.emailError?.asString(context) ?: "",
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 

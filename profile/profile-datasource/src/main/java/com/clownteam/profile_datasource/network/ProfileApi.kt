@@ -1,5 +1,6 @@
 package com.clownteam.profile_datasource.network
 
+import com.clownteam.profile_datasource.network.models.ProfileResponse
 import com.clownteam.profile_datasource.network.models.ProfilesResponse
 import retrofit2.Call
 import retrofit2.http.GET
@@ -10,4 +11,7 @@ interface ProfileApi {
 
     @GET("api/profiles/")
     fun getProfiles(@Header("Authorization") token: String): Call<ProfilesResponse>
+
+    @GET("api/profile")
+    fun getProfile(@Header("Authorization") token: String): Call<ProfileResponse>
 }
