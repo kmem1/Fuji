@@ -126,6 +126,22 @@ class RegistrationViewModel @Inject constructor(
                 )
             }
 
+            ValidatePasswordResult.ShouldContainLowerAndUpperCaseError -> {
+                state = state.copy(
+                    passwordError = UiText.StringResource(
+                        R.string.password_should_contain_lower_and_upper_cases
+                    )
+                )
+            }
+
+            ValidatePasswordResult.ShouldContainNonLetterSymbol -> {
+                state = state.copy(
+                    passwordError = UiText.StringResource(
+                        R.string.password_should_contains_symbols
+                    )
+                )
+            }
+
             ValidatePasswordResult.Success -> {
                 state = state.copy(passwordError = null)
                 return true

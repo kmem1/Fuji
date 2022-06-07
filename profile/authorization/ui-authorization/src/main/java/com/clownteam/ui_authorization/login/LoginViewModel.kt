@@ -19,7 +19,6 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val validateEmail: IValidateEmailUseCase,
-    private val validatePassword: IValidatePasswordUseCase,
     private val loginUseCase: ILoginUseCase
 ) : ViewModel(), EventHandler<LoginEvent> {
 
@@ -48,12 +47,9 @@ class LoginViewModel @Inject constructor(
         state = state.copy(isLoading = true, isNetworkError = false)
 
         viewModelScope.launch {
-//            val isEmailValid = handleEmailValidationResult(state.username)
-            // TODO Включить обратно когда будет авторизация по email
-            val isEmailValid = true
-            val isPasswordValid = handlePasswordValidationResult(state.password)
+            val isEmailValid = handleEmailValidationResult(state.username)
 
-            if (isEmailValid && isPasswordValid) {
+            if (isEmailValid) {
                 tryToLogin()
             }
         }
@@ -75,35 +71,6 @@ class LoginViewModel @Inject constructor(
 
             ValidateEmailResult.Success -> {
                 state = state.copy(usernameError = null)
-                return true
-            }
-        }
-
-        return false
-    }
-
-    private suspend fun handlePasswordValidationResult(password: String): Boolean {
-        when (validatePassword.invoke(password)) {
-            ValidatePasswordResult.NotEnoughLengthError -> {
-                state =
-                    state.copy(
-                        passwordError = UiText.StringResource(
-                            R.string.password_length_error,
-                            IValidatePasswordUseCase.MIN_PASSWORD_LENGTH
-                        )
-                    )
-            }
-
-            ValidatePasswordResult.ShouldContainLettersAndDigitsError -> {
-                state = state.copy(
-                    passwordError = UiText.StringResource(
-                        R.string.password_should_contain_letters_and_digits_error
-                    )
-                )
-            }
-
-            ValidatePasswordResult.Success -> {
-                state = state.copy(passwordError = null)
                 return true
             }
         }

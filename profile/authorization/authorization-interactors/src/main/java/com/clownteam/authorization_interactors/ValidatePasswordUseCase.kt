@@ -18,6 +18,19 @@ internal class ValidatePasswordUseCase : IValidatePasswordUseCase {
             return ValidatePasswordResult.ShouldContainLettersAndDigitsError
         }
 
+        val containsLowerCase = param.any { it.isLowerCase() }
+        val containsUpperCase = param.any { it.isUpperCase() }
+
+        if (!(containsLowerCase && containsUpperCase)) {
+            return ValidatePasswordResult.ShouldContainLowerAndUpperCaseError
+        }
+
+        val containsNonLetter = param.any { !it.isLetterOrDigit() }
+
+        if (!containsNonLetter) {
+            return ValidatePasswordResult.ShouldContainNonLetterSymbol
+        }
+
         return ValidatePasswordResult.Success
     }
 }
@@ -31,5 +44,7 @@ interface IValidatePasswordUseCase : IUseCase.InOut<String, ValidatePasswordResu
 sealed class ValidatePasswordResult {
     object NotEnoughLengthError : ValidatePasswordResult()
     object ShouldContainLettersAndDigitsError : ValidatePasswordResult()
+    object ShouldContainLowerAndUpperCaseError: ValidatePasswordResult()
+    object ShouldContainNonLetterSymbol: ValidatePasswordResult()
     object Success : ValidatePasswordResult()
 }
