@@ -1,7 +1,5 @@
 package com.clownteam.fuji.ui.navigation.screens.archive
 
-import android.os.Bundle
-import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -50,7 +48,7 @@ private fun createArchiveNavigationControllerScreen(imageLoader: ImageLoader): N
             slideOutHorizontally(targetOffsetX = { 1000 })
         }
     ) { navController, _, bundle ->
-        OpenArchiveScreen(navController, imageLoader, bundle)
+        OpenArchiveScreen(navController, imageLoader)
     }
 }
 
