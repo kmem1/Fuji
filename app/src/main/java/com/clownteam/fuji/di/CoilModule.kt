@@ -24,7 +24,7 @@ object CoilModule {
         return ImageLoader.Builder(app)
             .error(R.drawable.placeholder_error)
 //            .placeholder(R.drawable.placeholder_gray)
-            .availableMemoryPercentage(0.25) // Don't know what is recommended?
+            .availableMemoryPercentage(0.4) // Don't know what is recommended?
             .crossfade(true)
             .build()
     }

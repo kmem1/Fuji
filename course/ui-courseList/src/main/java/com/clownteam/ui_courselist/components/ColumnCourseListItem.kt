@@ -19,13 +19,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.ImageLoader
 import coil.compose.rememberImagePainter
+import com.clownteam.components.AutoResizeText
+import com.clownteam.components.FontSizeRange
 import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.R
 
 @Composable
-internal fun ColumnCourseListItem(
+fun ColumnCourseListItem(
     course: Course,
     imageLoader: ImageLoader,
     onClick: (String) -> Unit
@@ -38,7 +41,7 @@ internal fun ColumnCourseListItem(
                 .width(148.dp)
                 .height(88.dp)
                 .clip(RoundedCornerShape(corner = CornerSize(12.dp)))
-                .background(Color.LightGray)
+                .background(MaterialTheme.colors.primary)
                 .align(Alignment.CenterVertically),
             painter = rememberImagePainter(
                 course.imgUrl,
@@ -51,15 +54,16 @@ internal fun ColumnCourseListItem(
         // Content column
         Column(modifier = Modifier.padding(start = 9.dp)) {
             // Title
-            Text(
+            AutoResizeText(
                 modifier = Modifier
                     .padding(vertical = 5.dp)
                     .fillMaxWidth(),
                 text = course.title,
                 style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.Bold,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                fontSizeRange = FontSizeRange(min = 10.sp, max = 16.sp)
             )
             // Sub-Contents row
             Row(

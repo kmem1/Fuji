@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.clownteam.course_domain.Course
 
 @Composable
-internal fun CourseListLazyRow(
+fun CourseListLazyRow(
     itemList: List<Course>,
     itemComposable: @Composable (Course) -> Unit,
     modifier: Modifier = Modifier,

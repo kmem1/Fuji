@@ -15,7 +15,4 @@ dependencies {
     "testImplementation"(Testing.coroutines)
     "testImplementation"(Testing.coreTesting)
     "testImplementation"(ComposeTest.uiTestJunit4)
-    androidTestImplementation(ComposeTest.uiTestJunit4)
-    androidTestImplementation(Mockito.mockitoAndroid)
-    debugImplementation(ComposeTest.uiTestManifest)
 }

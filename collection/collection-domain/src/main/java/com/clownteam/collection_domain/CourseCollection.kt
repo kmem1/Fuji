@@ -5,11 +5,17 @@ import com.clownteam.course_domain.Course
 
 data class CourseCollection(
     val membersAmount: Int,
-    val author: String,
+    val author: CourseCollectionAuthor,
     val courses: List<Course>,
     val imageUrl: String,
     val isAdded: Boolean,
-    val path: String,
+    val id: String,
     val rating: Double,
     val title: String
+)
+
+data class CourseCollectionAuthor(
+    val id: String,
+    val name: String,
+    val avatar_url: String
 )

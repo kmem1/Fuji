@@ -1,5 +1,5 @@
 package com.clownteam.collection_datasource.models.get_collection
 
-import com.clownteam.core.network.PaginationResponse
+import com.clownteam.collection_datasource.models.CourseCollectionResponseItem
 
-class GetCollectionResponse: PaginationResponse<GetCollectionResponseItem>()
+class GetCollectionResponse : CourseCollectionResponseItem()

@@ -5,7 +5,7 @@ apply {
 dependencies {
     "implementation"(project(Modules.core))
     "implementation"(project(Modules.collectionDomain))
-    "implementation"(project(Modules.collectionDatasource))
+    "implementation"(project(Modules.collectionDataSource))
 
     "implementation"(project(Modules.courseDomain))
 

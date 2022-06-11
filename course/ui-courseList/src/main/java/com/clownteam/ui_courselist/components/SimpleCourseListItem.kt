@@ -23,7 +23,7 @@ import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.R
 
 @Composable
-internal fun SimpleCourseListItem(
+fun SimpleCourseListItem(
     course: Course,
     imageLoader: ImageLoader,
     onClick: (String) -> Unit

@@ -5,7 +5,7 @@ apply {
 dependencies {
     "implementation"(project(Modules.core))
     "implementation"(project(Modules.profileDomain))
-    "implementation"(project(Modules.profileDatasource))
+    "implementation"(project(Modules.profileDataSource))
 
     "testImplementation"(Junit.junit4)
 }

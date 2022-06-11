@@ -2,6 +2,7 @@ package com.clownteam.fuji.ui.navigation
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 

@@ -9,8 +9,8 @@ import androidx.navigation.compose.composable
 import coil.ImageLoader
 import com.clownteam.fuji.ui.navigation.bottom_navigation.BottomNavItem
 import com.clownteam.fuji.ui.navigation.screens.archive.ArchiveContainer
-import com.clownteam.fuji.ui.navigation.screens.home.HomeScreen
 import com.clownteam.fuji.ui.navigation.screens.course.CourseScreen
+import com.clownteam.fuji.ui.navigation.screens.home.HomeScreen
 import com.clownteam.fuji.ui.navigation.screens.profile.ProfileContainer
 import com.clownteam.fuji.ui.navigation.screens.search.SearchScreen
 
@@ -53,9 +53,12 @@ fun SetupNavGraph(
         }
 
         composable(BottomNavItem.Archive.route) {
-            ArchiveContainer(createExternalRouter { route, params ->
-                navController.navigate(route, params)
-            })
+            ArchiveContainer(
+                externalRouter = createExternalRouter { route, params ->
+                    navController.navigate(route, params)
+                },
+                imageLoader = imageLoader
+            )
         }
 
         composable(BottomNavItem.Profile.route) {

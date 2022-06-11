@@ -3,6 +3,7 @@ package com.clownteam.fuji.ui.navigation
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.clownteam.ui_collectiondetailed.ui.CollectionDetailedViewModel
 import com.clownteam.ui_coursedetailed.ui.CourseDetailedViewModel
 
 sealed class Route(val route: String, val arguments: List<NamedNavArgument> = emptyList()) {
@@ -11,7 +12,7 @@ sealed class Route(val route: String, val arguments: List<NamedNavArgument> = em
         route = "home_route"
     )
 
-    object CourseRoute: Route(
+    object CourseRoute : Route(
         route = "course_route",
         arguments = listOf(navArgument(CourseDetailedViewModel.COURSE_ID_ARG_KEY) {
             type = NavType.StringType
@@ -27,4 +28,21 @@ sealed class Route(val route: String, val arguments: List<NamedNavArgument> = em
     object RegistrationRoute : Route(route = "registration_route")
 
     object RestorePasswordRoute : Route(route = "restore_password_route")
+
+    object ArchiveRoute : Route(route = "archive_route")
+
+    object CourseCollectionRoute : Route(
+        route = "course_collection/{${CollectionDetailedViewModel.COLLECTION_ID_ARG_KEY}}",
+        arguments = listOf(
+            navArgument(CollectionDetailedViewModel.COLLECTION_ID_ARG_KEY) {
+                type = NavType.StringType
+            })
+    ) {
+        fun getRouteWithArgument(collectionId: String): String {
+            return route.replace(
+                "{${CollectionDetailedViewModel.COLLECTION_ID_ARG_KEY}}",
+                collectionId
+            )
+        }
+    }
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="course_collection_item_img_content_description">Collection Logo</string>
+    <string name="collection_detailed_header_text">Подборка</string>
+</resources>

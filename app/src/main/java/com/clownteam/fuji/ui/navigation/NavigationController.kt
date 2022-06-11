@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.compose.animation.*
 import com.google.accompanist.navigation.animation.composable
 import androidx.compose.runtime.Composable
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -22,6 +23,7 @@ fun NavigationController(
         screens.forEach { screen ->
             composable(
                 screen.route,
+                arguments = screen.arguments,
                 enterTransition = screen.enterTransition,
                 exitTransition = screen.exitTransition,
                 popEnterTransition = screen.popEnterTransition,
@@ -39,6 +41,7 @@ fun NavigationController(
 
 data class NavigationControllerScreen @OptIn(ExperimentalAnimationApi::class) constructor(
     val route: String,
+    val arguments: List<NamedNavArgument> = emptyList(),
     val enterTransition: (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = { defaultEnterTransition() },
     val exitTransition: (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = { defaultExitTransition() },
     val popEnterTransition: (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = enterTransition,

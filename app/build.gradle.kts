@@ -65,10 +65,16 @@ dependencies {
     implementation(project(Modules.authorizationInteractors))
     implementation(project(Modules.ui_authorization))
 
-    implementation(project(Modules.profileDatasource))
+    implementation(project(Modules.profileDataSource))
     implementation(project(Modules.profileDomain))
     implementation(project(Modules.profileInteractors))
     implementation(project(Modules.ui_profile))
+
+    implementation(project(Modules.collectionDataSource))
+    implementation(project(Modules.collectionDomain))
+    implementation(project(Modules.collectionInteractors))
+    implementation(project(Modules.ui_collectionList))
+    implementation(project(Modules.ui_collectionDetailed))
 
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.coreSplashScreen)

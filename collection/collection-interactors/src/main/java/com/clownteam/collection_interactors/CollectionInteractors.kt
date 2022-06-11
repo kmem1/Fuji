@@ -5,7 +5,8 @@ import com.clownteam.collection_datasource.CollectionServiceImpl
 import com.clownteam.core.network.token.TokenManager
 
 class CollectionInteractors private constructor(
-    val getMyCollections: IGetMyCollectionsUseCase
+    val getMyCollections: IGetMyCollectionsUseCase,
+    val getCollection: IGetCollectionUseCase
 ) {
 
     companion object Factory {
@@ -16,7 +17,8 @@ class CollectionInteractors private constructor(
         ): CollectionInteractors {
             val service = CollectionServiceImpl(api)
             return CollectionInteractors(
-                GetMyCollectionsUseCase(service, tokenManager, baseUrl)
+                GetMyCollectionsUseCase(service, tokenManager, baseUrl),
+                GetCollectionUseCase(service, tokenManager, baseUrl)
             )
         }
     }

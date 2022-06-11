@@ -17,7 +17,7 @@ object Modules {
     const val ui_courseList = ":course:ui-courseList"
 
     const val profile = ":profile"
-    const val profileDatasource = ":profile:profile-datasource"
+    const val profileDataSource = ":profile:profile-datasource"
     const val profileDomain = ":profile:profile-domain"
     const val profileInteractors = ":profile:profile-interactors"
     const val ui_profile = ":profile:ui-profile"
@@ -28,8 +28,9 @@ object Modules {
     const val ui_authorization = ":profile:authorization:ui-authorization"
 
     const val collection = ":collection"
-    const val collectionDatasource = ":collection:collection-datasource"
+    const val collectionDataSource = ":collection:collection-datasource"
     const val collectionDomain = ":collection:collection-domain"
     const val collectionInteractors = ":collection:collection-interactors"
-    const val ui_collection = ":collection:ui-collection"
+    const val ui_collectionList = ":collection:ui-collectionList"
+    const val ui_collectionDetailed = ":collection:ui-collectionDetailed"
 }

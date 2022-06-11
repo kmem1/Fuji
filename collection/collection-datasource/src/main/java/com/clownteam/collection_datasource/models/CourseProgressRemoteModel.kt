@@ -1,4 +1,4 @@
-package com.clownteam.collection_datasource.models.get_collection
+package com.clownteam.collection_datasource.models
 
 import com.google.gson.annotations.SerializedName
 
