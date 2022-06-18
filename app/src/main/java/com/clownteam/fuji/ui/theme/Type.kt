@@ -14,7 +14,9 @@ val Gotham = FontFamily(
     Font(R.font.gotham_thin, FontWeight.W300),
     Font(R.font.gotham_bold, FontWeight.W600),
     Font(R.font.gotham_medium, FontWeight.Medium),
-    Font(R.font.gotham_bold, FontWeight.Bold)
+    Font(R.font.gotham_bold, FontWeight.Bold),
+    // Был выбран первый не занятый fontWeight, чтобы не ломать остальное
+    Font(R.font.gotham_book, FontWeight.W800)
 )
 
 val GothamTypography = Typography(

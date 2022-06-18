@@ -26,7 +26,6 @@ class CourseDetailedViewModel @Inject constructor(
 
 
     init {
-        Log.d("Kmem", "$courseId")
         if (courseId == null) {
             updateState(CourseDetailedState.Error)
         } else {

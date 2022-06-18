@@ -15,6 +15,7 @@ object Modules {
     const val courseInteractors = ":course:course-interactors"
     const val ui_courseDetailed = ":course:ui-courseDetailed"
     const val ui_courseList = ":course:ui-courseList"
+    const val ui_coursePassing = ":course:ui-coursePassing"
 
     const val profile = ":profile"
     const val profileDataSource = ":profile:profile-datasource"

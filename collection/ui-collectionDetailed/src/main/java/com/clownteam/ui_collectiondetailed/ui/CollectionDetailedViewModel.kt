@@ -33,6 +33,8 @@ class CollectionDetailedViewModel @Inject constructor(
         } else {
             obtainEvent(CollectionDetailedEvent.GetCollection)
         }
+
+
     }
 
     override fun obtainEvent(event: CollectionDetailedEvent) {
@@ -54,11 +56,11 @@ class CollectionDetailedViewModel @Inject constructor(
 
             val collectionResult = getCollection.invoke(collectionId)
 
-            handleCourseInfoUseCaseResult(collectionResult)
+            handleGetCollectionUseCaseResult(collectionResult)
         }
     }
 
-    private fun handleCourseInfoUseCaseResult(result: GetCollectionUseCaseResult) {
+    private fun handleGetCollectionUseCaseResult(result: GetCollectionUseCaseResult) {
         when (result) {
             GetCollectionUseCaseResult.Failed -> {
                 updateState(CollectionDetailedState.Error)

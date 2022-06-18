@@ -5,6 +5,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.clownteam.ui_collectiondetailed.ui.CollectionDetailedViewModel
 import com.clownteam.ui_coursedetailed.ui.CourseDetailedViewModel
+import com.clownteam.ui_coursepassing.course_modules.CourseModulesViewModel
 
 sealed class Route(val route: String, val arguments: List<NamedNavArgument> = emptyList()) {
 
@@ -42,6 +43,21 @@ sealed class Route(val route: String, val arguments: List<NamedNavArgument> = em
             return route.replace(
                 "{${CollectionDetailedViewModel.COLLECTION_ID_ARG_KEY}}",
                 collectionId
+            )
+        }
+    }
+
+    object CourseModulesRoute : Route(
+        route = "course_modules/{${CourseModulesViewModel.COURSE_ID_ARG_KEY}}",
+        arguments = listOf(
+            navArgument(CourseModulesViewModel.COURSE_ID_ARG_KEY) {
+                type = NavType.StringType
+            })
+    ) {
+        fun getRouteWithArgument(courseId: String): String {
+            return route.replace(
+                "{${CourseModulesViewModel.COURSE_ID_ARG_KEY}}",
+                courseId
             )
         }
     }

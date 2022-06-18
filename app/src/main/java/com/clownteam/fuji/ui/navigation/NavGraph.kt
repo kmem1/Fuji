@@ -3,6 +3,9 @@ package com.clownteam.fuji.ui.navigation
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,6 +16,8 @@ import com.clownteam.fuji.ui.navigation.screens.course.CourseScreen
 import com.clownteam.fuji.ui.navigation.screens.home.HomeScreen
 import com.clownteam.fuji.ui.navigation.screens.profile.ProfileContainer
 import com.clownteam.fuji.ui.navigation.screens.search.SearchScreen
+import com.clownteam.ui_coursepassing.course_modules.CourseModules
+import com.clownteam.ui_coursepassing.course_modules.CourseModulesViewModel
 
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi
@@ -30,10 +35,13 @@ fun SetupNavGraph(
             showBottomBar(true)
 //            val viewModel: HomeViewModel = hiltViewModel()
             HomeScreen(
+//                navigateToCourse = { courseId ->
+//                    navController.navigate("${Route.CourseRoute.route}/$courseId")
+//                },
+                imageLoader = imageLoader,
                 navigateToCourse = { courseId ->
-                    navController.navigate("${Route.CourseRoute.route}/$courseId")
-                },
-                imageLoader = imageLoader
+                    navController.navigate(Route.CourseModulesRoute.getRouteWithArgument(courseId))
+                }
             )
         }
 
@@ -46,6 +54,15 @@ fun SetupNavGraph(
                 imageLoader,
                 onBack = { navController.popBackStack() }
             )
+        }
+
+        composable(
+            route = Route.CourseModulesRoute.route,
+            arguments = Route.CourseModulesRoute.arguments
+        ) {
+            showBottomBar(false)
+            val viewModel: CourseModulesViewModel = hiltViewModel()
+            CourseModules(viewModel.state.value, viewModel) { navController.popBackStack() }
         }
 
         composable(BottomNavItem.Search.route) {

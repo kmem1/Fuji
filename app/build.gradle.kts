@@ -59,6 +59,7 @@ dependencies {
     implementation(project(Modules.courseInteractors))
     implementation(project(Modules.ui_courseList))
     implementation(project(Modules.ui_courseDetailed))
+    implementation(project(Modules.ui_coursePassing))
 
     implementation(project(Modules.authorizationDataSource))
     implementation(project(Modules.authorizationDomain))

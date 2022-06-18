@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.ImageLoader
+import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.ui.CourseList
 import com.clownteam.ui_courselist.ui.CourseListViewModel
 

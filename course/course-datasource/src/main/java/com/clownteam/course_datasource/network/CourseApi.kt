@@ -2,12 +2,16 @@ package com.clownteam.course_datasource.network
 
 import com.clownteam.course_datasource.network.models.get_course_info.CourseInfoResponse
 import com.clownteam.course_datasource.network.models.get_courses.GetCoursesResponse
+import com.clownteam.course_datasource.network.models.get_courses_modules.CourseModulesResponse
 import com.clownteam.course_datasource.network.models.get_user_courses.GetUserCoursesResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Path
 
+/**
+ * Данный интерфейс описывает способы подключения к удаленному серверу через REST API
+ */
 interface CourseApi {
 
     @GET("api/courses/")
@@ -24,4 +28,10 @@ interface CourseApi {
         @Header("Authorization") token: String,
         @Path("id") id: String
     ): Call<CourseInfoResponse>
+
+    @GET("api/courses/learn/{courseId}/themes/")
+    fun getCourseModules(
+        @Header("Authorization") token: String,
+        @Path("courseId") courseId: String
+    ): Call<CourseModulesResponse>
 }

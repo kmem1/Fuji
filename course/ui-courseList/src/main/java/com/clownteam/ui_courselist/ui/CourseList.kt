@@ -16,6 +16,7 @@ import coil.ImageLoader
 import com.clownteam.components.DefaultScreenUI
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.ProgressBarState
+import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.R
 import com.clownteam.ui_courselist.components.ColumnCourseListItem
 import com.clownteam.ui_courselist.components.CourseListLazyRow

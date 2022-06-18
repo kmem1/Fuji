@@ -200,16 +200,13 @@ fun CollectionCoursesList(
     imageLoader: ImageLoader,
     navigateToDetailed: (String) -> Unit
 ) {
-    val arrayList = ArrayList(courses)
-    arrayList.addAll(courses)
-    arrayList.addAll(courses)
     LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(horizontal = 10.dp)) {
-        itemsIndexed(arrayList) { index, course ->
+        itemsIndexed(courses) { index, course ->
             Spacer(modifier = Modifier.size(12.dp))
 
             ColumnCourseListItem(course, imageLoader, navigateToDetailed)
 
-            if (index == arrayList.lastIndex) {
+            if (index == courses.lastIndex) {
                 Spacer(modifier = Modifier.size(12.dp))
             }
         }

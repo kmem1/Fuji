@@ -19,8 +19,6 @@ internal class GetMyCoursesUseCase(
         val username =
             userDataManager.getUserPath() ?: return GetMyCoursesUseCaseResult.Unauthorized
 
-        println("username: $username")
-
         var result = service.getUserCourses(token, username)
 
         if (result.statusCode == 401) {

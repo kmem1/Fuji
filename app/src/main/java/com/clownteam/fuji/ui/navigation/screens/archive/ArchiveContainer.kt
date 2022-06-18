@@ -47,7 +47,7 @@ private fun createArchiveNavigationControllerScreen(imageLoader: ImageLoader): N
         popExitTransition = {
             slideOutHorizontally(targetOffsetX = { 1000 })
         }
-    ) { navController, _, bundle ->
+    ) { navController, _, _ ->
         OpenArchiveScreen(navController, imageLoader)
     }
 }
