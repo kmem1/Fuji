@@ -1,6 +1,7 @@
-package com.clownteam.ui_coursepassing.course_modules
+package com.clownteam.ui_coursepassing.course_lessons
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,81 +24,73 @@ import androidx.compose.ui.unit.dp
 import com.clownteam.components.DefaultButton
 import com.clownteam.components.header.DefaultHeader
 import com.clownteam.core.domain.EventHandler
-import com.clownteam.course_domain.CourseModule
+import com.clownteam.course_domain.CourseLesson
 import com.clownteam.ui_coursepassing.R
 
 @Composable
-fun CourseModules(
-    state: CourseModulesState,
-    eventHandler: EventHandler<CourseModulesEvent>,
+fun CourseLessons(
+    state: CourseLessonsState,
+    eventHandler: EventHandler<CourseLessonsEvent>,
     onBack: () -> Unit = {},
-    onModuleClick: (courseId: String, moduleId: String, moduleName: String) -> Unit = { _, _, _ -> }
+    onLessonClick: (moduleId: String) -> Unit = {}
 ) {
     when (state) {
-        is CourseModulesState.Data -> {
-            if (state.course != null) {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    DefaultHeader(
-                        titleText = stringResource(R.string.course_modules_title_text),
-                        onArrowClick = { onBack() }
-                    )
+        is CourseLessonsState.Data -> {
+            Column(modifier = Modifier.fillMaxSize()) {
+                DefaultHeader(titleText = stringResource(R.string.course_lessons_title_text), onArrowClick = { onBack() })
 
-                    Spacer(modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.size(20.dp))
 
+                if (state.moduleName.isNotEmpty()) {
                     Row(modifier = Modifier.height(IntrinsicSize.Min).padding(horizontal = 24.dp)) {
                         Box(
                             modifier = Modifier.width(1.dp).fillMaxHeight()
-                                .background(MaterialTheme.colors.secondary)
+                                .background(Color(0xFF245ED1))
                         )
 
                         Spacer(modifier = Modifier.size(12.dp))
 
                         Text(
-                            state.course.title,
+                            state.moduleName,
                             style = MaterialTheme.typography.h4,
                             fontWeight = FontWeight.Bold
                         )
                     }
 
                     Spacer(modifier = Modifier.size(36.dp))
-
-                    ModulesList(
-                        modules = state.modules,
-                        onModuleClick = { moduleId, moduleName ->
-                            onModuleClick(state.courseId ?: "", moduleId, moduleName)
-                        }
-                    )
                 }
+
+                LessonList(lessons = state.lessons, onLessonClick)
             }
         }
 
-        CourseModulesState.Error -> {
+        CourseLessonsState.Error -> {
             Box(modifier = Modifier.fillMaxSize()) {
                 DefaultButton(
                     text = "Retry",
-                    onClick = { eventHandler.obtainEvent(CourseModulesEvent.GetModules) }
+                    onClick = { eventHandler.obtainEvent(CourseLessonsEvent.GetLessons) }
                 )
             }
         }
 
-        CourseModulesState.Loading -> {
+        CourseLessonsState.Loading -> {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
 
-        CourseModulesState.NetworkError -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CourseLessonsState.NetworkError -> {
+            Box(modifier = Modifier.fillMaxSize()) {
                 DefaultButton(
                     text = "Ошибка сети",
-                    onClick = { eventHandler.obtainEvent(CourseModulesEvent.GetModules) }
+                    onClick = { eventHandler.obtainEvent(CourseLessonsEvent.GetLessons) }
                 )
             }
         }
 
-        CourseModulesState.Unauthorized -> {
+        CourseLessonsState.Unauthorized -> {
             Box(modifier = Modifier.fillMaxSize()) {
                 DefaultButton(
                     text = "Необходимо авторизоваться",
-                    onClick = { eventHandler.obtainEvent(CourseModulesEvent.GetModules) }
+                    onClick = { eventHandler.obtainEvent(CourseLessonsEvent.GetLessons) }
                 )
             }
         }
@@ -105,17 +98,15 @@ fun CourseModules(
 }
 
 @Composable
-private fun ModulesList(
-    modules: List<CourseModule>,
-    onModuleClick: (moduleId: String, moduleName: String) -> Unit
-) {
+private fun LessonList(lessons: List<CourseLesson>, onLessonClick: (lessonId: String) -> Unit) {
     LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        items(modules) { module ->
+        items(lessons) { lesson ->
             Row(
                 modifier = Modifier.fillMaxWidth().heightIn(min = 65.dp).padding(horizontal = 24.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF245ED1))
-                    .clickable { onModuleClick(module.id, module.title) }
+                    .background(MaterialTheme.colors.primary)
+                    .border(1.dp, Color.Yellow, RoundedCornerShape(16.dp))
+                    .clickable { onLessonClick(lesson.id) }
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -123,7 +114,7 @@ private fun ModulesList(
                     modifier = Modifier.padding(vertical = 10.dp).padding(end = 8.dp).weight(1F)
                 ) {
                     Text(
-                        module.title,
+                        lesson.title,
                         style = MaterialTheme.typography.h5,
                         fontWeight = FontWeight.Medium,
                         color = Color.White,
@@ -131,9 +122,9 @@ private fun ModulesList(
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    if (module.currentProgress != 0) {
+                    if (lesson.currentProgress != 0) {
                         Text(
-                            "${module.currentProgress}/${module.maxProgress}",
+                            "${lesson.currentProgress}/${lesson.maxProgress}",
                             style = MaterialTheme.typography.caption,
                             fontWeight = FontWeight.W500,
                             color = Color(0xFF3CFF2C)

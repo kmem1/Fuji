@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="course_modules_title_text">Модули курса</string>
+    <string name="course_lessons_title_text">Уроки модуля</string>
+</resources>

@@ -3,9 +3,12 @@ package com.clownteam.course_datasource.network
 import com.clownteam.core.network.NetworkResponse
 import com.clownteam.course_datasource.network.models.get_course_info.CourseInfoResponse
 import com.clownteam.course_datasource.network.models.get_course_lessons.CourseLessonsResponse
+import com.clownteam.course_datasource.network.models.get_course_steps.CourseStepsResponse
 import com.clownteam.course_datasource.network.models.get_courses.GetCoursesResponse
 import com.clownteam.course_datasource.network.models.get_courses_modules.CourseModulesResponse
 import com.clownteam.course_datasource.network.models.get_user_courses.GetUserCoursesResponse
+import retrofit2.http.Header
+import retrofit2.http.Path
 
 interface CourseService {
 
@@ -29,4 +32,11 @@ interface CourseService {
         moduleId: String
     ): NetworkResponse<CourseLessonsResponse>
 
+    suspend fun getCourseSteps(
+        token: String,
+        courseId: String,
+        moduleId: String,
+        lessonId: String,
+        stepId: String
+    ): NetworkResponse<CourseStepsResponse>
 }

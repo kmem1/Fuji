@@ -1,11 +1,10 @@
 package com.clownteam.fuji.ui.navigation
 
+import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,8 +15,11 @@ import com.clownteam.fuji.ui.navigation.screens.course.CourseScreen
 import com.clownteam.fuji.ui.navigation.screens.home.HomeScreen
 import com.clownteam.fuji.ui.navigation.screens.profile.ProfileContainer
 import com.clownteam.fuji.ui.navigation.screens.search.SearchScreen
+import com.clownteam.ui_coursepassing.course_lessons.CourseLessons
+import com.clownteam.ui_coursepassing.course_lessons.CourseLessonsViewModel
 import com.clownteam.ui_coursepassing.course_modules.CourseModules
 import com.clownteam.ui_coursepassing.course_modules.CourseModulesViewModel
+import com.google.gson.Gson
 
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi
@@ -62,7 +64,30 @@ fun SetupNavGraph(
         ) {
             showBottomBar(false)
             val viewModel: CourseModulesViewModel = hiltViewModel()
-            CourseModules(viewModel.state.value, viewModel) { navController.popBackStack() }
+            CourseModules(
+                state = viewModel.state.value,
+                eventHandler = viewModel,
+                onBack = { navController.popBackStack() },
+                onModuleClick = { courseId, moduleId, moduleName ->
+                    val args =
+                        CourseLessonsViewModel.CourseLessonsArgs(courseId, moduleId, moduleName)
+                    val argsJson = Uri.encode(Gson().toJson(args))
+                    navController.navigate(Route.CourseLessonsRoute.getRouteWithArgument(argsJson))
+                }
+            )
+        }
+
+        composable(
+            route = Route.CourseLessonsRoute.route,
+            arguments = Route.CourseLessonsRoute.arguments
+        ) {
+            showBottomBar(false)
+            val viewModel: CourseLessonsViewModel = hiltViewModel()
+            CourseLessons(
+                state = viewModel.state.value,
+                eventHandler = viewModel,
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(BottomNavItem.Search.route) {

@@ -74,7 +74,7 @@ class CourseModulesViewModel @Inject constructor(
             is GetCourseModulesUseCaseResult.Success -> {
                 state.value.let {
                     val course = if (it is CourseModulesState.Data) it.course else null
-                    updateState(CourseModulesState.Data(course, result.data))
+                    updateState(CourseModulesState.Data(course, result.data, courseId))
                 }
             }
 
@@ -97,7 +97,7 @@ class CourseModulesViewModel @Inject constructor(
             is GetCourseInfoByIdUseCaseResult.Success -> {
                 state.value.let {
                     val modules = if (it is CourseModulesState.Data) it.modules else emptyList()
-                    updateState(CourseModulesState.Data(result.course, modules))
+                    updateState(CourseModulesState.Data(result.course, modules, courseId))
                 }
             }
 
