@@ -6,6 +6,8 @@
     <string name="people_icon_content_description">People icon</string>
     <string name="free">Бесплатно</string>
     <string name="course_image_content_description">Course logo</string>
+    <string name="add_to_collection_btn_text">Добавить в подборку</string>
+    <string name="bottom_sheet_error_text">Курс не найден</string>
     <plurals name="price_rubles">
         <item quantity="zero">Бесплатно</item>
         <item quantity="other">%1$d ₽</item>

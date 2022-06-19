@@ -1,8 +1,9 @@
 package com.clownteam.ui_courselist.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,14 +28,20 @@ import com.clownteam.components.FontSizeRange
 import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.R
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ColumnCourseListItem(
     course: Course,
     imageLoader: ImageLoader,
-    onClick: (String) -> Unit
+    onClick: (String) -> Unit,
+    onLongClick: (String) -> Unit = {}
 ) {
     // Main Row
-    Row(modifier = Modifier.clickable { onClick(course.id) }) {
+    Row(
+        modifier = Modifier.combinedClickable(
+            onClick = { onClick(course.id) },
+            onLongClick = { onLongClick(course.id) })
+    ) {
         // Logo
         Image(
             modifier = Modifier
