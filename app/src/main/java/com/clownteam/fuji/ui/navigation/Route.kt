@@ -4,10 +4,12 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.clownteam.fuji.ui.navigation.nav_types.CourseLessonNavType
+import com.clownteam.fuji.ui.navigation.nav_types.CourseStepsNavType
 import com.clownteam.ui_collectiondetailed.ui.CollectionDetailedViewModel
 import com.clownteam.ui_coursedetailed.ui.CourseDetailedViewModel
 import com.clownteam.ui_coursepassing.course_lessons.CourseLessonsViewModel
 import com.clownteam.ui_coursepassing.course_modules.CourseModulesViewModel
+import com.clownteam.ui_coursepassing.course_steps.CourseStepsViewModel
 
 sealed class Route(val route: String, val arguments: List<NamedNavArgument> = emptyList()) {
 
@@ -74,6 +76,21 @@ sealed class Route(val route: String, val arguments: List<NamedNavArgument> = em
         fun getRouteWithArgument(args: String): String {
             return route.replace(
                 "{${CourseLessonsViewModel.LESSONS_ARG_KEY}}",
+                args
+            )
+        }
+    }
+
+    object CourseStepsRoute : Route(
+        route = "course_steps/{${CourseStepsViewModel.STEPS_ARG_KEY}}",
+        arguments = listOf(
+            navArgument(CourseStepsViewModel.STEPS_ARG_KEY) {
+                type = CourseStepsNavType()
+            })
+    ) {
+        fun getRouteWithArgument(args: String): String {
+            return route.replace(
+                "{${CourseStepsViewModel.STEPS_ARG_KEY}}",
                 args
             )
         }

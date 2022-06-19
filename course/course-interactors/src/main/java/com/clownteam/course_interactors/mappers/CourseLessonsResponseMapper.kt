@@ -10,7 +10,15 @@ object CourseLessonsResponseMapper {
             id = input.path ?: "",
             title = input.title ?: "",
             currentProgress = input.progress ?: 0,
-            maxProgress = input.countStep ?: 0
+            maxProgress = input.countStep ?: 0,
+            currentStepId = getCurrentStepId(input.currentStep)
         )
+    }
+
+    private fun getCurrentStepId(path: String?): String {
+        if (path == null) return ""
+
+        val l = path.lastIndexOf("/")
+        return path.substring((l + 1) until path.length)
     }
 }

@@ -32,12 +32,14 @@ fun CourseLessons(
     state: CourseLessonsState,
     eventHandler: EventHandler<CourseLessonsEvent>,
     onBack: () -> Unit = {},
-    onLessonClick: (moduleId: String) -> Unit = {}
+    onLessonClick: (courseId: String, moduleId: String, lessonId: String, lessonName: String, stepId: String) -> Unit = { _, _, _, _, _ -> }
 ) {
     when (state) {
         is CourseLessonsState.Data -> {
             Column(modifier = Modifier.fillMaxSize()) {
-                DefaultHeader(titleText = stringResource(R.string.course_lessons_title_text), onArrowClick = { onBack() })
+                DefaultHeader(
+                    titleText = stringResource(R.string.course_lessons_title_text),
+                    onArrowClick = { onBack() })
 
                 Spacer(modifier = Modifier.size(20.dp))
 
@@ -60,7 +62,11 @@ fun CourseLessons(
                     Spacer(modifier = Modifier.size(36.dp))
                 }
 
-                LessonList(lessons = state.lessons, onLessonClick)
+                LessonList(
+                    lessons = state.lessons
+                ) { lessonId, lessonName, stepId ->
+                    onLessonClick(state.courseId, state.moduleId, lessonId, lessonName, stepId)
+                }
             }
         }
 
@@ -98,7 +104,10 @@ fun CourseLessons(
 }
 
 @Composable
-private fun LessonList(lessons: List<CourseLesson>, onLessonClick: (lessonId: String) -> Unit) {
+private fun LessonList(
+    lessons: List<CourseLesson>,
+    onLessonClick: (lessonId: String, lessonName: String, stepId: String) -> Unit
+) {
     LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         items(lessons) { lesson ->
             Row(
@@ -106,7 +115,7 @@ private fun LessonList(lessons: List<CourseLesson>, onLessonClick: (lessonId: St
                     .clip(RoundedCornerShape(16.dp))
                     .background(MaterialTheme.colors.primary)
                     .border(1.dp, Color.Yellow, RoundedCornerShape(16.dp))
-                    .clickable { onLessonClick(lesson.id) }
+                    .clickable { onLessonClick(lesson.id, lesson.title, lesson.currentStepId) }
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

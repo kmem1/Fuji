@@ -36,7 +36,7 @@ class CourseLessonsViewModel @Inject constructor(
     private val moduleName = savedStateHandle.get<CourseLessonsArgs>(LESSONS_ARG_KEY)?.moduleName
 
     init {
-        Log.d("Kmem","cID: $courseId mID: $moduleId mName: $moduleName")
+        Log.d("Kmem", "cID: $courseId mID: $moduleId mName: $moduleName")
 
         obtainEvent(CourseLessonsEvent.GetLessons)
     }
@@ -61,11 +61,11 @@ class CourseLessonsViewModel @Inject constructor(
             val params = GetCourseLessonsParams(courseId, moduleId)
             val modulesResult = getCourseLessons.invoke(params)
 
-            handleGetCoursesModulesResult(modulesResult)
+            handleGetCoursesLessonsResult(modulesResult)
         }
     }
 
-    private fun handleGetCoursesModulesResult(result: GetCourseLessonsUseCaseResult) {
+    private fun handleGetCoursesLessonsResult(result: GetCourseLessonsUseCaseResult) {
         when (result) {
             GetCourseLessonsUseCaseResult.Failed -> {
                 updateState(CourseLessonsState.Error)
@@ -76,7 +76,14 @@ class CourseLessonsViewModel @Inject constructor(
             }
 
             is GetCourseLessonsUseCaseResult.Success -> {
-                updateState(CourseLessonsState.Data(moduleName ?: "", result.data))
+                updateState(
+                    CourseLessonsState.Data(
+                        courseId = courseId ?: "",
+                        moduleId = moduleId ?: "",
+                        moduleName = moduleName ?: "",
+                        lessons = result.data
+                    )
+                )
             }
 
             GetCourseLessonsUseCaseResult.Unauthorized -> {
@@ -90,7 +97,7 @@ class CourseLessonsViewModel @Inject constructor(
         val courseId: String,
         val moduleId: String,
         val moduleName: String
-    ): Parcelable
+    ) : Parcelable
 
     private fun updateState(newState: CourseLessonsState) {
         state.value = newState

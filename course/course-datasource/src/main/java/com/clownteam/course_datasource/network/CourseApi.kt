@@ -2,6 +2,7 @@ package com.clownteam.course_datasource.network
 
 import com.clownteam.course_datasource.network.models.get_course_info.CourseInfoResponse
 import com.clownteam.course_datasource.network.models.get_course_lessons.CourseLessonsResponse
+import com.clownteam.course_datasource.network.models.get_course_step.CourseStepResponse
 import com.clownteam.course_datasource.network.models.get_course_steps.CourseStepsResponse
 import com.clownteam.course_datasource.network.models.get_courses.GetCoursesResponse
 import com.clownteam.course_datasource.network.models.get_courses_modules.CourseModulesResponse
@@ -49,7 +50,16 @@ interface CourseApi {
         @Header("Authorization") token: String,
         @Path("courseId") courseId: String,
         @Path("themeId") themeId: String,
-        @Path("themeId") lessonId: String,
+        @Path("lessonId") lessonId: String,
         @Path("stepId") stepId: String
     ): Call<CourseStepsResponse>
+
+    @GET("api/courses/learn/{courseId}/themes/{themeId}/lessons/{lessonId}/steps/{stepId}")
+    fun getCourseStep(
+        @Header("Authorization") token: String,
+        @Path("courseId") courseId: String,
+        @Path("themeId") themeId: String,
+        @Path("lessonId") lessonId: String,
+        @Path("stepId") stepId: String
+    ): Call<CourseStepResponse>
 }

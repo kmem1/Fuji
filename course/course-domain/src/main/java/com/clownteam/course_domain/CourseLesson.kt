@@ -4,5 +4,6 @@ data class CourseLesson(
     val id: String,
     val title: String,
     val currentProgress: Int,
-    val maxProgress: Int
+    val maxProgress: Int,
+    val currentStepId: String
 )

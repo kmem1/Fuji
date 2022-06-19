@@ -4,6 +4,7 @@ import com.clownteam.core.network.NetworkResponse
 import com.clownteam.core.network.baseRequest
 import com.clownteam.course_datasource.network.models.get_course_info.CourseInfoResponse
 import com.clownteam.course_datasource.network.models.get_course_lessons.CourseLessonsResponse
+import com.clownteam.course_datasource.network.models.get_course_step.CourseStepResponse
 import com.clownteam.course_datasource.network.models.get_course_steps.CourseStepsResponse
 import com.clownteam.course_datasource.network.models.get_courses.GetCoursesResponse
 import com.clownteam.course_datasource.network.models.get_courses_modules.CourseModulesResponse
@@ -48,4 +49,13 @@ class CourseServiceImpl(private val api: CourseApi) : CourseService {
         stepId: String
     ): NetworkResponse<CourseStepsResponse> =
         baseRequest { api.getCourseSteps("Bearer $token", courseId, moduleId, lessonId, stepId) }
+
+    override suspend fun getCourseStep(
+        token: String,
+        courseId: String,
+        moduleId: String,
+        lessonId: String,
+        stepId: String
+    ): NetworkResponse<CourseStepResponse> =
+        baseRequest { api.getCourseStep("Bearer $token", courseId, moduleId, lessonId, stepId) }
 }

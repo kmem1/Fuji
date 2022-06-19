@@ -19,6 +19,8 @@ import com.clownteam.ui_coursepassing.course_lessons.CourseLessons
 import com.clownteam.ui_coursepassing.course_lessons.CourseLessonsViewModel
 import com.clownteam.ui_coursepassing.course_modules.CourseModules
 import com.clownteam.ui_coursepassing.course_modules.CourseModulesViewModel
+import com.clownteam.ui_coursepassing.course_steps.CourseSteps
+import com.clownteam.ui_coursepassing.course_steps.CourseStepsViewModel
 import com.google.gson.Gson
 
 @ExperimentalAnimationApi
@@ -84,6 +86,27 @@ fun SetupNavGraph(
             showBottomBar(false)
             val viewModel: CourseLessonsViewModel = hiltViewModel()
             CourseLessons(
+                state = viewModel.state.value,
+                eventHandler = viewModel,
+                onBack = { navController.popBackStack() },
+                onLessonClick = { courseId, moduleId, lessonId, lessonName, stepId ->
+                    val args = CourseStepsViewModel.CourseStepsArgs(
+                        courseId, moduleId, lessonId, lessonName, stepId
+                    )
+
+                    val argsJson = Uri.encode(Gson().toJson(args))
+                    navController.navigate(Route.CourseStepsRoute.getRouteWithArgument(argsJson))
+                }
+            )
+        }
+
+        composable(
+            route = Route.CourseStepsRoute.route,
+            arguments = Route.CourseStepsRoute.arguments
+        ) {
+            showBottomBar(false)
+            val viewModel: CourseStepsViewModel = hiltViewModel()
+            CourseSteps(
                 state = viewModel.state.value,
                 eventHandler = viewModel,
                 onBack = { navController.popBackStack() }
