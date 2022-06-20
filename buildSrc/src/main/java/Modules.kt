@@ -34,4 +34,5 @@ object Modules {
     const val collectionInteractors = ":collection:collection-interactors"
     const val ui_collectionList = ":collection:ui-collectionList"
     const val ui_collectionDetailed = ":collection:ui-collectionDetailed"
+    const val ui_collectionAction = ":collection:ui-collectionAction"
 }

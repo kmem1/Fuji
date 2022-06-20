@@ -83,7 +83,7 @@ class CourseStepsViewModel @Inject constructor(
             val params = GetCourseStepsParams(courseId, moduleId, lessonId, stepId)
             val modulesResult = getCourseSteps.invoke(params)
 
-            handleGetCoursesStepsResult(modulesResult)
+            handleGetCourseStepsResult(modulesResult)
         }
     }
 
@@ -104,11 +104,11 @@ class CourseStepsViewModel @Inject constructor(
             val params = GetCourseStepParams(courseId, moduleId, lessonId, stepId)
             val result = getCourseStep.invoke(params)
 
-            handleGetCoursesStepResult(result)
+            handleGetCourseStepResult(result)
         }
     }
 
-    private fun handleGetCoursesStepsResult(result: GetCourseStepsUseCaseResult) {
+    private fun handleGetCourseStepsResult(result: GetCourseStepsUseCaseResult) {
         when (result) {
             GetCourseStepsUseCaseResult.Failed -> {
                 updateState(CourseStepsState.Error)
@@ -144,7 +144,7 @@ class CourseStepsViewModel @Inject constructor(
         }
     }
 
-    private fun handleGetCoursesStepResult(result: GetCourseStepUseCaseResult) {
+    private fun handleGetCourseStepResult(result: GetCourseStepUseCaseResult) {
         when (result) {
             GetCourseStepUseCaseResult.Failed -> {
                 updateState(CourseStepsState.Error)

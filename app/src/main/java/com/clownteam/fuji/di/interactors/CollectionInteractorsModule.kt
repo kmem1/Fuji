@@ -3,6 +3,7 @@ package com.clownteam.fuji.di.interactors
 import com.clownteam.collection_datasource.CollectionApi
 import com.clownteam.collection_interactors.CollectionInteractors
 import com.clownteam.core.network.token.TokenManager
+import com.clownteam.core.user_data.UserDataManager
 import com.clownteam.fuji.api.FujiApi
 import dagger.Module
 import dagger.Provides
@@ -24,8 +25,9 @@ object CollectionInteractorsModule {
     @Singleton
     fun provideCollectionInteractors(
         collectionApi: CollectionApi,
-        tokenManager: TokenManager
+        tokenManager: TokenManager,
+        userDataManager: UserDataManager
     ): CollectionInteractors {
-        return CollectionInteractors.build(collectionApi, FujiApi.BASE_URL, tokenManager)
+        return CollectionInteractors.build(collectionApi, FujiApi.BASE_URL, tokenManager, userDataManager)
     }
 }

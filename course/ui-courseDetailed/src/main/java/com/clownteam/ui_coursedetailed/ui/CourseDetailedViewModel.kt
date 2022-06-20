@@ -1,6 +1,5 @@
 package com.clownteam.ui_coursedetailed.ui
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -23,7 +22,6 @@ class CourseDetailedViewModel @Inject constructor(
     override val state: MutableState<CourseDetailedState> =
         mutableStateOf(CourseDetailedState.Loading)
     private val courseId = savedStateHandle.get<String>(COURSE_ID_ARG_KEY)
-
 
     init {
         if (courseId == null) {

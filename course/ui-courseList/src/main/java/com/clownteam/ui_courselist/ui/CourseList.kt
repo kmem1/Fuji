@@ -47,6 +47,7 @@ fun CourseList(
     state: CourseListState,
     eventHandler: EventHandler<CourseListEvent>,
     navigateToDetailScreen: (String) -> Unit,
+    navigateToAddToCollection: (String) -> Unit,
     imageLoader: ImageLoader
 ) {
     DefaultScreenUI(
@@ -61,7 +62,13 @@ fun CourseList(
                 BottomSheetContent(
                     selectedCourse.value,
                     imageLoader
-                ) { coroutineScope.launch { bottomState.hide() } }
+                ) {
+                    coroutineScope.launch {
+                        bottomState.hide()
+                        navigateToAddToCollection(selectedCourse.value?.id ?: "")
+                        selectedCourse.value = null
+                    }
+                }
             },
             scrimColor = Color.Black.copy(alpha = 0.7F),
             sheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),

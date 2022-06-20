@@ -15,6 +15,8 @@ import com.clownteam.fuji.ui.navigation.screens.course.CourseScreen
 import com.clownteam.fuji.ui.navigation.screens.home.HomeScreen
 import com.clownteam.fuji.ui.navigation.screens.profile.ProfileContainer
 import com.clownteam.fuji.ui.navigation.screens.search.SearchScreen
+import com.clownteam.ui_collectionaction.add_to_collection.AddToCollectionScreen
+import com.clownteam.ui_collectionaction.add_to_collection.AddToCollectionScreenViewModel
 import com.clownteam.ui_coursepassing.course_lessons.CourseLessons
 import com.clownteam.ui_coursepassing.course_lessons.CourseLessonsViewModel
 import com.clownteam.ui_coursepassing.course_modules.CourseModules
@@ -45,7 +47,22 @@ fun SetupNavGraph(
                 imageLoader = imageLoader,
                 navigateToCourse = { courseId ->
                     navController.navigate(Route.CourseModulesRoute.getRouteWithArgument(courseId))
+                },
+                navigateToAddToCollection = { courseId ->
+                    navController.navigate(Route.AddToCollectionRoute.getRouteWithArgument(courseId))
                 }
+            )
+        }
+
+        composable(Route.AddToCollectionRoute.route) {
+            showBottomBar(false)
+            val viewModel: AddToCollectionScreenViewModel = hiltViewModel()
+            AddToCollectionScreen(
+                state = viewModel.state.value,
+                eventHandler = viewModel,
+                imageLoader = imageLoader,
+                onBack = {},
+                navigateToCreateCollection = {}
             )
         }
 

@@ -76,6 +76,7 @@ dependencies {
     implementation(project(Modules.collectionInteractors))
     implementation(project(Modules.ui_collectionList))
     implementation(project(Modules.ui_collectionDetailed))
+    implementation(project(Modules.ui_collectionAction))
 
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.coreSplashScreen)
