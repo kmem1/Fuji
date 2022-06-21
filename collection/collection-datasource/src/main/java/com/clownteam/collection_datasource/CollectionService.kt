@@ -1,5 +1,6 @@
 package com.clownteam.collection_datasource
 
+import com.clownteam.collection_datasource.models.create_collection.CreateCollectionResponse
 import com.clownteam.collection_datasource.models.get_collection.GetCollectionResponse
 import com.clownteam.collection_datasource.models.get_collections.GetCollectionsResponse
 import com.clownteam.collection_datasource.models.get_user_collections.GetUserCollectionsResponse
@@ -14,5 +15,7 @@ interface CollectionService {
     suspend fun getUserCollections(token: String, userPath: String): NetworkResponse<GetUserCollectionsResponse>
 
     suspend fun addCourseToCollection(token: String, courseId: String, collectionId: String): NetworkResponse<Any>
+
+    suspend fun createCollection(token: String): NetworkResponse<CreateCollectionResponse>
 
 }

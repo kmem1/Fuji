@@ -1,6 +1,7 @@
 package com.clownteam.collection_datasource
 
 import com.clownteam.collection_datasource.models.add_course_to_collection.AddCourseToCollectionBody
+import com.clownteam.collection_datasource.models.create_collection.CreateCollectionResponse
 import com.clownteam.collection_datasource.models.get_collection.GetCollectionResponse
 import com.clownteam.collection_datasource.models.get_collections.GetCollectionsResponse
 import com.clownteam.collection_datasource.models.get_user_collections.GetUserCollectionsResponse
@@ -30,4 +31,7 @@ interface CollectionApi {
         @Path("courseId") courseId: String,
         @Body body: AddCourseToCollectionBody
     ): Call<Any>
+
+    @POST("api/collections/create/")
+    fun createCollection(@Header("Authorization") token: String): Call<CreateCollectionResponse>
 }
