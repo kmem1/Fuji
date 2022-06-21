@@ -13,7 +13,11 @@ object GetUserCollectionsResponseItemMapper {
 
         return CourseCollection(
             membersAmount = 0,
-            author = CourseCollectionAuthor("", name = input.author ?: "", avatar_url = ""),
+            author = CourseCollectionAuthor(
+                input.author?.id ?: "",
+                name = input.author?.username ?: "",
+                avatar_url = input.author?.avatarUrl ?: ""
+            ),
             courses = emptyList(),
             imageUrl = imgUrl,
             isAdded = input.isAdded ?: false,

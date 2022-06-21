@@ -12,11 +12,12 @@ import coil.ImageLoader
 import com.clownteam.fuji.ui.navigation.bottom_navigation.BottomNavItem
 import com.clownteam.fuji.ui.navigation.screens.archive.ArchiveContainer
 import com.clownteam.fuji.ui.navigation.screens.course.CourseScreen
-import com.clownteam.fuji.ui.navigation.screens.home.HomeScreen
 import com.clownteam.fuji.ui.navigation.screens.profile.ProfileContainer
 import com.clownteam.fuji.ui.navigation.screens.search.SearchScreen
 import com.clownteam.ui_collectionaction.add_to_collection.AddToCollectionScreen
 import com.clownteam.ui_collectionaction.add_to_collection.AddToCollectionScreenViewModel
+import com.clownteam.ui_collectionaction.create_collection.CreateCollectionScreen
+import com.clownteam.ui_collectionaction.create_collection.CreateCollectionViewModel
 import com.clownteam.ui_courselist.ui.CourseList
 import com.clownteam.ui_courselist.ui.CourseListViewModel
 import com.clownteam.ui_coursepassing.course_lessons.CourseLessons
@@ -63,7 +64,24 @@ fun SetupNavGraph(
                 eventHandler = viewModel,
                 imageLoader = imageLoader,
                 onBack = { navController.navigateUp() },
-                navigateToCreateCollection = {}
+                navigateToCreateCollection = { courseId ->
+                    navController.navigate(Route.CreateCollectionRoute.getRouteWithArgument(courseId))
+                }
+            )
+        }
+
+        composable(Route.CreateCollectionRoute.route) {
+            showBottomBar(false)
+            val viewModel: CreateCollectionViewModel = hiltViewModel()
+            CreateCollectionScreen(
+                state = viewModel.state.value,
+                eventHandler = viewModel,
+                viewModel = viewModel,
+                onBack = { navController.navigateUp() },
+                onSuccessCreate = {
+                    navController.navigateUp()
+                    navController.navigateUp()
+                }
             )
         }
 

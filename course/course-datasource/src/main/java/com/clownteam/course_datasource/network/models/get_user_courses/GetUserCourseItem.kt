@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class GetUserCourseItem(
     @SerializedName("author")
-    val author: String?,
+    val author: AuthorModel?,
     @SerializedName("description")
     val description: String?,
     @SerializedName("duration_in_minutes")
@@ -24,4 +24,13 @@ data class GetUserCourseItem(
     val statusProgress: String?,
     @SerializedName("title")
     val title: String?
+)
+
+data class AuthorModel(
+    @SerializedName("path")
+    val id: String?,
+    @SerializedName("username")
+    val username: String?,
+    @SerializedName("avatar_url")
+    val avatarUrl: String?
 )

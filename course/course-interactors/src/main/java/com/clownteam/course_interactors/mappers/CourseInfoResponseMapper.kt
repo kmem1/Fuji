@@ -41,10 +41,10 @@ object CourseInfoResponseMapper {
         val course = Course(
             id = "",
             title = input.mainInfo?.title ?: "",
-            authorName = input.mainInfo?.author ?: "",
+            authorName = input.mainInfo?.author?.username ?: "",
             imgUrl = imgUrl,
             durationInMinutes = input.mainInfo?.durationInMinutes ?: 0,
-            rating = input.mainInfo?.rating?.toFloat() ?: 0F,
+            rating = input.mainInfo?.rating?.value?.toFloat() ?: 0F,
             membersAmount = input.mainInfo?.membersAmount ?: 0,
             description = "",
             price = input.mainInfo?.price?.toFloat() ?: 0F,

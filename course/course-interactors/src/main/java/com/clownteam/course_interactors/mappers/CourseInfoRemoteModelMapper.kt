@@ -21,7 +21,7 @@ internal object CourseInfoRemoteModelMapper {
             hasCertificate = false,
             maxProgressPoints = courseInfo.progress?.maxProgress ?: 0,
             currentPoints = courseInfo.progress?.progress ?: 0,
-            authorName = courseInfo.author ?: "",
+            authorName = courseInfo.author?.username ?: "",
             courseDurationInHours = (courseInfo.durationInMinutes ?: 0) / 60
         )
     }

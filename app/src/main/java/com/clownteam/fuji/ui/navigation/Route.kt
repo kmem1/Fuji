@@ -6,6 +6,7 @@ import androidx.navigation.navArgument
 import com.clownteam.fuji.ui.navigation.nav_types.CourseLessonNavType
 import com.clownteam.fuji.ui.navigation.nav_types.CourseStepsNavType
 import com.clownteam.ui_collectionaction.add_to_collection.AddToCollectionScreenViewModel
+import com.clownteam.ui_collectionaction.create_collection.CreateCollectionViewModel
 import com.clownteam.ui_collectiondetailed.ui.CollectionDetailedViewModel
 import com.clownteam.ui_coursedetailed.ui.CourseDetailedViewModel
 import com.clownteam.ui_coursepassing.course_lessons.CourseLessonsViewModel
@@ -62,6 +63,21 @@ sealed class Route(val route: String, val arguments: List<NamedNavArgument> = em
         fun getRouteWithArgument(args: String): String {
             return route.replace(
                 "{${AddToCollectionScreenViewModel.COURSE_ID_ARG_KEY}}",
+                args
+            )
+        }
+    }
+
+    object CreateCollectionRoute : Route(
+        route = "create_collection_with_course/{${CreateCollectionViewModel.COURSE_ID_ARG_KEY}}",
+        arguments = listOf(
+            navArgument(CreateCollectionViewModel.COURSE_ID_ARG_KEY) {
+                type = NavType.StringType
+            })
+    ) {
+        fun getRouteWithArgument(args: String): String {
+            return route.replace(
+                "{${CreateCollectionViewModel.COURSE_ID_ARG_KEY}}",
                 args
             )
         }

@@ -12,3 +12,4 @@ data class CourseCollectionsAuthorResponseItem(
     @SerializedName("avatar_url")
     val avatarUrl: String,
 )
+

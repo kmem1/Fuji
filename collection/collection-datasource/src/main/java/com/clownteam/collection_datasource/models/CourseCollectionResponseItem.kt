@@ -28,3 +28,4 @@ open class CourseCollectionResponseItem {
     @SerializedName("title")
     val title: String? = null
 }
+

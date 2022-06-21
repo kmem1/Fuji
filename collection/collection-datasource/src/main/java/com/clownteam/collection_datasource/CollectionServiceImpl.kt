@@ -5,6 +5,7 @@ import com.clownteam.collection_datasource.models.create_collection.CreateCollec
 import com.clownteam.collection_datasource.models.get_collection.GetCollectionResponse
 import com.clownteam.collection_datasource.models.get_collections.GetCollectionsResponse
 import com.clownteam.collection_datasource.models.get_user_collections.GetUserCollectionsResponse
+import com.clownteam.collection_datasource.models.update_collection.UpdateCollectionResponseBody
 import com.clownteam.core.network.NetworkResponse
 import com.clownteam.core.network.baseRequest
 
@@ -41,6 +42,13 @@ class CollectionServiceImpl(private val api: CollectionApi) : CollectionService 
 
     override suspend fun createCollection(token: String): NetworkResponse<CreateCollectionResponse> =
         baseRequest { api.createCollection(createBearerToken(token)) }
+
+    override suspend fun updateCollection(
+        token: String,
+        collectionId: String,
+        body: UpdateCollectionResponseBody
+    ): NetworkResponse<Any> =
+        baseRequest { api.updateCollection(createBearerToken(token), collectionId, body) }
 
     private fun createBearerToken(token: String): String {
         return "Bearer $token"

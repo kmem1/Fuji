@@ -52,7 +52,7 @@ object GetCollectionResponseItemMapper {
         return Course(
             id = input.path ?: "",
             title = input.title ?: "",
-            authorName = input.author ?: "",
+            authorName = input.author?.username ?: "",
             imgUrl = imgUrl,
             durationInMinutes = input.durationInMinutes ?: 0,
             rating = input.rating?.toFloat() ?: 0F,

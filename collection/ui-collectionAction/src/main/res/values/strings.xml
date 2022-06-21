@@ -2,4 +2,6 @@
 <resources>
     <string name="no_collections_error_text">У вас ещё нет подборок</string>
     <string name="create_collection_btn_text">Новая подборка</string>
+    <string name="create_collection_title_text">Создание подборки</string>
+    <string name="create">Создать</string>
 </resources>

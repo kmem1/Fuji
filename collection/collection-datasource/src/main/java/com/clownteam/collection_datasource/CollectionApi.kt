@@ -5,6 +5,7 @@ import com.clownteam.collection_datasource.models.create_collection.CreateCollec
 import com.clownteam.collection_datasource.models.get_collection.GetCollectionResponse
 import com.clownteam.collection_datasource.models.get_collections.GetCollectionsResponse
 import com.clownteam.collection_datasource.models.get_user_collections.GetUserCollectionsResponse
+import com.clownteam.collection_datasource.models.update_collection.UpdateCollectionResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -34,4 +35,11 @@ interface CollectionApi {
 
     @POST("api/collections/create/")
     fun createCollection(@Header("Authorization") token: String): Call<CreateCollectionResponse>
+
+    @PUT("api/collections/update/{collectionId}/")
+    fun updateCollection(
+        @Header("Authorization") token: String,
+        @Path("collectionId") collectionID: String,
+        @Body body: UpdateCollectionResponseBody
+    ): Call<Any>
 }
