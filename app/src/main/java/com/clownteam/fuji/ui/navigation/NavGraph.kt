@@ -17,6 +17,8 @@ import com.clownteam.fuji.ui.navigation.screens.profile.ProfileContainer
 import com.clownteam.fuji.ui.navigation.screens.search.SearchScreen
 import com.clownteam.ui_collectionaction.add_to_collection.AddToCollectionScreen
 import com.clownteam.ui_collectionaction.add_to_collection.AddToCollectionScreenViewModel
+import com.clownteam.ui_courselist.ui.CourseList
+import com.clownteam.ui_courselist.ui.CourseListViewModel
 import com.clownteam.ui_coursepassing.course_lessons.CourseLessons
 import com.clownteam.ui_coursepassing.course_lessons.CourseLessonsViewModel
 import com.clownteam.ui_coursepassing.course_modules.CourseModules
@@ -39,18 +41,17 @@ fun SetupNavGraph(
     ) {
         composable(BottomNavItem.Home.route) {
             showBottomBar(true)
-//            val viewModel: HomeViewModel = hiltViewModel()
-            HomeScreen(
-//                navigateToCourse = { courseId ->
-//                    navController.navigate("${Route.CourseRoute.route}/$courseId")
-//                },
-                imageLoader = imageLoader,
-                navigateToCourse = { courseId ->
+            val viewModel: CourseListViewModel = hiltViewModel()
+            CourseList(
+                state = viewModel.state.value,
+                eventHandler = viewModel,
+                navigateToDetailScreen = { courseId ->
                     navController.navigate(Route.CourseModulesRoute.getRouteWithArgument(courseId))
                 },
                 navigateToAddToCollection = { courseId ->
                     navController.navigate(Route.AddToCollectionRoute.getRouteWithArgument(courseId))
-                }
+                },
+                imageLoader = imageLoader
             )
         }
 
@@ -61,7 +62,7 @@ fun SetupNavGraph(
                 state = viewModel.state.value,
                 eventHandler = viewModel,
                 imageLoader = imageLoader,
-                onBack = {},
+                onBack = { navController.navigateUp() },
                 navigateToCreateCollection = {}
             )
         }

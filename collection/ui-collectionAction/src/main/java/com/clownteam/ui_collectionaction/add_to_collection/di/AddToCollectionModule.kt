@@ -1,6 +1,7 @@
 package com.clownteam.ui_collectionaction.add_to_collection.di
 
 import com.clownteam.collection_interactors.CollectionInteractors
+import com.clownteam.collection_interactors.IAddCourseToCollectionUseCase
 import com.clownteam.collection_interactors.IGetUserCollectionsUseCase
 import dagger.Module
 import dagger.Provides
@@ -16,5 +17,11 @@ object AddToCollectionModule {
     @Provides
     fun provideGetUserCollectionsUseCase(interactors: CollectionInteractors): IGetUserCollectionsUseCase {
         return interactors.getUserCollections
+    }
+
+    @Singleton
+    @Provides
+    fun provideAddCourseToCollectionsUseCase(interactors: CollectionInteractors): IAddCourseToCollectionUseCase {
+        return interactors.addCourseToCollection
     }
 }

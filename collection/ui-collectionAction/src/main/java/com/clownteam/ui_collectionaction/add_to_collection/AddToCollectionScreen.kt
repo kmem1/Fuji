@@ -85,6 +85,10 @@ fun AddToCollectionScreen(
                 DefaultButton(text = "Unauthorized", onClick = { })
             }
         }
+
+        AddToCollectionScreenState.SuccessAddCourse -> {
+            onBack()
+        }
     }
 }
 

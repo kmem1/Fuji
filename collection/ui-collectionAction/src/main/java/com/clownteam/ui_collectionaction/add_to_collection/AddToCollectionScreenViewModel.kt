@@ -5,8 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.clownteam.collection_interactors.GetUserCollectionsUseCaseResult
-import com.clownteam.collection_interactors.IGetUserCollectionsUseCase
+import com.clownteam.collection_interactors.*
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.StateHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddToCollectionScreenViewModel @Inject constructor(
     private val getUserCollections: IGetUserCollectionsUseCase,
+    private val addCourseToCollectionUseCase: IAddCourseToCollectionUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel(), EventHandler<AddToCollectionScreenEvent>,
     StateHolder<MutableState<AddToCollectionScreenState>> {
@@ -34,13 +34,44 @@ class AddToCollectionScreenViewModel @Inject constructor(
         mutableStateOf(AddToCollectionScreenState.Loading)
 
     override fun obtainEvent(event: AddToCollectionScreenEvent) {
-        when(event) {
+        when (event) {
             is AddToCollectionScreenEvent.AddToCollection -> {
-
+                addCourseToCollection(event.collection.id)
             }
 
             AddToCollectionScreenEvent.GetMyCollections -> {
                 getCollections()
+            }
+        }
+    }
+
+    private fun addCourseToCollection(collectionId: String) {
+        viewModelScope.launch {
+            updateState(AddToCollectionScreenState.Loading)
+
+            val params = AddCourseToCollectionParams(courseId ?: "", collectionId)
+            val result = addCourseToCollectionUseCase.invoke(params)
+
+            handleAddCourseToCollectionResult(result)
+        }
+    }
+
+    private fun handleAddCourseToCollectionResult(result: AddCourseToCollectionUseCaseResult) {
+        when(result) {
+            AddCourseToCollectionUseCaseResult.Failed -> {
+                updateState(AddToCollectionScreenState.SuccessAddCourse)
+            }
+
+            AddCourseToCollectionUseCaseResult.NetworkError -> {
+                updateState(AddToCollectionScreenState.Error)
+            }
+
+            AddCourseToCollectionUseCaseResult.Success -> {
+                updateState(AddToCollectionScreenState.SuccessAddCourse)
+            }
+
+            AddCourseToCollectionUseCaseResult.Unauthorized -> {
+                updateState(AddToCollectionScreenState.Unauthorized)
             }
         }
     }
@@ -54,7 +85,7 @@ class AddToCollectionScreenViewModel @Inject constructor(
     }
 
     private fun handleGetUserCollectionsResult(result: GetUserCollectionsUseCaseResult) {
-        when(result) {
+        when (result) {
             GetUserCollectionsUseCaseResult.Failed -> {
                 updateState(AddToCollectionScreenState.Error)
             }

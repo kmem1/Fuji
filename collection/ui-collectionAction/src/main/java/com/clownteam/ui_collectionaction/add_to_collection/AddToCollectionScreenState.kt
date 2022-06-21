@@ -8,6 +8,8 @@ sealed class AddToCollectionScreenState {
     class Data(val collections: List<CourseCollection>, val courseId: String) :
         AddToCollectionScreenState()
 
+    object SuccessAddCourse : AddToCollectionScreenState()
+
     object Error : AddToCollectionScreenState()
 
     object Unauthorized : AddToCollectionScreenState()

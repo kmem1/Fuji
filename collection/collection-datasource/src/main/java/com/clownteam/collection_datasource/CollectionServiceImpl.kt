@@ -1,5 +1,6 @@
 package com.clownteam.collection_datasource
 
+import com.clownteam.collection_datasource.models.add_course_to_collection.AddCourseToCollectionBody
 import com.clownteam.collection_datasource.models.get_collection.GetCollectionResponse
 import com.clownteam.collection_datasource.models.get_collections.GetCollectionsResponse
 import com.clownteam.collection_datasource.models.get_user_collections.GetUserCollectionsResponse
@@ -24,4 +25,16 @@ class CollectionServiceImpl(private val api: CollectionApi) : CollectionService 
     ): NetworkResponse<GetUserCollectionsResponse> =
         baseRequest { api.getUserCollections("Bearer $token", userPath) }
 
+    override suspend fun addCourseToCollection(
+        token: String,
+        courseId: String,
+        collectionId: String
+    ): NetworkResponse<Any> =
+        baseRequest {
+            api.addCourseToCollection(
+                "Bearer $token",
+                courseId,
+                AddCourseToCollectionBody(collectionId)
+            )
+        }
 }

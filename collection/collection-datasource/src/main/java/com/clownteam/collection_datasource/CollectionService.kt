@@ -13,4 +13,6 @@ interface CollectionService {
 
     suspend fun getUserCollections(token: String, userPath: String): NetworkResponse<GetUserCollectionsResponse>
 
+    suspend fun addCourseToCollection(token: String, courseId: String, collectionId: String): NetworkResponse<Any>
+
 }

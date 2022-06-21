@@ -1,5 +1,6 @@
 package com.clownteam.ui_courselist.ui
 
+import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -74,6 +75,7 @@ fun CourseList(
             sheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
             sheetBackgroundColor = MaterialTheme.colors.background
         ) {
+            Log.d("kmem", "$state")
             when (state) {
                 is CourseListState.Data -> {
                     Column(
