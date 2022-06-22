@@ -10,7 +10,7 @@ object UserCourseResponseMapper {
         imgUrl += input.imageUrl
 
         return Course(
-            id = "",
+            id = input.path ?: "",
             title = input.title ?: "",
             authorName = input.author?.username ?: "",
             imgUrl = imgUrl,
@@ -21,9 +21,10 @@ object UserCourseResponseMapper {
             price = 0F,
             marksCount = 0,
             hasCertificate = false,
-            maxProgressPoints = 0,
-            currentPoints = 0,
-            courseDurationInHours = 0
+            maxProgressPoints = input.progress?.maxProgress ?: 0,
+            currentPoints = input.progress?.progress ?: 0,
+            courseDurationInHours = 0,
+            isStarted = input.statusProgress != null
         )
     }
 }

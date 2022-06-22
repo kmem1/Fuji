@@ -22,6 +22,8 @@ interface CourseService {
 
     suspend fun getCourseInfo(token: String, id: String): NetworkResponse<CourseInfoResponse>
 
+    suspend fun startLearningCourse(token: String, courseId: String): NetworkResponse<Any>
+
     suspend fun getCourseModules(
         token: String,
         courseId: String

@@ -52,7 +52,8 @@ object CourseInfoResponseMapper {
             hasCertificate = false,
             maxProgressPoints = 0,
             currentPoints = 0,
-            courseDurationInHours = 0
+            courseDurationInHours = 0,
+            isStarted = input.mainInfo?.statusProgress != null
         )
 
         return MapperResult(course = course, courseInfoUI = courseInfo)

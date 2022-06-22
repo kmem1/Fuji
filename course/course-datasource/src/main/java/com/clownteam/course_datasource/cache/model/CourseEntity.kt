@@ -34,5 +34,6 @@ internal fun CourseEntity.toCourse(): Course =
         maxProgressPoints = maxProgressPoints,
         currentPoints = currentPoints,
         authorName = authorName,
-        courseDurationInHours = courseDurationInHours
+        courseDurationInHours = courseDurationInHours,
+        isStarted = false
     )

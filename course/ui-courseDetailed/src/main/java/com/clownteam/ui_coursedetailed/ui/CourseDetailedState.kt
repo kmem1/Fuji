@@ -12,4 +12,5 @@ sealed class CourseDetailedState {
     object Error : CourseDetailedState()
 
     object Unauthorized : CourseDetailedState()
+
 }

@@ -14,7 +14,8 @@ class CourseInteractors private constructor(
     val getCourseModulesUseCase: IGetCourseModulesUseCase,
     val getCourseLessonsUseCase: IGetCourseLessonsUseCase,
     val getCourseStepsUseCase: IGetCourseStepsUseCase,
-    val getCourseStepUseCase: IGetCourseStepUseCase
+    val getCourseStepUseCase: IGetCourseStepUseCase,
+    val startLearningCourseUseCase: IStartLearningCourseUseCase
 ) {
     companion object Factory {
         fun build(
@@ -33,7 +34,8 @@ class CourseInteractors private constructor(
                 GetCourseModulesUseCase(service, tokenManager),
                 GetCourseLessonsUseCase(service, tokenManager),
                 GetCourseStepsUseCase(service, tokenManager),
-                GetCourseStepUseCase(service, tokenManager)
+                GetCourseStepUseCase(service, tokenManager),
+                StartLearningCourseUseCase(service, tokenManager)
             )
         }
     }

@@ -47,7 +47,7 @@ fun SetupNavGraph(
                 state = viewModel.state.value,
                 eventHandler = viewModel,
                 navigateToDetailScreen = { courseId ->
-                    navController.navigate(Route.CourseModulesRoute.getRouteWithArgument(courseId))
+                    navController.navigate(Route.CourseRoute.getRouteWithArgument(courseId))
                 },
                 navigateToAddToCollection = { courseId ->
                     navController.navigate(Route.AddToCollectionRoute.getRouteWithArgument(courseId))
@@ -86,13 +86,16 @@ fun SetupNavGraph(
         }
 
         composable(
-            route = Route.CourseRoute.route + "/{courseId}",
+            route = Route.CourseRoute.route,
             arguments = Route.CourseRoute.arguments
         ) {
             showBottomBar(false)
             CourseScreen(
                 imageLoader,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                navigateToPassing = { courseId ->
+                    navController.navigate(Route.CourseModulesRoute.getRouteWithArgument(courseId))
+                }
             )
         }
 
@@ -154,6 +157,7 @@ fun SetupNavGraph(
         }
 
         composable(BottomNavItem.Archive.route) {
+            showBottomBar(true)
             ArchiveContainer(
                 externalRouter = createExternalRouter { route, params ->
                     navController.navigate(route, params)

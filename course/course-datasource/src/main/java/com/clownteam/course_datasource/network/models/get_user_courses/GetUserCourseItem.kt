@@ -17,7 +17,7 @@ data class GetUserCourseItem(
     @SerializedName("path")
     val path: String?,
     @SerializedName("progress")
-    val progress: Any?,
+    val progress: ProgressModel?,
     @SerializedName("rating")
     val rating: Double?,
     @SerializedName("status_progress")
@@ -33,4 +33,11 @@ data class AuthorModel(
     val username: String?,
     @SerializedName("avatar_url")
     val avatarUrl: String?
+)
+
+data class ProgressModel(
+    @SerializedName("progress")
+    val progress: Int,
+    @SerializedName("max_progress")
+    val maxProgress: Int
 )

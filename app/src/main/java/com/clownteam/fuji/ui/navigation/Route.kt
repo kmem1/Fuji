@@ -20,11 +20,18 @@ sealed class Route(val route: String, val arguments: List<NamedNavArgument> = em
     )
 
     object CourseRoute : Route(
-        route = "course_route",
+        route = "course_route/{${CourseDetailedViewModel.COURSE_ID_ARG_KEY}}",
         arguments = listOf(navArgument(CourseDetailedViewModel.COURSE_ID_ARG_KEY) {
             type = NavType.StringType
         })
-    )
+    ) {
+        fun getRouteWithArgument(args: String): String {
+            return CourseRoute.route.replace(
+                "{${CourseDetailedViewModel.COURSE_ID_ARG_KEY}}",
+                args
+            )
+        }
+    }
 
     object SearchRoute : Route(route = "search_route")
 

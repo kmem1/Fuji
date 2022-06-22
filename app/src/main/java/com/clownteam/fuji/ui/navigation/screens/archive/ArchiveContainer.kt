@@ -73,15 +73,16 @@ private fun OpenArchiveScreen(
 private fun createCollectionDetailedNavigationControllerScreen(imageLoader: ImageLoader): NavigationControllerScreen {
     return NavigationControllerScreen(
         route = Route.CourseCollectionRoute.route
-    ) { navController, _, bundle ->
-        OpenCourseCollectionScreen(navController, imageLoader)
+    ) { navController, externalRouter, bundle ->
+        OpenCourseCollectionScreen(navController, imageLoader, externalRouter)
     }
 }
 
 @Composable
 private fun OpenCourseCollectionScreen(
     navController: NavController,
-    imageLoader: ImageLoader
+    imageLoader: ImageLoader,
+    externalRouter: Router?
 ) {
     val viewModel: CollectionDetailedViewModel = hiltViewModel()
     CollectionDetailed(
@@ -90,6 +91,6 @@ private fun OpenCourseCollectionScreen(
         imageLoader = imageLoader,
         onBackPressed = { navController.popBackStack() },
         navigateToLogin = {},
-        navigateToDetailed = {}
+        openCourse = { externalRouter?.routeTo(Route.CourseRoute.getRouteWithArgument(it)) }
     )
 }

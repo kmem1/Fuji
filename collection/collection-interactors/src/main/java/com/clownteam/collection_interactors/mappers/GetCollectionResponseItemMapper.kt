@@ -63,7 +63,8 @@ object GetCollectionResponseItemMapper {
             hasCertificate = false,
             maxProgressPoints = input.progress?.maxProgress ?: 0,
             currentPoints = input.progress?.progress ?: 0,
-            courseDurationInHours = (input.durationInMinutes ?: 0) / 60
+            courseDurationInHours = (input.durationInMinutes ?: 0) / 60,
+            isStarted = input.statusProgress != null
         )
     }
 }

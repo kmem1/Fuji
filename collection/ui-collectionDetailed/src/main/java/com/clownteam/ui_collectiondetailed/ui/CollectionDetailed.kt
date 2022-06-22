@@ -41,7 +41,7 @@ fun CollectionDetailed(
     imageLoader: ImageLoader,
     onBackPressed: () -> Unit = {},
     navigateToLogin: () -> Unit = {},
-    navigateToDetailed: (String) -> Unit = {}
+    openCourse: (String) -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
@@ -50,7 +50,7 @@ fun CollectionDetailed(
                     state.collection,
                     imageLoader,
                     onBackPressed,
-                    navigateToDetailed
+                    openCourse
                 )
             }
 
@@ -90,7 +90,7 @@ fun CollectionDetailedContent(
     collection: CourseCollection,
     imageLoader: ImageLoader,
     onBackPressed: () -> Unit,
-    navigateToDetailed: (String) -> Unit
+    openCourse: (String) -> Unit
 ) {
     DefaultHeader(
         titleText = stringResource(R.string.collection_detailed_header_text),
@@ -100,7 +100,7 @@ fun CollectionDetailedContent(
 
     CollectionDetailedHeader(collection, imageLoader)
 
-    CollectionCoursesList(collection.courses, imageLoader, navigateToDetailed)
+    CollectionCoursesList(collection.courses, imageLoader, openCourse)
 }
 
 @Composable

@@ -3,6 +3,7 @@ package com.clownteam.ui_coursedetailed.di
 import com.clownteam.course_interactors.CourseInteractors
 import com.clownteam.course_interactors.IGetCourseByIdUseCase
 import com.clownteam.course_interactors.IGetCourseInfoByIdUseCase
+import com.clownteam.course_interactors.IStartLearningCourseUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,5 +24,11 @@ object CourseDetailedModule {
     @Singleton
     fun provideGetCourseInfoByIdUseCase(interactors: CourseInteractors): IGetCourseInfoByIdUseCase {
         return interactors.getCourseInfoById
+    }
+
+    @Provides
+    @Singleton
+    fun provideStartLearningCourseUseCase(interactors: CourseInteractors): IStartLearningCourseUseCase {
+        return interactors.startLearningCourseUseCase
     }
 }

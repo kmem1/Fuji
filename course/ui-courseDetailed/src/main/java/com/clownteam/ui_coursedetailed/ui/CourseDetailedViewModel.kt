@@ -9,19 +9,27 @@ import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.StateHolder
 import com.clownteam.course_interactors.GetCourseInfoByIdUseCaseResult
 import com.clownteam.course_interactors.IGetCourseInfoByIdUseCase
+import com.clownteam.course_interactors.IStartLearningCourseUseCase
+import com.clownteam.course_interactors.StartLearningCourseUseCaseResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CourseDetailedViewModel @Inject constructor(
     private val getCourseInfo: IGetCourseInfoByIdUseCase,
+    private val startLearningCourse: IStartLearningCourseUseCase,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel(), EventHandler<CourseDetailedEvent>, StateHolder<MutableState<CourseDetailedState>> {
 
     override val state: MutableState<CourseDetailedState> =
         mutableStateOf(CourseDetailedState.Loading)
     private val courseId = savedStateHandle.get<String>(COURSE_ID_ARG_KEY)
+
+    private val eventChannel = Channel<CourseDetailedVMEvent>()
+    val events = eventChannel.receiveAsFlow()
 
     init {
         if (courseId == null) {
@@ -36,6 +44,38 @@ class CourseDetailedViewModel @Inject constructor(
             is CourseDetailedEvent.GetCourseInfo -> {
                 getCourseInfo()
             }
+
+            CourseDetailedEvent.StartLearning -> {
+                startLearning()
+            }
+
+            CourseDetailedEvent.ContinueLearning -> {
+                viewModelScope.launch {
+                    eventChannel.send(CourseDetailedVMEvent.StartLearning(courseId ?: ""))
+                }
+            }
+        }
+    }
+
+    private fun startLearning() {
+        viewModelScope.launch {
+            val result = startLearningCourse.invoke(courseId ?: "")
+
+            handleStartLearningUseCaseResult(result)
+        }
+    }
+
+    private suspend fun handleStartLearningUseCaseResult(result: StartLearningCourseUseCaseResult) {
+        when(result) {
+            StartLearningCourseUseCaseResult.Failed -> { }
+
+            StartLearningCourseUseCaseResult.NetworkError -> { }
+
+            StartLearningCourseUseCaseResult.Success -> {
+                eventChannel.send(CourseDetailedVMEvent.StartLearning(courseId ?: ""))
+            }
+
+            StartLearningCourseUseCaseResult.Unauthorized -> { }
         }
     }
 
@@ -82,4 +122,7 @@ class CourseDetailedViewModel @Inject constructor(
         const val COURSE_ID_ARG_KEY = "courseId"
     }
 
+    sealed class CourseDetailedVMEvent {
+        class StartLearning(val courseId: String): CourseDetailedVMEvent()
+    }
 }

@@ -52,7 +52,8 @@ internal class CourseCacheImpl : CourseCache {
             maxProgressPoints = 65,
             currentPoints = 23,
             authorName = "Академия Яндекс",
-            courseDurationInHours = 89
+            courseDurationInHours = 89,
+            isStarted = false
         ),
         Course(
             id = "2",
@@ -68,7 +69,8 @@ internal class CourseCacheImpl : CourseCache {
             maxProgressPoints = 65,
             currentPoints = 23,
             authorName = "Академия Яндекс",
-            courseDurationInHours = 89
+            courseDurationInHours = 89,
+            isStarted = false
         ),
         Course(
             id = "3",
@@ -84,7 +86,8 @@ internal class CourseCacheImpl : CourseCache {
             maxProgressPoints = 65,
             currentPoints = 23,
             authorName = "Академия Яндекс",
-            courseDurationInHours = 89
+            courseDurationInHours = 89,
+            isStarted = false
         ), Course(
             id = "4",
             title = "Основы программирования на C++",
@@ -99,7 +102,8 @@ internal class CourseCacheImpl : CourseCache {
             maxProgressPoints = 65,
             currentPoints = 23,
             authorName = "Академия Яндекс",
-            courseDurationInHours = 89
+            courseDurationInHours = 89,
+            isStarted = false
         ),
         Course(
             id = "5",
@@ -115,7 +119,8 @@ internal class CourseCacheImpl : CourseCache {
             maxProgressPoints = 65,
             currentPoints = 23,
             authorName = "Академия Яндекс",
-            courseDurationInHours = 89
+            courseDurationInHours = 89,
+            isStarted = false
         ),
         Course(
             id = "6",
@@ -131,7 +136,8 @@ internal class CourseCacheImpl : CourseCache {
             maxProgressPoints = 65,
             currentPoints = 23,
             authorName = "Академия Яндекс",
-            courseDurationInHours = 89
+            courseDurationInHours = 89,
+            isStarted = false
         )
     )
 

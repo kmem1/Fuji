@@ -10,6 +10,7 @@ import com.clownteam.course_datasource.network.models.get_user_courses.GetUserCo
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 /**
@@ -31,6 +32,12 @@ interface CourseApi {
         @Header("Authorization") token: String,
         @Path("id") id: String
     ): Call<CourseInfoResponse>
+
+    @POST("api/courses/start-learn/{courseId}/")
+    fun startLearningCourse(
+        @Header("Authorization") token: String,
+        @Path("courseId") courseId: String
+    ): Call<Any>
 
     @GET("api/courses/learn/{courseId}/themes/")
     fun getCourseModules(

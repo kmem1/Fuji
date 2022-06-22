@@ -14,5 +14,6 @@ data class Course(
     val maxProgressPoints: Int,
     val currentPoints: Int,
     val authorName: String,
-    val courseDurationInHours: Int
+    val courseDurationInHours: Int,
+    val isStarted: Boolean
 )

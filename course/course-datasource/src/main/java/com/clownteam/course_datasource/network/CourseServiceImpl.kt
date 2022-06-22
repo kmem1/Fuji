@@ -22,6 +22,11 @@ class CourseServiceImpl(private val api: CourseApi) : CourseService {
     ): NetworkResponse<GetUserCoursesResponse> =
         baseRequest { api.getUserCourses("Bearer $token", userPath) }
 
+    override suspend fun startLearningCourse(
+        token: String,
+        courseId: String
+    ): NetworkResponse<Any> = baseRequest { api.startLearningCourse("Bearer $token", courseId) }
+
     override suspend fun getCourseInfo(
         token: String,
         id: String

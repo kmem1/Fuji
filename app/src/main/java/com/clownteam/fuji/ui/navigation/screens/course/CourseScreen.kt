@@ -7,12 +7,18 @@ import com.clownteam.ui_coursedetailed.ui.CourseDetailed
 import com.clownteam.ui_coursedetailed.ui.CourseDetailedViewModel
 
 @Composable
-fun CourseScreen(imageLoader: ImageLoader, onBack: () -> Unit) {
+fun CourseScreen(
+    imageLoader: ImageLoader,
+    onBack: () -> Unit,
+    navigateToPassing: (String) -> Unit
+) {
     val viewModel: CourseDetailedViewModel = hiltViewModel()
     CourseDetailed(
-        viewModel.state.value,
-        viewModel,
-        imageLoader,
-        onBack
+        state = viewModel.state.value,
+        eventHandler = viewModel,
+        viewModel = viewModel,
+        imageLoader = imageLoader,
+        onBack = onBack,
+        navigateToPassing = navigateToPassing
     )
 }

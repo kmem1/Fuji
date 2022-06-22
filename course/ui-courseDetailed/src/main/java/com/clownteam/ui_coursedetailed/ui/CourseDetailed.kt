@@ -1,5 +1,6 @@
 package com.clownteam.ui_coursedetailed.ui
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,11 +12,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,19 +32,34 @@ import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.ProgressBarState
 import com.clownteam.ui_coursedetailed.R
 import com.clownteam.ui_coursedetailed.components.*
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun CourseDetailed(
     state: CourseDetailedState,
     eventHandler: EventHandler<CourseDetailedEvent>,
+    viewModel: CourseDetailedViewModel,
     imageLoader: ImageLoader,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    navigateToPassing: (String) -> Unit
 ) {
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = context) {
+        viewModel.events.collectLatest { event ->
+            when (event) {
+                is CourseDetailedViewModel.CourseDetailedVMEvent.StartLearning -> {
+                    navigateToPassing(event.courseId)
+                }
+            }
+        }
+    }
+
     DefaultScreenUI(
         progressBarState = if (state is CourseDetailedState.Loading) ProgressBarState.Loading else ProgressBarState.Idle
     ) {
         if (state is CourseDetailedState.Data) {
-            MainContent(state, imageLoader, onBack)
+            MainContent(state, eventHandler, imageLoader, onBack, navigateToPassing)
         }
 
         if (state is CourseDetailedState.Error) {
@@ -63,8 +81,10 @@ fun CourseDetailed(
 @Composable
 private fun MainContent(
     state: CourseDetailedState.Data,
+    eventHandler: EventHandler<CourseDetailedEvent>,
     imageLoader: ImageLoader,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    navigateToPassing: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         Column(modifier = Modifier.padding(horizontal = 14.dp)) {
@@ -139,33 +159,37 @@ private fun MainContent(
                 fontWeight = FontWeight.W300
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+            if (state.course.price != 0.0F) {
                 Text(
                     text = "${state.course.price}₽",
                     style = MaterialTheme.typography.h1,
                     fontSize = 36.sp,
                     fontWeight = FontWeight.W600
                 )
+            }
 
-                Button(
-                    onClick = {},
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color(0xFF82C391),
-                        contentColor = Color.White,
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                    contentPadding = PaddingValues(horizontal = 56.dp, vertical = 6.dp)
-                ) {
-                    Text(
-                        text = "Купить",
-                        style = MaterialTheme.typography.h3,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 24.sp
-                    )
-                }
+            Button(
+                onClick = {
+                    if (state.course.isStarted) {
+                        eventHandler.obtainEvent(CourseDetailedEvent.ContinueLearning)
+                    } else {
+                        eventHandler.obtainEvent(CourseDetailedEvent.StartLearning)
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color(0xFF82C391),
+                    contentColor = Color.White,
+                ),
+                shape = RoundedCornerShape(10.dp),
+                contentPadding = PaddingValues(horizontal = 56.dp, vertical = 6.dp),
+                modifier = Modifier.padding(bottom = 16.dp, top = 8.dp)
+            ) {
+                Text(
+                    text = if (state.course.price != 0.0F) "Купить" else "Начать",
+                    style = MaterialTheme.typography.h3,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 24.sp
+                )
             }
         }
 
