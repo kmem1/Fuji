@@ -1,13 +1,12 @@
 package com.clownteam.ui_collectionlist
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -26,9 +25,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.ImageLoader
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.clownteam.collection_domain.CourseCollection
 import com.clownteam.components.DefaultButton
+import com.clownteam.components.header.DefaultHeader
 import com.clownteam.core.domain.EventHandler
 
 @Composable
@@ -59,21 +59,28 @@ fun CollectionList(
             }
 
             is CollectionListState.Data -> {
-                CollectionListContent(state.collections, imageLoader, navigateToDetailed)
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    DefaultHeader(
+                        titleText = stringResource(R.string.archive_screen_title),
+                        showArrow = false,
+                        bgColor = MaterialTheme.colors.primary
+                    )
+
+                    CollectionListContent(state.collections, imageLoader, navigateToDetailed)
+                }
             }
         }
     }
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun CollectionListContent(
     courseCollectionList: List<CourseCollection>,
     imageLoader: ImageLoader,
     navigateToDetailed: (String) -> Unit
 ) {
     LazyVerticalGrid(
-        cells = GridCells.Adaptive(minSize = 185.dp),
+        columns = GridCells.Adaptive(minSize = 145.dp),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
         horizontalArrangement = Arrangement.spacedBy(14.dp)
@@ -96,7 +103,7 @@ fun CourseCollectionItem(
     ) {
         Image(
             modifier = Modifier.fillMaxWidth().height(196.dp).clip(RoundedCornerShape(12.dp)),
-            painter = rememberImagePainter(collection.imageUrl, imageLoader = imageLoader),
+            painter = rememberAsyncImagePainter(collection.imageUrl, imageLoader = imageLoader),
             contentDescription = stringResource(R.string.course_collection_item_img_content_description),
             contentScale = ContentScale.Crop,
             alpha = 1.0F

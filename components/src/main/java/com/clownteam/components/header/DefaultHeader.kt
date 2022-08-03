@@ -20,24 +20,31 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.clownteam.components.R
 
 @Composable
-fun DefaultHeader(titleText: String, onArrowClick: () -> Unit, bgColor: Color = Color.Transparent) {
+fun DefaultHeader(
+    titleText: String,
+    showArrow: Boolean = true,
+    onArrowClick: () -> Unit = {},
+    bgColor: Color = Color.Transparent
+) {
     ConstraintLayout(modifier = Modifier.fillMaxWidth().background(bgColor)) {
         val (backIcon, title) = createRefs()
 
-        IconButton(
-            modifier = Modifier.padding(start = 24.dp).size(34.dp)
-                .constrainAs(backIcon) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                },
-            onClick = { onArrowClick() }
-        ) {
-            Icon(
-                modifier = Modifier.size(34.dp),
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.back_button_content_description)
-            )
+        if (showArrow) {
+            IconButton(
+                modifier = Modifier.padding(start = 24.dp).size(34.dp)
+                    .constrainAs(backIcon) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                    },
+                onClick = { onArrowClick() }
+            ) {
+                Icon(
+                    modifier = Modifier.size(34.dp),
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back_button_content_description)
+                )
+            }
         }
 
         Text(

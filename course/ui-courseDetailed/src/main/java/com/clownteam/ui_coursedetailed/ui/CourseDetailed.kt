@@ -1,6 +1,5 @@
 package com.clownteam.ui_coursedetailed.ui
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,7 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.ImageLoader
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.clownteam.components.DefaultScreenUI
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.ProgressBarState
@@ -59,7 +58,7 @@ fun CourseDetailed(
         progressBarState = if (state is CourseDetailedState.Loading) ProgressBarState.Loading else ProgressBarState.Idle
     ) {
         if (state is CourseDetailedState.Data) {
-            MainContent(state, eventHandler, imageLoader, onBack, navigateToPassing)
+            MainContent(state, eventHandler, imageLoader, onBack)
         }
 
         if (state is CourseDetailedState.Error) {
@@ -83,8 +82,7 @@ private fun MainContent(
     state: CourseDetailedState.Data,
     eventHandler: EventHandler<CourseDetailedEvent>,
     imageLoader: ImageLoader,
-    onBack: () -> Unit,
-    navigateToPassing: (String) -> Unit
+    onBack: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         Column(modifier = Modifier.padding(horizontal = 14.dp)) {
@@ -103,8 +101,8 @@ private fun MainContent(
                 modifier = Modifier.fillMaxWidth()
                     .height(204.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color.LightGray),
-                painter = rememberImagePainter(
+                    .background(Color.DarkGray),
+                painter = rememberAsyncImagePainter(
                     state.course.imgUrl,
                     imageLoader = imageLoader
                 ),

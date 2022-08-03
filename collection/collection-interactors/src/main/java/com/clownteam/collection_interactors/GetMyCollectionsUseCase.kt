@@ -4,6 +4,7 @@ import com.clownteam.collection_datasource.CollectionService
 import com.clownteam.collection_domain.CourseCollection
 import com.clownteam.collection_interactors.mappers.GetCollectionResponseItemMapper
 import com.clownteam.core.domain.IUseCase
+import com.clownteam.core.network.authorizationRequest
 import com.clownteam.core.network.token.TokenManager
 import com.clownteam.core.user_data.UserDataManager
 
@@ -14,26 +15,11 @@ internal class GetMyCollectionsUseCase(
 ) : IGetMyCollectionsUseCase {
 
     override suspend fun invoke(): GetMyCollectionsUseCaseResult {
-        val token = tokenManager.getToken() ?: return GetMyCollectionsUseCaseResult.Unauthorized
-
-        var result = service.getCollections(token)
-
-        if (result.statusCode == 401) {
-            val newTokenResponse = tokenManager.refreshToken()
-
-            if (newTokenResponse.isNetworkError) {
-                return GetMyCollectionsUseCaseResult.NetworkError
-            }
-
-            if (newTokenResponse.isSuccessCode && newTokenResponse.data != null) {
-                newTokenResponse.data?.let {
-                    result = service.getCollections(token)
-                } ?: GetMyCollectionsUseCaseResult.Unauthorized
-            } else {
-                return GetMyCollectionsUseCaseResult.Unauthorized
-            }
+        val result = authorizationRequest(tokenManager) { token ->
+            service.getCollections(token)
         }
 
+        if (result.isUnauthorized) return GetMyCollectionsUseCaseResult.Unauthorized
         if (result.isNetworkError) return GetMyCollectionsUseCaseResult.NetworkError
 
         return if (result.isSuccessCode && result.data != null) {

@@ -2,6 +2,7 @@ package com.clownteam.fuji.di
 
 import android.app.Application
 import coil.ImageLoader
+import coil.memory.MemoryCache
 import com.clownteam.fuji.R
 import dagger.Module
 import dagger.Provides
@@ -24,7 +25,11 @@ object CoilModule {
         return ImageLoader.Builder(app)
             .error(R.drawable.placeholder_error)
 //            .placeholder(R.drawable.placeholder_gray)
-            .availableMemoryPercentage(0.4) // Don't know what is recommended?
+            .memoryCache {
+                MemoryCache.Builder(app.applicationContext)
+                    .maxSizePercent(0.4) // Don't know what is recommended?
+                    .build()
+            }
             .crossfade(true)
             .build()
     }

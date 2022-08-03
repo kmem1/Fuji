@@ -3,6 +3,7 @@ package com.clownteam.collection_interactors
 import com.clownteam.collection_datasource.CollectionService
 import com.clownteam.collection_interactors.mappers.GetCollectionResponseItemMapper
 import com.clownteam.core.domain.IUseCase
+import com.clownteam.core.network.authorizationRequest
 import com.clownteam.core.network.token.TokenManager
 
 internal class AddCourseToCollectionUseCase(
@@ -11,27 +12,11 @@ internal class AddCourseToCollectionUseCase(
 ) : IAddCourseToCollectionUseCase {
 
     override suspend fun invoke(param: AddCourseToCollectionParams): AddCourseToCollectionUseCaseResult {
-        val token =
-            tokenManager.getToken() ?: return AddCourseToCollectionUseCaseResult.Unauthorized
-
-        var result = service.addCourseToCollection(token, param.courseId, param.collectionId)
-
-        if (result.statusCode == 401) {
-            val newTokenResponse = tokenManager.refreshToken()
-
-            if (newTokenResponse.isNetworkError) {
-                return AddCourseToCollectionUseCaseResult.NetworkError
-            }
-
-            if (newTokenResponse.isSuccessCode && newTokenResponse.data != null) {
-                newTokenResponse.data?.let {
-                    result = service.addCourseToCollection(token, param.courseId, param.collectionId)
-                } ?: AddCourseToCollectionUseCaseResult.Unauthorized
-            } else {
-                return AddCourseToCollectionUseCaseResult.Unauthorized
-            }
+        val result = authorizationRequest(tokenManager) { token ->
+            service.addCourseToCollection(token, param.courseId, param.collectionId)
         }
 
+        if (result.isUnauthorized) return AddCourseToCollectionUseCaseResult.Unauthorized
         if (result.isNetworkError) return AddCourseToCollectionUseCaseResult.NetworkError
 
         return if (result.isSuccessCode && result.data != null) {

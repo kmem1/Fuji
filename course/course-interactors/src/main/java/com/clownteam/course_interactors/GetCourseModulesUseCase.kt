@@ -1,6 +1,7 @@
 package com.clownteam.course_interactors
 
 import com.clownteam.core.domain.IUseCase
+import com.clownteam.core.network.authorizationRequest
 import com.clownteam.core.network.token.TokenManager
 import com.clownteam.course_datasource.network.CourseService
 import com.clownteam.course_domain.CourseModule
@@ -12,26 +13,11 @@ internal class GetCourseModulesUseCase(
 ) : IGetCourseModulesUseCase {
 
     override suspend fun invoke(param: String): GetCourseModulesUseCaseResult {
-        val token = tokenManager.getToken() ?: return GetCourseModulesUseCaseResult.Unauthorized
-
-        var result = service.getCourseModules(token, param)
-
-        if (result.statusCode == 401) {
-            val newTokenResponse = tokenManager.refreshToken()
-
-            if (newTokenResponse.isNetworkError) {
-                return GetCourseModulesUseCaseResult.NetworkError
-            }
-
-            if (newTokenResponse.isSuccessCode && newTokenResponse.data != null) {
-                newTokenResponse.data?.let {
-                    result = service.getCourseModules(token, param)
-                } ?: GetCourseModulesUseCaseResult.Unauthorized
-            } else {
-                return GetCourseModulesUseCaseResult.Unauthorized
-            }
+        val result = authorizationRequest(tokenManager) { token ->
+            service.getCourseModules(token, param)
         }
 
+        if (result.isUnauthorized) return GetCourseModulesUseCaseResult.Unauthorized
         if (result.isNetworkError) return GetCourseModulesUseCaseResult.NetworkError
 
         return if (result.isSuccessCode && result.data != null) {

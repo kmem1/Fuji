@@ -22,6 +22,7 @@ import coil.ImageLoader
 import com.clownteam.fuji.ui.navigation.SetupNavGraph
 import com.clownteam.fuji.ui.navigation.bottom_navigation.AppBottomNavigation
 import com.clownteam.fuji.ui.theme.FujiTheme
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             FujiTheme {
-                val navController = rememberNavController()
+                val navController = rememberAnimatedNavController()
                 var bottomBarState by remember { mutableStateOf(true) }
                 Scaffold(bottomBar = { if (bottomBarState) AppBottomNavigation(navController) }) { innerPadding ->
                     Box(

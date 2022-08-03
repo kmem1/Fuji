@@ -3,6 +3,7 @@ package com.clownteam.fuji.auth
 import android.util.Log
 import com.clownteam.core.network.NetworkResponse
 import com.clownteam.core.network.token.TokenManager
+import com.clownteam.fuji.api.FujiApi
 import com.clownteam.fuji.api.token.TokenService
 import com.clownteam.fuji.api.token.models.get_token.GetTokenRequest
 import com.clownteam.fuji.api.token.models.refresh_token.RefreshTokenRequest
@@ -11,6 +12,12 @@ import kotlinx.coroutines.withContext
 
 @Suppress("BlockingMethodInNonBlockingContext")
 class TokenManagerImpl(private val tokenService: TokenService) : TokenManager {
+
+    companion object {
+        fun create(): TokenManager {
+            return TokenManagerImpl(FujiApi.createService(TokenService::class.java))
+        }
+    }
 
     override fun getToken(): String? {
         return TokenPreferences.accessToken

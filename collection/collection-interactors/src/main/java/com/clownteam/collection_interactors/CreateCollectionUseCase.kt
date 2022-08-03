@@ -2,6 +2,7 @@ package com.clownteam.collection_interactors
 
 import com.clownteam.collection_datasource.CollectionService
 import com.clownteam.core.domain.IUseCase
+import com.clownteam.core.network.authorizationRequest
 import com.clownteam.core.network.token.TokenManager
 
 internal class CreateCollectionUseCase(
@@ -10,27 +11,11 @@ internal class CreateCollectionUseCase(
 ) : ICreateCollectionUseCase {
 
     override suspend fun invoke(): CreateCollectionUseCaseResult {
-        val token =
-            tokenManager.getToken() ?: return CreateCollectionUseCaseResult.Unauthorized
-
-        var result = service.createCollection(token)
-
-        if (result.statusCode == 401) {
-            val newTokenResponse = tokenManager.refreshToken()
-
-            if (newTokenResponse.isNetworkError) {
-                return CreateCollectionUseCaseResult.NetworkError
-            }
-
-            if (newTokenResponse.isSuccessCode && newTokenResponse.data != null) {
-                newTokenResponse.data?.let {
-                    result = service.createCollection(token)
-                } ?: CreateCollectionUseCaseResult.Unauthorized
-            } else {
-                return CreateCollectionUseCaseResult.Unauthorized
-            }
+        val result = authorizationRequest(tokenManager) { token ->
+            service.createCollection(token)
         }
 
+        if (result.isUnauthorized) return CreateCollectionUseCaseResult.Unauthorized
         if (result.isNetworkError) return CreateCollectionUseCaseResult.NetworkError
 
         return if (result.isSuccessCode && result.data != null) {

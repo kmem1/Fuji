@@ -10,22 +10,20 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.ImageLoader
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.clownteam.components.AutoResizeText
 import com.clownteam.components.DefaultButton
 import com.clownteam.components.DefaultScreenUI
@@ -38,6 +36,7 @@ import com.clownteam.ui_courselist.components.ColumnCourseListItem
 import com.clownteam.ui_courselist.components.CourseListLazyRow
 import com.clownteam.ui_courselist.components.SimpleCourseListItem
 import com.clownteam.ui_courselist.components.TitleText
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -47,10 +46,24 @@ import kotlinx.coroutines.launch
 fun CourseList(
     state: CourseListState,
     eventHandler: EventHandler<CourseListEvent>,
+    viewModel: CourseListViewModel,
     navigateToDetailScreen: (String) -> Unit,
     navigateToAddToCollection: (String) -> Unit,
+    navigateToLogin: () -> Unit,
     imageLoader: ImageLoader
 ) {
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = context) {
+        viewModel.events.collectLatest { event ->
+            when (event) {
+                CourseListViewModel.CourseListViewModelEvent.Unauthorized -> {
+                    navigateToLogin()
+                }
+            }
+        }
+    }
+
     DefaultScreenUI(
         progressBarState = if (state is CourseListState.Loading) ProgressBarState.Loading else ProgressBarState.Idle
     ) {
@@ -150,7 +163,7 @@ private fun BottomSheetContent(course: Course?, imageLoader: ImageLoader, onAddC
                         .size(60.dp)
                         .clip(RoundedCornerShape(CornerSize(12.dp)))
                         .background(MaterialTheme.colors.primary),
-                    painter = rememberImagePainter(
+                    painter = rememberAsyncImagePainter(
                         course.imgUrl,
                         imageLoader = imageLoader
                     ),
@@ -178,19 +191,25 @@ private fun BottomSheetContent(course: Course?, imageLoader: ImageLoader, onAddC
             }
 
             Box(
-                modifier = Modifier.fillMaxWidth().height(1.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
                     .background(MaterialTheme.colors.secondary)
             )
 
             DefaultButton(
                 stringResource(R.string.add_to_collection_btn_text),
                 onClick = onAddClick,
-                modifier = Modifier.padding(vertical = 34.dp).align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .padding(vertical = 34.dp)
+                    .align(Alignment.CenterHorizontally)
             )
         }
     } else {
         Box(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 80.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 80.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(stringResource(R.string.bottom_sheet_error_text))

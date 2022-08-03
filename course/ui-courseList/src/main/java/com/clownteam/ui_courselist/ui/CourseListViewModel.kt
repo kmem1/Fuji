@@ -11,6 +11,8 @@ import com.clownteam.course_interactors.GetPopularCoursesUseCaseResult
 import com.clownteam.course_interactors.IGetMyCoursesUseCase
 import com.clownteam.course_interactors.IGetPopularCoursesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,6 +24,9 @@ class CourseListViewModel @Inject constructor(
     StateHolder<MutableState<CourseListState>> {
 
     override val state: MutableState<CourseListState> = mutableStateOf(CourseListState.Loading)
+
+    private val eventChannel = Channel<CourseListViewModelEvent>()
+    val events = eventChannel.receiveAsFlow()
 
     init {
         obtainEvent(CourseListEvent.GetCourses)
@@ -47,7 +52,7 @@ class CourseListViewModel @Inject constructor(
         }
     }
 
-    private fun handleGetCoursesResult(result: GetPopularCoursesUseCaseResult) {
+    private suspend fun handleGetCoursesResult(result: GetPopularCoursesUseCaseResult) {
         when (result) {
             GetPopularCoursesUseCaseResult.Failed -> {
                 state.value = CourseListState.Error(message = "Ошибка при получении данных")
@@ -58,7 +63,7 @@ class CourseListViewModel @Inject constructor(
             }
 
             GetPopularCoursesUseCaseResult.Unauthorized -> {
-                state.value = CourseListState.Error(message = "Необходима авторизация")
+                eventChannel.send(CourseListViewModelEvent.Unauthorized)
             }
 
             is GetPopularCoursesUseCaseResult.Success -> {
@@ -71,7 +76,7 @@ class CourseListViewModel @Inject constructor(
         }
     }
 
-    private fun handleMyCoursesResult(result: GetMyCoursesUseCaseResult) {
+    private suspend fun handleMyCoursesResult(result: GetMyCoursesUseCaseResult) {
         when (result) {
             GetMyCoursesUseCaseResult.Failed -> {
                 state.value = CourseListState.Error(message = "Error while retrieving data")
@@ -91,8 +96,12 @@ class CourseListViewModel @Inject constructor(
             }
 
             GetMyCoursesUseCaseResult.Unauthorized -> {
-                state.value = CourseListState.Error(message = "Необходима авторизация")
+                eventChannel.send(CourseListViewModelEvent.Unauthorized)
             }
         }
+    }
+
+    sealed class CourseListViewModelEvent {
+        object Unauthorized: CourseListViewModelEvent()
     }
 }

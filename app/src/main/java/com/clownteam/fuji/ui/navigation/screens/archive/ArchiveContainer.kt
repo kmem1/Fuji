@@ -11,6 +11,7 @@ import com.clownteam.fuji.ui.navigation.NavigationController
 import com.clownteam.fuji.ui.navigation.NavigationControllerScreen
 import com.clownteam.fuji.ui.navigation.Route
 import com.clownteam.fuji.ui.navigation.Router
+import com.clownteam.fuji.ui.navigation.bottom_navigation.BottomNavItem
 import com.clownteam.ui_collectiondetailed.ui.CollectionDetailed
 import com.clownteam.ui_collectiondetailed.ui.CollectionDetailedViewModel
 import com.clownteam.ui_collectionlist.CollectionList
@@ -90,7 +91,7 @@ private fun OpenCourseCollectionScreen(
         eventHandler = viewModel,
         imageLoader = imageLoader,
         onBackPressed = { navController.popBackStack() },
-        navigateToLogin = {},
+        navigateToLogin = { externalRouter?.routeTo(BottomNavItem.Profile.route) },
         openCourse = { externalRouter?.routeTo(Route.CourseRoute.getRouteWithArgument(it)) }
     )
 }

@@ -1,6 +1,7 @@
 package com.clownteam.course_interactors
 
 import com.clownteam.core.domain.IUseCase
+import com.clownteam.core.network.authorizationRequest
 import com.clownteam.core.network.token.TokenManager
 import com.clownteam.course_datasource.network.CourseService
 import com.clownteam.course_domain.CourseLesson
@@ -12,26 +13,11 @@ internal class GetCourseLessonsUseCase(
 ) : IGetCourseLessonsUseCase {
 
     override suspend fun invoke(param: GetCourseLessonsParams): GetCourseLessonsUseCaseResult {
-        val token = tokenManager.getToken() ?: return GetCourseLessonsUseCaseResult.Unauthorized
-
-        var result = service.getCourseLessons(token, param.courseId, param.moduleId)
-
-        if (result.statusCode == 401) {
-            val newTokenResponse = tokenManager.refreshToken()
-
-            if (newTokenResponse.isNetworkError) {
-                return GetCourseLessonsUseCaseResult.NetworkError
-            }
-
-            if (newTokenResponse.isSuccessCode && newTokenResponse.data != null) {
-                newTokenResponse.data?.let {
-                    result = service.getCourseLessons(token, param.courseId, param.moduleId)
-                } ?: GetCourseLessonsUseCaseResult.Unauthorized
-            } else {
-                return GetCourseLessonsUseCaseResult.Unauthorized
-            }
+        val result = authorizationRequest(tokenManager) { token ->
+            service.getCourseLessons(token, param.courseId, param.moduleId)
         }
 
+        if (result.isUnauthorized) return GetCourseLessonsUseCaseResult.Unauthorized
         if (result.isNetworkError) return GetCourseLessonsUseCaseResult.NetworkError
 
         return if (result.isSuccessCode && result.data != null) {

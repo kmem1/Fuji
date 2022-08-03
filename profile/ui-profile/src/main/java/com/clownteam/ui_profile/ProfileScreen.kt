@@ -1,9 +1,7 @@
 package com.clownteam.ui_profile
 
 import android.util.Log
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +29,6 @@ fun ProfileScreen(
         eventHandler.obtainEvent(ProfileEvent.GetProfile)
 
         viewModel.events.collectLatest { event ->
-            Log.d("Kmem", "$event")
             when (event) {
                 ProfileViewModel.ProfileViewModelEvent.UnauthorizedEvent -> {
                     navigateToLogin()
@@ -44,36 +41,38 @@ fun ProfileScreen(
         }
     }
 
-    if (state.isNetworkError) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            DefaultButton(
-                text = "Retry",
-                onClick = { eventHandler.obtainEvent(ProfileEvent.GetProfile) })
-        }
-    } else {
-        if (state.isLoading) {
-            LinearProgressIndicator()
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (state.isNetworkError) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                DefaultButton(
+                    text = "Retry",
+                    onClick = { eventHandler.obtainEvent(ProfileEvent.GetProfile) })
+            }
+        } else {
+            if (state.isLoading) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
 
-        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-            val (username, exitButton) = createRefs()
+            ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+                val (username, exitButton) = createRefs()
 
-            Text(text = state.username, modifier = Modifier.constrainAs(username) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom)
-            })
-
-            DefaultButton(
-                text = "Выйти",
-                onClick = { eventHandler.obtainEvent(ProfileEvent.SignOut) },
-                modifier = Modifier.constrainAs(exitButton) {
-                    bottom.linkTo(parent.bottom)
+                Text(text = state.username, modifier = Modifier.constrainAs(username) {
+                    top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }.padding(bottom = 24.dp)
-            )
+                    bottom.linkTo(parent.bottom)
+                })
+
+                DefaultButton(
+                    text = "Выйти",
+                    onClick = { eventHandler.obtainEvent(ProfileEvent.SignOut) },
+                    modifier = Modifier.constrainAs(exitButton) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }.padding(bottom = 24.dp)
+                )
+            }
         }
     }
 }

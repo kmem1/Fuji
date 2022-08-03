@@ -2,6 +2,7 @@ package com.clownteam.course_interactors
 
 import com.clownteam.core.domain.IUseCase
 import com.clownteam.core.network.NetworkResponse
+import com.clownteam.core.network.authorizationRequest
 import com.clownteam.core.network.token.TokenManager
 import com.clownteam.course_datasource.network.CourseService
 import com.clownteam.course_datasource.network.models.get_course_step.CourseStepResponse
@@ -14,26 +15,11 @@ internal class GetCourseStepUseCase(
 ) : IGetCourseStepUseCase {
 
     override suspend fun invoke(param: GetCourseStepParams): GetCourseStepUseCaseResult {
-        val token = tokenManager.getToken() ?: return GetCourseStepUseCaseResult.Unauthorized
-
-        var result = getResponseFromServer(token, param)
-
-        if (result.statusCode == 401) {
-            val newTokenResponse = tokenManager.refreshToken()
-
-            if (newTokenResponse.isNetworkError) {
-                return GetCourseStepUseCaseResult.NetworkError
-            }
-
-            if (newTokenResponse.isSuccessCode && newTokenResponse.data != null) {
-                newTokenResponse.data?.let {
-                    result = getResponseFromServer(token, param)
-                } ?: GetCourseStepUseCaseResult.Unauthorized
-            } else {
-                return GetCourseStepUseCaseResult.Unauthorized
-            }
+        val result = authorizationRequest(tokenManager) { token ->
+            getResponseFromServer(token, param)
         }
 
+        if (result.isUnauthorized) return GetCourseStepUseCaseResult.Unauthorized
         if (result.isNetworkError) return GetCourseStepUseCaseResult.NetworkError
 
         return if (result.isSuccessCode && result.data != null) {

@@ -81,7 +81,9 @@ fun CourseModules(
         }
 
         CourseModulesState.Loading -> {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            Box(modifier = Modifier.fillMaxSize()) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
         }
 
         CourseModulesState.NetworkError -> {
