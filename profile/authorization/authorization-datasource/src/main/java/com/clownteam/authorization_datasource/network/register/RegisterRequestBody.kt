@@ -2,7 +2,7 @@ package com.clownteam.authorization_datasource.network.register
 
 import com.google.gson.annotations.SerializedName
 
-class RegisterRequest(
+class RegisterRequestBody(
     @SerializedName("username")
     val username: String,
 

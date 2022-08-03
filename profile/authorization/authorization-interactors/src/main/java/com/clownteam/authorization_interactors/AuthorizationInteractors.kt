@@ -9,19 +9,21 @@ class AuthorizationInteractors private constructor(
     val validatePassword: IValidatePasswordUseCase,
     val validateRepeatedPassword: IValidateRepeatedPasswordUseCase,
     val register: IRegistrationUseCase,
-    val login: ILoginUseCase
-){
-  companion object Factory {
-      fun build(authorizationApi: AuthorizationApi): AuthorizationInteractors {
-          val authorizationService = AuthorizationServiceImpl(authorizationApi)
-          return AuthorizationInteractors(
-              ValidateLoginUseCase(),
-              ValidateEmailUseCase(),
-              ValidatePasswordUseCase(),
-              ValidateRepeatedPasswordUseCase(),
-              RegistrationUseCase(authorizationService),
-              LoginUseCase(authorizationService)
-          )
-      }
-  }
+    val login: ILoginUseCase,
+    val restorePassword: IRestorePasswordUseCase
+) {
+    companion object Factory {
+        fun build(authorizationApi: AuthorizationApi): AuthorizationInteractors {
+            val authorizationService = AuthorizationServiceImpl(authorizationApi)
+            return AuthorizationInteractors(
+                ValidateLoginUseCase(),
+                ValidateEmailUseCase(),
+                ValidatePasswordUseCase(),
+                ValidateRepeatedPasswordUseCase(),
+                RegistrationUseCase(authorizationService),
+                LoginUseCase(authorizationService),
+                RestorePasswordUseCase(authorizationService)
+            )
+        }
+    }
 }

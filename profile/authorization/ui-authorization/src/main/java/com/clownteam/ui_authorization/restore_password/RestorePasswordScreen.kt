@@ -1,8 +1,10 @@
 package com.clownteam.ui_authorization.restore_password
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +30,10 @@ fun RestorePasswordScreen(
 ) {
     val context = LocalContext.current
 
+    if (state.isLoading) {
+        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+    }
+
     DefaultHeader(titleText = "Восстановление пароля", onArrowClick = { navigateBack() })
 
     if (state.isSuccess) {
@@ -43,6 +49,14 @@ private fun RestorePasswordEmailScreen(
     state: RestorePasswordState,
     eventHandler: EventHandler<RestorePasswordEvent>
 ) {
+    if (state.failedMessage != null) {
+        Toast.makeText(context, state.failedMessage, Toast.LENGTH_SHORT).show()
+        eventHandler.obtainEvent(RestorePasswordEvent.FailedMessageShown)
+    } else if (state.networkErrorMessage != null) {
+        Toast.makeText(context, state.networkErrorMessage, Toast.LENGTH_SHORT).show()
+        eventHandler.obtainEvent(RestorePasswordEvent.NetworkErrorMessageShown)
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -59,7 +73,9 @@ private fun RestorePasswordEmailScreen(
         Spacer(modifier = Modifier.size(26.dp))
 
         AuthorizationTextField(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
             value = state.email,
             onValueChange = { eventHandler.obtainEvent(RestorePasswordEvent.EmailChanged(it)) },
             hint = stringResource(R.string.email_hint),
@@ -70,7 +86,7 @@ private fun RestorePasswordEmailScreen(
 
         Spacer(modifier = Modifier.size(90.dp))
 
-        DefaultButton(text = stringResource(R.string.restore_password_button_text)) {
+        DefaultButton(text = stringResource(R.string.restore_password_button_text), enabled = !state.isLoading) {
             eventHandler.obtainEvent(RestorePasswordEvent.Submit)
         }
     }

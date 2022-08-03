@@ -1,59 +1,38 @@
 package com.clownteam.authorization_datasource.network
 
-import com.clownteam.authorization_datasource.network.login.LoginRequest
+import com.clownteam.authorization_datasource.network.login.LoginRequestBody
 import com.clownteam.authorization_datasource.network.login.LoginResponse
-import com.clownteam.authorization_datasource.network.register.RegisterRequest
+import com.clownteam.authorization_datasource.network.register.RegisterRequestBody
 import com.clownteam.authorization_datasource.network.register.RegisterResponse
 import com.clownteam.authorization_domain.login.LoginData
 import com.clownteam.authorization_domain.registration.RegistrationData
 import com.clownteam.core.network.NetworkResponse
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.clownteam.core.network.baseRequest
 
 @Suppress("BlockingMethodInNonBlockingContext")
 class AuthorizationServiceImpl(private val api: AuthorizationApi) : AuthorizationService {
 
     override suspend fun register(data: RegistrationData): NetworkResponse<RegisterResponse> =
-        withContext(Dispatchers.IO) {
-            try {
-                val request = RegisterRequest(
+        baseRequest {
+                val request = RegisterRequestBody(
                     username = data.username,
                     email = data.email,
                     password = data.password,
                     repeatPassword = data.password
                 )
 
-                val apiResponse = api.register(request).execute()
-
-                NetworkResponse(statusCode = apiResponse.code(), data = apiResponse.body())
-            } catch (e: Exception) {
-                e.printStackTrace()
-                NetworkResponse(
-                    isNetworkError = true,
-                    data = null,
-                    errorMessage = e.message ?: ""
-                )
-            }
+                api.register(request)
         }
 
-    override suspend fun login(data: LoginData): NetworkResponse<LoginResponse> =
-        withContext(Dispatchers.IO) {
-            try {
-                val request = LoginRequest(
-                    email = data.email,
-                    password = data.password,
-                )
+    override suspend fun login(data: LoginData): NetworkResponse<LoginResponse> = baseRequest {
+            val requestBody = LoginRequestBody(
+                email = data.email,
+                password = data.password,
+            )
 
-                val apiResponse = api.token(request).execute()
-
-                NetworkResponse(statusCode = apiResponse.code(), data = apiResponse.body())
-            } catch (e: Exception) {
-                e.printStackTrace()
-                NetworkResponse(
-                    isNetworkError = true,
-                    data = null,
-                    errorMessage = e.message ?: ""
-                )
-            }
+            api.token(requestBody)
         }
+
+    override suspend fun restorePassword(email: String): NetworkResponse<Any> =
+        baseRequest { api.restorePassword(email) }
 }

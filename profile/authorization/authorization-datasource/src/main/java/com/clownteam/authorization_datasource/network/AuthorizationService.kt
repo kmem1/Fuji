@@ -11,4 +11,6 @@ interface AuthorizationService {
     suspend fun register(data: RegistrationData): NetworkResponse<RegisterResponse>
 
     suspend fun login(data: LoginData): NetworkResponse<LoginResponse>
+
+    suspend fun restorePassword(email: String): NetworkResponse<Any>
 }

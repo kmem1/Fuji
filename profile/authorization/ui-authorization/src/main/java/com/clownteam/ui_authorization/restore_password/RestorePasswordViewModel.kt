@@ -5,7 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.clownteam.authorization_interactors.IRestorePasswordUseCase
 import com.clownteam.authorization_interactors.IValidateEmailUseCase
+import com.clownteam.authorization_interactors.RestorePasswordUseCaseResult
 import com.clownteam.authorization_interactors.ValidateEmailResult
 import com.clownteam.components.UiText
 import com.clownteam.core.domain.EventHandler
@@ -16,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RestorePasswordViewModel @Inject constructor(
-    private val validateEmail: IValidateEmailUseCase
+    private val validateEmail: IValidateEmailUseCase,
+    private val restorePassword: IRestorePasswordUseCase
 ) : ViewModel(), EventHandler<RestorePasswordEvent> {
 
     var state by mutableStateOf(RestorePasswordState())
@@ -30,15 +33,42 @@ class RestorePasswordViewModel @Inject constructor(
             RestorePasswordEvent.Submit -> {
                 submitEmail()
             }
+
+            RestorePasswordEvent.FailedMessageShown -> {
+                state = state.copy(failedMessage = null)
+            }
+
+            RestorePasswordEvent.NetworkErrorMessageShown -> {
+                state = state.copy(networkErrorMessage = null)
+            }
         }
     }
 
     private fun submitEmail() {
+        state = state.copy(isLoading = true)
         viewModelScope.launch {
             if (isEmailValid()) {
-                state = state.copy(isSuccess = true)
+                tryToRestorePassword()
             }
         }
+    }
+
+    private suspend fun tryToRestorePassword() {
+        state = when (restorePassword.invoke(state.email)) {
+            RestorePasswordUseCaseResult.Failed -> {
+                state.copy(failedMessage = "Error")
+            }
+
+            RestorePasswordUseCaseResult.NetworkError -> {
+                state.copy(networkErrorMessage = "Network error")
+            }
+
+            RestorePasswordUseCaseResult.Success -> {
+                state.copy(isSuccess = true)
+            }
+        }
+
+        state = state.copy(isLoading = false)
     }
 
     private suspend fun isEmailValid(): Boolean {

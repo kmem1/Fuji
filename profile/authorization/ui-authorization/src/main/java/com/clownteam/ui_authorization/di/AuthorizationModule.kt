@@ -46,4 +46,10 @@ object AuthorizationModule {
     fun provideLoginUseCase(interactors: AuthorizationInteractors): ILoginUseCase {
         return interactors.login
     }
+
+    @Singleton
+    @Provides
+    fun provideRestorePasswordUseCase(interactors: AuthorizationInteractors): IRestorePasswordUseCase {
+        return interactors.restorePassword
+    }
 }

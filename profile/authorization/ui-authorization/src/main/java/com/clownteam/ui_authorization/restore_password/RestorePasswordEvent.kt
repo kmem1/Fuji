@@ -6,4 +6,7 @@ sealed class RestorePasswordEvent {
 
     object Submit: RestorePasswordEvent()
 
+    object FailedMessageShown: RestorePasswordEvent()
+
+    object NetworkErrorMessageShown: RestorePasswordEvent()
 }
