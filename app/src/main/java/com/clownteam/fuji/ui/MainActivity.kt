@@ -36,13 +36,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var imageLoader: ImageLoader
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition { viewModel.isLoading.value }
 
-        installSplashScreen().apply {
-            setKeepOnScreenCondition {
-                viewModel.isLoading.value
-            }
-        }
+        super.onCreate(savedInstanceState)
 
         setContent {
             FujiTheme {
