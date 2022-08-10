@@ -35,4 +35,10 @@ object Modules {
     const val ui_collectionList = ":collection:ui-collectionList"
     const val ui_collectionDetailed = ":collection:ui-collectionDetailed"
     const val ui_collectionAction = ":collection:ui-collectionAction"
+
+    const val search = ":search"
+    const val searchDatasource = ":search:search-datasource"
+    const val searchDomain = ":search:search-domain"
+    const val searchInteractors = ":search:search-interactors"
+    const val ui_search = ":search:ui-search"
 }
