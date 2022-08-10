@@ -9,4 +9,6 @@ sealed class CollectionListState {
     class Data(val collections: List<CourseCollection>): CollectionListState()
 
     class Error(val message: String): CollectionListState()
+
+    object Unauthorized : CollectionListState()
 }

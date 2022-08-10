@@ -9,6 +9,11 @@
 
     <string name="login_title">Вход</string>
 
+    <string name="login_fail_message">Неправильные данные</string>
+    <string name="registration_fail_message">Не удалось зарегистрироваться</string>
+    <string name="registration_success_message">Успешная регистрация</string>
+    <string name="network_error">Ошибка сети</string>
+
     <string name="email_hint">Email</string>
     <string name="password_hint">Пароль</string>
     <string name="repeated_password_hint">Подтвердите пароль</string>
@@ -22,7 +27,7 @@
     <string name="blank_login_error">Поле не должно быть пустым</string>
     <string name="login_length_error">Псевдоним должен содержать минимум %1$d символов</string>
     <string name="blank_repeated_password_error">Поле не должно быть пустым</string>
-    <string name="passwords_dont_match">Пароли не совпадают</string>
+    <string name="passwords_do_not_match">Пароли не совпадают</string>
     <string name="registration_title">Регистрация</string>
     <string name="restore_password_button_text">Отправить</string>
     <string name="restore_password_info_text">Введите email для восстановления пароля</string>

@@ -10,5 +10,7 @@ sealed class RegistrationEvent {
 
     class RepeatedPasswordChanged(val repeatedPassword: String): RegistrationEvent()
 
+    object MessageShown: RegistrationEvent()
+
     object Submit: RegistrationEvent()
 }

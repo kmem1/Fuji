@@ -11,7 +11,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,13 +27,42 @@ import com.clownteam.core.domain.EventHandler
 import com.clownteam.course_domain.CourseLesson
 import com.clownteam.ui_coursepassing.R
 
+private sealed class NavigationRoutes {
+    object Login : NavigationRoutes()
+
+    class CourseSteps(
+        val courseId: String,
+        val moduleId: String,
+        val lessonId: String,
+        val lessonName: String,
+        val stepId: String
+    ) : NavigationRoutes()
+}
+
 @Composable
 fun CourseLessons(
     state: CourseLessonsState,
     eventHandler: EventHandler<CourseLessonsEvent>,
     onBack: () -> Unit = {},
-    onLessonClick: (courseId: String, moduleId: String, lessonId: String, lessonName: String, stepId: String) -> Unit = { _, _, _, _, _ -> }
+    onLessonClick: (courseId: String, moduleId: String, lessonId: String, lessonName: String, stepId: String) -> Unit = { _, _, _, _, _ -> },
+    navigateToLogin: () -> Unit
 ) {
+    var navigationRoute by remember { mutableStateOf<NavigationRoutes?>(null) }
+
+    LaunchedEffect(key1 = navigationRoute) {
+        navigationRoute?.let {
+            when (it) {
+                NavigationRoutes.Login -> {
+                    navigateToLogin()
+                }
+
+                is NavigationRoutes.CourseSteps -> {
+                    onLessonClick(it.courseId, it.moduleId, it.lessonId, it.lessonName, it.stepId)
+                }
+            }
+        }
+    }
+    
     when (state) {
         is CourseLessonsState.Data -> {
             Column(modifier = Modifier.fillMaxSize()) {
@@ -44,9 +73,15 @@ fun CourseLessons(
                 Spacer(modifier = Modifier.size(20.dp))
 
                 if (state.moduleName.isNotEmpty()) {
-                    Row(modifier = Modifier.height(IntrinsicSize.Min).padding(horizontal = 24.dp)) {
+                    Row(
+                        modifier = Modifier
+                            .height(IntrinsicSize.Min)
+                            .padding(horizontal = 24.dp)
+                    ) {
                         Box(
-                            modifier = Modifier.width(1.dp).fillMaxHeight()
+                            modifier = Modifier
+                                .width(1.dp)
+                                .fillMaxHeight()
                                 .background(Color(0xFF245ED1))
                         )
 
@@ -65,7 +100,9 @@ fun CourseLessons(
                 LessonList(
                     lessons = state.lessons
                 ) { lessonId, lessonName, stepId ->
-                    onLessonClick(state.courseId, state.moduleId, lessonId, lessonName, stepId)
+                    navigationRoute = NavigationRoutes.CourseSteps(
+                        state.courseId, state.moduleId, lessonId, lessonName, stepId
+                    )
                 }
             }
         }
@@ -80,7 +117,9 @@ fun CourseLessons(
         }
 
         CourseLessonsState.Loading -> {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            Column(modifier = Modifier.fillMaxSize()) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
         }
 
         CourseLessonsState.NetworkError -> {
@@ -93,12 +132,7 @@ fun CourseLessons(
         }
 
         CourseLessonsState.Unauthorized -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                DefaultButton(
-                    text = "Необходимо авторизоваться",
-                    onClick = { eventHandler.obtainEvent(CourseLessonsEvent.GetLessons) }
-                )
-            }
+            navigationRoute = NavigationRoutes.Login
         }
     }
 }
@@ -111,7 +145,10 @@ private fun LessonList(
     LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         items(lessons) { lesson ->
             Row(
-                modifier = Modifier.fillMaxWidth().heightIn(min = 65.dp).padding(horizontal = 24.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 65.dp)
+                    .padding(horizontal = 24.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(MaterialTheme.colors.primary)
                     .border(1.dp, Color.Yellow, RoundedCornerShape(16.dp))
@@ -120,7 +157,10 @@ private fun LessonList(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
-                    modifier = Modifier.padding(vertical = 10.dp).padding(end = 8.dp).weight(1F)
+                    modifier = Modifier
+                        .padding(vertical = 10.dp)
+                        .padding(end = 8.dp)
+                        .weight(1F)
                 ) {
                     Text(
                         lesson.title,
@@ -145,7 +185,9 @@ private fun LessonList(
                     painter = painterResource(R.drawable.ic_arrow_right),
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.size(24.dp).padding(start = 12.dp)
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(start = 12.dp)
                 )
             }
         }

@@ -1,18 +1,19 @@
 package com.clownteam.ui_authorization.login
 
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clownteam.authorization_domain.login.LoginData
-import com.clownteam.authorization_interactors.*
+import com.clownteam.authorization_interactors.ILoginUseCase
+import com.clownteam.authorization_interactors.IValidateEmailUseCase
+import com.clownteam.authorization_interactors.LoginUseCaseResult
+import com.clownteam.authorization_interactors.ValidateEmailResult
 import com.clownteam.components.UiText
 import com.clownteam.core.domain.EventHandler
+import com.clownteam.core.domain.StateHolder
 import com.clownteam.ui_authorization.R
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,57 +21,58 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val validateEmail: IValidateEmailUseCase,
     private val loginUseCase: ILoginUseCase
-) : ViewModel(), EventHandler<LoginEvent> {
+) : ViewModel(), EventHandler<LoginEvent>, StateHolder<MutableState<LoginState>> {
 
-    var state by mutableStateOf(LoginState())
-
-    private val eventChannel = Channel<LoginViewModelEvent>()
-    val events = eventChannel.receiveAsFlow()
+    override val state = mutableStateOf(LoginState())
 
     override fun obtainEvent(event: LoginEvent) {
         when (event) {
             is LoginEvent.EmailChanged -> {
-                state = state.copy(email = event.email)
+                state.value = state.value.copy(email = event.email)
             }
 
             is LoginEvent.PasswordChanged -> {
-                state = state.copy(password = event.password)
+                state.value = state.value.copy(password = event.password)
             }
 
             is LoginEvent.Submit -> {
                 submitData()
             }
+
+            LoginEvent.FailMessageShown -> {
+                state.value = state.value.copy(errorMessage = null)
+            }
         }
     }
 
     private fun submitData() {
-        state = state.copy(isLoading = true, isNetworkError = false)
+        state.value = state.value.copy(isLoading = true, isNetworkError = false)
 
         viewModelScope.launch {
-            val isEmailValid = handleEmailValidationResult(state.email)
+            val isEmailValid = handleEmailValidationResult(state.value.email)
 
             if (isEmailValid) {
                 tryToLogin()
             }
         }
 
-        state = state.copy(isLoading = false)
+        state.value = state.value.copy(isLoading = false)
     }
 
     private suspend fun handleEmailValidationResult(email: String): Boolean {
         when (validateEmail.invoke(email)) {
             is ValidateEmailResult.BlankEmailError -> {
-                state =
-                    state.copy(emailError = UiText.StringResource(R.string.blank_email_error_string))
+                state.value =
+                    state.value.copy(emailError = UiText.StringResource(R.string.blank_email_error_string))
             }
 
             ValidateEmailResult.InvalidEmailError -> {
-                state =
-                    state.copy(emailError = UiText.StringResource(R.string.invalid_email_error))
+                state.value =
+                    state.value.copy(emailError = UiText.StringResource(R.string.invalid_email_error))
             }
 
             ValidateEmailResult.Success -> {
-                state = state.copy(emailError = null)
+                state.value = state.value.copy(emailError = null)
                 return true
             }
         }
@@ -79,33 +81,34 @@ class LoginViewModel @Inject constructor(
     }
 
     private suspend fun tryToLogin() {
-        val data = LoginData(state.email, state.password)
+        val data = LoginData(state.value.email, state.value.password)
 
         when (val result = loginUseCase.invoke(data)) {
             is LoginUseCaseResult.Failed -> {
-                eventChannel.send(LoginViewModelEvent.Failed)
+                state.value =
+                    state.value.copy(
+                        errorMessage = UiText.StringResource(R.string.login_fail_message),
+                        isNetworkError = false
+                    )
             }
 
             LoginUseCaseResult.NetworkError -> {
-                state = state.copy(isNetworkError = true)
+                state.value = state.value.copy(
+                    isNetworkError = true,
+                    errorMessage = UiText.StringResource(R.string.network_error)
+                )
             }
 
             is LoginUseCaseResult.Success -> {
-                eventChannel.send(
-                    LoginViewModelEvent.Success(
+                state.value = state.value.copy(
+                    isNetworkError = false,
+                    loginResult = LoginResult(
                         result.accessToken,
                         result.refreshToken,
-                        state.email
+                        state.value.email
                     )
                 )
             }
         }
-    }
-
-    sealed class LoginViewModelEvent {
-        class Success(val access: String, val refresh: String, val username: String) :
-            LoginViewModelEvent()
-
-        object Failed : LoginViewModelEvent()
     }
 }

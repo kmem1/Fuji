@@ -1,40 +1,31 @@
 package com.clownteam.ui_profile
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.clownteam.components.DefaultButton
 import com.clownteam.core.domain.EventHandler
-import kotlinx.coroutines.flow.collectLatest
+
+private sealed class NavigationRoute {
+    object Login : NavigationRoute()
+}
 
 @Composable
 fun ProfileScreen(
     state: ProfileState,
     eventHandler: EventHandler<ProfileEvent>,
-    viewModel: ProfileViewModel,
     navigateToLogin: () -> Unit = {}
 ) {
-    val context = LocalContext.current
+    var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
 
-    Log.d("Kmem", "ProfileScreen")
-
-    LaunchedEffect(key1 = context) {
-        eventHandler.obtainEvent(ProfileEvent.GetProfile)
-
-        viewModel.events.collectLatest { event ->
-            when (event) {
-                ProfileViewModel.ProfileViewModelEvent.UnauthorizedEvent -> {
-                    navigateToLogin()
-                }
-
-                ProfileViewModel.ProfileViewModelEvent.NavigateToLoginEvent -> {
+    LaunchedEffect(key1 = navigationRoute) {
+        navigationRoute?.let {
+            when (it) {
+                NavigationRoute.Login -> {
                     navigateToLogin()
                 }
             }
@@ -53,25 +44,33 @@ fun ProfileScreen(
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
 
-            ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-                val (username, exitButton) = createRefs()
+            if (state.profileData == null) {
+                navigationRoute = NavigationRoute.Login
+            } else {
+                ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+                    val (username, exitButton) = createRefs()
 
-                Text(text = state.username, modifier = Modifier.constrainAs(username) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                })
+                    Text(
+                        text = state.profileData.username,
+                        modifier = Modifier.constrainAs(username) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            bottom.linkTo(parent.bottom)
+                        })
 
-                DefaultButton(
-                    text = "Выйти",
-                    onClick = { eventHandler.obtainEvent(ProfileEvent.SignOut) },
-                    modifier = Modifier.constrainAs(exitButton) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }.padding(bottom = 24.dp)
-                )
+                    DefaultButton(
+                        text = "Выйти",
+                        onClick = { eventHandler.obtainEvent(ProfileEvent.SignOut) },
+                        modifier = Modifier
+                            .constrainAs(exitButton) {
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
+                            .padding(bottom = 24.dp)
+                    )
+                }
             }
         }
     }

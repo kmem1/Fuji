@@ -11,8 +11,6 @@ import com.clownteam.components.UiText
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.ui_authorization.R
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,9 +24,6 @@ class RegistrationViewModel @Inject constructor(
 ) : ViewModel(), EventHandler<RegistrationEvent> {
 
     var state by mutableStateOf(RegistrationState())
-
-    private val registrationResultChannel = Channel<RegistrationResult>()
-    val registrationResults = registrationResultChannel.receiveAsFlow()
 
     override fun obtainEvent(event: RegistrationEvent) {
         when (event) {
@@ -46,6 +41,9 @@ class RegistrationViewModel @Inject constructor(
             }
             RegistrationEvent.Submit -> {
                 submitData()
+            }
+            RegistrationEvent.MessageShown -> {
+                state = state.copy(message = null)
             }
         }
     }
@@ -69,17 +67,20 @@ class RegistrationViewModel @Inject constructor(
 
         val data = RegistrationData(state.login, state.email, state.password)
 
-        when(registerUserCase.invoke(data)) {
+        state = when (registerUserCase.invoke(data)) {
             is RegistrationUseCaseResult.Failed -> {
-                registrationResultChannel.send(RegistrationResult.Failed)
+                state.copy(message = UiText.StringResource(R.string.registration_fail_message))
             }
 
             RegistrationUseCaseResult.Success -> {
-                registrationResultChannel.send(RegistrationResult.Success)
+                state.copy(
+                    isSuccessRegistration = true,
+                    message = UiText.StringResource(R.string.registration_success_message)
+                )
             }
 
             RegistrationUseCaseResult.NetworkError -> {
-                registrationResultChannel.send(RegistrationResult.NetworkError)
+                state.copy(message = UiText.StringResource(R.string.network_error))
             }
         }
 
@@ -197,7 +198,7 @@ class RegistrationViewModel @Inject constructor(
             ValidateRepeatedPasswordResult.NotMatchesError -> {
                 state = state.copy(
                     repeatedPasswordError = UiText.StringResource(
-                        R.string.passwords_dont_match
+                        R.string.passwords_do_not_match
                     )
                 )
             }
@@ -209,13 +210,5 @@ class RegistrationViewModel @Inject constructor(
         }
 
         return false
-    }
-
-    sealed class RegistrationResult {
-        object Success : RegistrationResult()
-
-        object Failed : RegistrationResult()
-
-        object NetworkError : RegistrationResult()
     }
 }

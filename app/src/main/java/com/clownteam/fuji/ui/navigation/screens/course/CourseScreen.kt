@@ -10,15 +10,16 @@ import com.clownteam.ui_coursedetailed.ui.CourseDetailedViewModel
 fun CourseScreen(
     imageLoader: ImageLoader,
     onBack: () -> Unit,
-    navigateToPassing: (String) -> Unit
+    navigateToPassing: (String) -> Unit,
+    navigateToLogin: () -> Unit
 ) {
     val viewModel: CourseDetailedViewModel = hiltViewModel()
     CourseDetailed(
         state = viewModel.state.value,
         eventHandler = viewModel,
-        viewModel = viewModel,
         imageLoader = imageLoader,
         onBack = onBack,
-        navigateToPassing = navigateToPassing
+        navigateToPassing = navigateToPassing,
+        navigateToLogin = navigateToLogin
     )
 }

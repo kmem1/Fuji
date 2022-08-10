@@ -21,6 +21,10 @@ class CollectionListViewModel @Inject constructor(
     override val state: MutableState<CollectionListState> =
         mutableStateOf(CollectionListState.Loading)
 
+    init {
+        obtainEvent(CollectionListEvent.GetCollections)
+    }
+
     override fun obtainEvent(event: CollectionListEvent) {
         when (event) {
             CollectionListEvent.GetCollections -> {

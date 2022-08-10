@@ -8,5 +8,13 @@ data class LoginState(
     val password: String = "",
     val passwordError: UiText? = null,
     val isNetworkError: Boolean = false,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val loginResult: LoginResult? = null,
+    val errorMessage: UiText? = null
+)
+
+data class LoginResult(
+    val access: String,
+    val refresh: String,
+    val userPath: String
 )

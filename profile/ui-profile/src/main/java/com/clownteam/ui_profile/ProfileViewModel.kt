@@ -10,8 +10,6 @@ import com.clownteam.profile_interactors.GetProfileUseCaseResult
 import com.clownteam.profile_interactors.IGetProfileUseCase
 import com.clownteam.profile_interactors.ISignOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,17 +21,14 @@ class ProfileViewModel @Inject constructor(
 
     var state by mutableStateOf(ProfileState())
 
-    private val eventChannel = Channel<ProfileViewModelEvent>()
-    val events = eventChannel.receiveAsFlow()
+    init {
+        obtainEvent(ProfileEvent.GetProfile)
+    }
 
     override fun obtainEvent(event: ProfileEvent) {
         when (event) {
             ProfileEvent.SignOut -> {
-                viewModelScope.launch {
-                    signOut.invoke()
-
-                    eventChannel.send(ProfileViewModelEvent.NavigateToLoginEvent)
-                }
+                signOut()
             }
 
             is ProfileEvent.GetProfile -> {
@@ -42,11 +37,17 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    private fun signOut() {
+        viewModelScope.launch {
+            signOut.invoke()
+            state = state.copy(profileData = null)
+        }
+    }
+
     private fun getProfile() {
         state = state.copy(isLoading = true, isNetworkError = false)
 
         viewModelScope.launch {
-
             val result = getProfileUseCase.invoke()
 
             handleProfileUseCaseResult(result)
@@ -68,22 +69,16 @@ class ProfileViewModel @Inject constructor(
             is GetProfileUseCaseResult.Success -> {
                 state = state.copy(
                     isNetworkError = false,
-                    username = result.data.username,
-                    avatarUrl = result.data.avatarUrl
+                    profileData = result.data
                 )
             }
 
             GetProfileUseCaseResult.Unauthorized -> {
-                viewModelScope.launch {
-                    eventChannel.send(ProfileViewModelEvent.UnauthorizedEvent)
-                }
+                state = state.copy(
+                    isNetworkError = false,
+                    profileData = null
+                )
             }
         }
-    }
-
-    sealed class ProfileViewModelEvent {
-        object UnauthorizedEvent : ProfileViewModelEvent()
-
-        object NavigateToLoginEvent : ProfileViewModelEvent()
     }
 }

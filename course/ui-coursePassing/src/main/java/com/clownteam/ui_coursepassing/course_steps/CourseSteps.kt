@@ -10,7 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,12 +24,29 @@ import com.clownteam.components.DefaultButton
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.course_domain.CourseStep
 
+private sealed class NavigationRoutes {
+    object Login : NavigationRoutes()
+}
+
 @Composable
 fun CourseSteps(
     state: CourseStepsState,
     eventHandler: EventHandler<CourseStepsEvent>,
-    onBack: () -> Unit = {}
+    navigateToLogin: () -> Unit,
+    onBack: () -> Unit = {},
 ) {
+    var navigationRoute by remember { mutableStateOf<NavigationRoutes?>(null) }
+
+    LaunchedEffect(key1 = navigationRoute) {
+        navigationRoute?.let {
+            when (it) {
+                NavigationRoutes.Login -> {
+                    navigateToLogin()
+                }
+            }
+        }
+    }
+
     when (state) {
         is CourseStepsState.Data -> {
             Column(modifier = Modifier.fillMaxSize()) {
@@ -91,7 +108,9 @@ fun CourseSteps(
         }
 
         CourseStepsState.Loading -> {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            Column(modifier = Modifier.fillMaxSize()) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
         }
 
         CourseStepsState.NetworkError -> {
@@ -105,10 +124,7 @@ fun CourseSteps(
 
         CourseStepsState.Unauthorized -> {
             Box(modifier = Modifier.fillMaxSize()) {
-                DefaultButton(
-                    text = "Необходимо авторизоваться",
-                    onClick = { eventHandler.obtainEvent(CourseStepsEvent.GetSteps) }
-                )
+                navigationRoute = NavigationRoutes.Login
             }
         }
     }
@@ -120,7 +136,9 @@ private fun CourseLessonHeader(onArrowClick: () -> Unit, lessonTitle: String) {
         val (backIcon, title) = createRefs()
 
         IconButton(
-            modifier = Modifier.padding(start = 24.dp).size(34.dp)
+            modifier = Modifier
+                .padding(start = 24.dp)
+                .size(34.dp)
                 .constrainAs(backIcon) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -136,7 +154,9 @@ private fun CourseLessonHeader(onArrowClick: () -> Unit, lessonTitle: String) {
         }
 
         Column(
-            modifier = Modifier.width(IntrinsicSize.Max).padding(24.dp)
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .padding(24.dp)
                 .constrainAs(title) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -155,7 +175,12 @@ private fun CourseLessonHeader(onArrowClick: () -> Unit, lessonTitle: String) {
 
             Spacer(modifier = Modifier.size(2.dp))
 
-            Box(modifier = Modifier.height(1.dp).fillMaxWidth().background(Color.Yellow))
+            Box(
+                modifier = Modifier
+                    .height(1.dp)
+                    .fillMaxWidth()
+                    .background(Color.Yellow)
+            )
         }
     }
 }
@@ -172,7 +197,8 @@ private fun CourseStepsTopRow(
             val bgColor = if (step.isComplete) Color(0xFF2ED573) else Color(0xFF404040)
             val borderColor = if (index == currentStepIndex) Color.White else Color.Transparent
             Box(
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier
+                    .size(28.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(bgColor)
                     .border(3.dp, borderColor, RoundedCornerShape(10.dp))

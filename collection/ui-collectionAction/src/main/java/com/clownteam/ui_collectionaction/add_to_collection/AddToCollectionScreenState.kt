@@ -5,8 +5,10 @@ import com.clownteam.collection_domain.CourseCollection
 sealed class AddToCollectionScreenState {
     object Loading : AddToCollectionScreenState()
 
-    class Data(val collections: List<CourseCollection>, val courseId: String) :
-        AddToCollectionScreenState()
+    class Data(
+        val collections: List<CourseCollection>,
+        val courseId: String
+    ) : AddToCollectionScreenState()
 
     object SuccessAddCourse : AddToCollectionScreenState()
 

@@ -1,9 +1,11 @@
 package com.clownteam.ui_collectionaction.create_collection
 
-sealed class CreateCollectionState {
+import com.clownteam.components.UiText
 
-    object Loading: CreateCollectionState()
-
-    object Idle: CreateCollectionState()
-
-}
+data class CreateCollectionState(
+    val isLoading: Boolean = false,
+    val collectionTitle: String = "",
+    val errorMessage: UiText? = null,
+    val isUnauthorized: Boolean = false,
+    val isSuccess: Boolean = false
+)

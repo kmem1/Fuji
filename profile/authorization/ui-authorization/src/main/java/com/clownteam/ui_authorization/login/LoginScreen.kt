@@ -1,6 +1,5 @@
 package com.clownteam.ui_authorization.login
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -32,38 +31,62 @@ import com.clownteam.ui_authorization.components.AuthorizationText
 import com.clownteam.ui_authorization.components.AuthorizationTextClickable
 import com.clownteam.ui_authorization.components.AuthorizationTextField
 
+private sealed class NavigationRoute {
+    object Registration : NavigationRoute()
+    object RestorePassword : NavigationRoute()
+
+    class SuccessLoginRoute(
+        val accessToken: String,
+        val refreshToken: String,
+        val userPath: String
+    ) : NavigationRoute()
+}
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LoginScreen(
     state: LoginState,
     eventHandler: EventHandler<LoginEvent>,
-    viewModel: LoginViewModel,
     navigateToRegistration: () -> Unit = {},
     navigateToRestorePassword: () -> Unit = {},
     onSuccessLogin: (access: String, refresh: String, username: String) -> Unit
 ) {
     val context = LocalContext.current
-    var isNavigated by remember { mutableStateOf(false) }
 
     val (focusRequester) = FocusRequester.createRefs()
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    LaunchedEffect(key1 = context) {
-        viewModel.events.collect { event ->
-            when (event) {
-                is LoginViewModel.LoginViewModelEvent.Success -> {
-                    onSuccessLogin(
-                        event.access,
-                        event.refresh,
-                        event.username
-                    )
+    var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
+
+    LaunchedEffect(key1 = navigationRoute) {
+        navigationRoute?.let {
+            when (it) {
+                NavigationRoute.Registration -> {
+                    navigateToRegistration()
                 }
 
-                LoginViewModel.LoginViewModelEvent.Failed -> {
-                    Toast.makeText(context, "Неправильные данные", Toast.LENGTH_SHORT).show()
+                NavigationRoute.RestorePassword -> {
+                    navigateToRestorePassword()
+                }
+
+                is NavigationRoute.SuccessLoginRoute -> {
+                    onSuccessLogin(it.accessToken, it.refreshToken, it.userPath)
                 }
             }
         }
+    }
+
+    LaunchedEffect(key1 = state.errorMessage) {
+        state.errorMessage?.showToast(context)
+        eventHandler.obtainEvent(LoginEvent.FailMessageShown)
+    }
+
+    if (state.loginResult != null) {
+        navigationRoute = NavigationRoute.SuccessLoginRoute(
+            state.loginResult.access,
+            state.loginResult.refresh,
+            state.loginResult.userPath
+        )
     }
 
     if (state.isLoading) {
@@ -137,11 +160,9 @@ fun LoginScreen(
                     .align(Alignment.End)
                     .padding(top = 8.dp, end = 32.dp),
                 onClick = {
-                    if (!isNavigated && !state.isLoading) {
-                        navigateToRestorePassword()
+                    if (!state.isLoading) {
+                        navigationRoute = NavigationRoute.RestorePassword
                     }
-
-                    isNavigated = true
                 }
             )
         }
@@ -167,12 +188,10 @@ fun LoginScreen(
                 AuthorizationTextClickable(
                     text = stringResource(R.string.registration_action),
                     onClick = {
-                        if (!isNavigated && !state.isLoading) {
-                            navigateToRegistration()
+                        if (!state.isLoading) {
+                            navigationRoute = NavigationRoute.Registration
                         }
-
-                        isNavigated = true
-                    }
+                    },
                 )
             }
 

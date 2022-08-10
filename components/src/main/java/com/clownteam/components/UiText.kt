@@ -1,6 +1,7 @@
 package com.clownteam.components
 
 import android.content.Context
+import android.widget.Toast
 import androidx.annotation.StringRes
 
 sealed class UiText {
@@ -17,5 +18,9 @@ sealed class UiText {
             is DynamicString -> value
             is StringResource -> context.getString(resId, *args)
         }
+    }
+
+    fun showToast(context: Context) {
+        Toast.makeText(context, this.asString(context), Toast.LENGTH_SHORT).show()
     }
 }

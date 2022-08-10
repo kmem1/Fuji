@@ -10,7 +10,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,13 +26,40 @@ import com.clownteam.core.domain.EventHandler
 import com.clownteam.course_domain.CourseModule
 import com.clownteam.ui_coursepassing.R
 
+private sealed class NavigationRoutes {
+    object Login : NavigationRoutes()
+
+    class CourseLessons(
+        val courseId: String,
+        val moduleId: String,
+        val moduleName: String
+    ) : NavigationRoutes()
+}
+
 @Composable
 fun CourseModules(
     state: CourseModulesState,
     eventHandler: EventHandler<CourseModulesEvent>,
     onBack: () -> Unit = {},
-    onModuleClick: (courseId: String, moduleId: String, moduleName: String) -> Unit = { _, _, _ -> }
+    onModuleClick: (courseId: String, moduleId: String, moduleName: String) -> Unit = { _, _, _ -> },
+    navigateToLogin: () -> Unit
 ) {
+    var navigationRoute by remember { mutableStateOf<NavigationRoutes?>(null) }
+
+    LaunchedEffect(key1 = navigationRoute) {
+        navigationRoute?.let {
+            when (it) {
+                NavigationRoutes.Login -> {
+                    navigateToLogin()
+                }
+
+                is NavigationRoutes.CourseLessons -> {
+                    onModuleClick(it.courseId, it.moduleId, it.moduleName)
+                }
+            }
+        }
+    }
+
     when (state) {
         is CourseModulesState.Data -> {
             if (state.course != null) {
@@ -44,9 +71,15 @@ fun CourseModules(
 
                     Spacer(modifier = Modifier.size(20.dp))
 
-                    Row(modifier = Modifier.height(IntrinsicSize.Min).padding(horizontal = 24.dp)) {
+                    Row(
+                        modifier = Modifier
+                            .height(IntrinsicSize.Min)
+                            .padding(horizontal = 24.dp)
+                    ) {
                         Box(
-                            modifier = Modifier.width(1.dp).fillMaxHeight()
+                            modifier = Modifier
+                                .width(1.dp)
+                                .fillMaxHeight()
                                 .background(MaterialTheme.colors.secondary)
                         )
 
@@ -64,7 +97,11 @@ fun CourseModules(
                     ModulesList(
                         modules = state.modules,
                         onModuleClick = { moduleId, moduleName ->
-                            onModuleClick(state.courseId ?: "", moduleId, moduleName)
+                            navigationRoute = NavigationRoutes.CourseLessons(
+                                state.courseId ?: "",
+                                moduleId,
+                                moduleName
+                            )
                         }
                     )
                 }
@@ -81,7 +118,7 @@ fun CourseModules(
         }
 
         CourseModulesState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize()) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
         }
@@ -96,12 +133,7 @@ fun CourseModules(
         }
 
         CourseModulesState.Unauthorized -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                DefaultButton(
-                    text = "Необходимо авторизоваться",
-                    onClick = { eventHandler.obtainEvent(CourseModulesEvent.GetModules) }
-                )
-            }
+            navigationRoute = NavigationRoutes.Login
         }
     }
 }
@@ -114,7 +146,10 @@ private fun ModulesList(
     LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         items(modules) { module ->
             Row(
-                modifier = Modifier.fillMaxWidth().heightIn(min = 65.dp).padding(horizontal = 24.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 65.dp)
+                    .padding(horizontal = 24.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(Color(0xFF245ED1))
                     .clickable { onModuleClick(module.id, module.title) }
@@ -122,7 +157,10 @@ private fun ModulesList(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
-                    modifier = Modifier.padding(vertical = 10.dp).padding(end = 8.dp).weight(1F)
+                    modifier = Modifier
+                        .padding(vertical = 10.dp)
+                        .padding(end = 8.dp)
+                        .weight(1F)
                 ) {
                     Text(
                         module.title,
@@ -147,7 +185,9 @@ private fun ModulesList(
                     painter = painterResource(R.drawable.ic_arrow_right),
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.size(24.dp).padding(start = 12.dp)
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(start = 12.dp)
                 )
             }
         }

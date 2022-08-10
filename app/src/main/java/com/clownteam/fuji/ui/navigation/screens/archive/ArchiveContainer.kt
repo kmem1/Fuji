@@ -1,5 +1,6 @@
 package com.clownteam.fuji.ui.navigation.screens.archive
 
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -11,52 +12,58 @@ import com.clownteam.fuji.ui.navigation.NavigationController
 import com.clownteam.fuji.ui.navigation.NavigationControllerScreen
 import com.clownteam.fuji.ui.navigation.Route
 import com.clownteam.fuji.ui.navigation.Router
-import com.clownteam.fuji.ui.navigation.bottom_navigation.BottomNavItem
 import com.clownteam.ui_collectiondetailed.ui.CollectionDetailed
 import com.clownteam.ui_collectiondetailed.ui.CollectionDetailedViewModel
 import com.clownteam.ui_collectionlist.CollectionList
 import com.clownteam.ui_collectionlist.CollectionListViewModel
 
-private const val PROFILE_SCREEN_TOKEN_KEY = "token_key"
 
 @Composable
-fun ArchiveContainer(externalRouter: Router, imageLoader: ImageLoader) {
+fun ArchiveContainer(
+    externalRouter: Router,
+    imageLoader: ImageLoader,
+    navigateToLogin: () -> Unit,
+//    enterTransition: EnterTransition =
+) {
     NavigationController(
         startDestination = Route.ArchiveRoute.route,
         router = externalRouter,
         screens = listOf(
-            createArchiveNavigationControllerScreen(imageLoader),
-            createCollectionDetailedNavigationControllerScreen(imageLoader)
+            createArchiveNavigationControllerScreen(imageLoader, navigateToLogin),
+            createCollectionDetailedNavigationControllerScreen(imageLoader, navigateToLogin)
         )
     )
 }
 
-
 @OptIn(ExperimentalAnimationApi::class)
-private fun createArchiveNavigationControllerScreen(imageLoader: ImageLoader): NavigationControllerScreen {
+private fun createArchiveNavigationControllerScreen(
+    imageLoader: ImageLoader,
+    navigateToLogin: () -> Unit
+): NavigationControllerScreen {
     return NavigationControllerScreen(
         route = Route.ArchiveRoute.route,
-        enterTransition = {
-            slideInHorizontally(initialOffsetX = { 1000 })
-        },
-        exitTransition = {
-            slideOutHorizontally(targetOffsetX = { -1000 })
-        },
-        popEnterTransition = {
-            slideInHorizontally(initialOffsetX = { -1000 })
-        },
-        popExitTransition = {
-            slideOutHorizontally(targetOffsetX = { 1000 })
-        }
+//        enterTransition = {
+//            slideInHorizontally(initialOffsetX = { 1000 })
+//        },
+//        exitTransition = {
+//            slideOutHorizontally(targetOffsetX = { -1000 })
+//        },
+//        popEnterTransition = {
+//            slideInHorizontally(initialOffsetX = { -1000 })
+//        },
+//        popExitTransition = {
+//            slideOutHorizontally(targetOffsetX = { 1000 })
+//        }
     ) { navController, _, _ ->
-        OpenArchiveScreen(navController, imageLoader)
+        OpenArchiveScreen(navController, imageLoader, navigateToLogin)
     }
 }
 
 @Composable
 private fun OpenArchiveScreen(
     navController: NavController,
-    imageLoader: ImageLoader
+    imageLoader: ImageLoader,
+    navigateToLogin: () -> Unit
 ) {
     val viewModel: CollectionListViewModel = hiltViewModel()
     CollectionList(
@@ -66,16 +73,20 @@ private fun OpenArchiveScreen(
         navigateToDetailed = { id ->
             val route = Route.CourseCollectionRoute.getRouteWithArgument(id)
             navController.navigate(route)
-        }
+        },
+        navigateToLogin = navigateToLogin
     )
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-private fun createCollectionDetailedNavigationControllerScreen(imageLoader: ImageLoader): NavigationControllerScreen {
+private fun createCollectionDetailedNavigationControllerScreen(
+    imageLoader: ImageLoader,
+    navigateToLogin: () -> Unit
+): NavigationControllerScreen {
     return NavigationControllerScreen(
         route = Route.CourseCollectionRoute.route
-    ) { navController, externalRouter, bundle ->
-        OpenCourseCollectionScreen(navController, imageLoader, externalRouter)
+    ) { navController, externalRouter, _ ->
+        OpenCourseCollectionScreen(navController, imageLoader, externalRouter, navigateToLogin)
     }
 }
 
@@ -83,7 +94,8 @@ private fun createCollectionDetailedNavigationControllerScreen(imageLoader: Imag
 private fun OpenCourseCollectionScreen(
     navController: NavController,
     imageLoader: ImageLoader,
-    externalRouter: Router?
+    externalRouter: Router?,
+    navigateToLogin: () -> Unit
 ) {
     val viewModel: CollectionDetailedViewModel = hiltViewModel()
     CollectionDetailed(
@@ -91,7 +103,7 @@ private fun OpenCourseCollectionScreen(
         eventHandler = viewModel,
         imageLoader = imageLoader,
         onBackPressed = { navController.popBackStack() },
-        navigateToLogin = { externalRouter?.routeTo(BottomNavItem.Profile.route) },
+        navigateToLogin = navigateToLogin,
         openCourse = { externalRouter?.routeTo(Route.CourseRoute.getRouteWithArgument(it)) }
     )
 }

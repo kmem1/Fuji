@@ -11,14 +11,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,17 +29,32 @@ import com.clownteam.components.DefaultButton
 import com.clownteam.components.header.DefaultHeader
 import com.clownteam.core.domain.EventHandler
 
+private sealed class NavigationRoute {
+    class CollectionDetail(val collectionId: String) : NavigationRoute()
+    object Login : NavigationRoute()
+}
+
 @Composable
 fun CollectionList(
     state: CollectionListState,
     eventHandler: EventHandler<CollectionListEvent>,
     imageLoader: ImageLoader,
-    navigateToDetailed: (String) -> Unit = {}
+    navigateToDetailed: (String) -> Unit,
+    navigateToLogin: () -> Unit
 ) {
-    val context = LocalContext.current
+    var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
 
-    LaunchedEffect(key1 = context) {
-        eventHandler.obtainEvent(CollectionListEvent.GetCollections)
+    LaunchedEffect(key1 = navigationRoute) {
+        navigationRoute?.let {
+            when (it) {
+                NavigationRoute.Login -> {
+                    navigateToLogin()
+                }
+                is NavigationRoute.CollectionDetail -> {
+                    navigateToDetailed(it.collectionId)
+                }
+            }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -50,7 +63,7 @@ fun CollectionList(
                 DefaultButton(
                     modifier = Modifier.align(Alignment.Center),
                     text = "Retry",
-                    onClick = {}
+                    onClick = { eventHandler.obtainEvent(CollectionListEvent.GetCollections) }
                 )
             }
 
@@ -66,8 +79,18 @@ fun CollectionList(
                         bgColor = MaterialTheme.colors.primary
                     )
 
-                    CollectionListContent(state.collections, imageLoader, navigateToDetailed)
+                    CollectionListContent(
+                        courseCollectionList = state.collections,
+                        imageLoader = imageLoader,
+                        navigateToDetailed = {
+                            navigationRoute = NavigationRoute.CollectionDetail(it)
+                        }
+                    )
                 }
+            }
+
+            CollectionListState.Unauthorized -> {
+                navigationRoute = NavigationRoute.Login
             }
         }
     }
@@ -98,21 +121,33 @@ fun CourseCollectionItem(
     onClick: (CourseCollection) -> Unit
 ) {
     Column(
-        modifier = Modifier.width(185.dp).clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF282828)).clickable { onClick(collection) }
+        modifier = Modifier
+            .width(185.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xFF282828))
+            .clickable { onClick(collection) }
     ) {
         Image(
-            modifier = Modifier.fillMaxWidth().height(196.dp).clip(RoundedCornerShape(12.dp)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(196.dp)
+                .clip(RoundedCornerShape(12.dp)),
             painter = rememberAsyncImagePainter(collection.imageUrl, imageLoader = imageLoader),
             contentDescription = stringResource(R.string.course_collection_item_img_content_description),
             contentScale = ContentScale.Crop,
             alpha = 1.0F
         )
 
-        Row(modifier = Modifier.fillMaxWidth().height(36.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(36.dp)
+        ) {
             Text(
                 text = collection.title,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
                     .align(Alignment.CenterVertically),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.subtitle2,
@@ -121,7 +156,12 @@ fun CourseCollectionItem(
             )
         }
 
-        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp).padding(bottom = 4.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
+                .padding(bottom = 4.dp)
+        ) {
             Text(
                 text = stringResource(R.string.course_collection_item_author_text),
                 fontSize = 11.sp,
@@ -129,7 +169,9 @@ fun CourseCollectionItem(
             )
 
             Text(
-                modifier = Modifier.padding(start = 4.dp).weight(1F),
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .weight(1F),
                 text = collection.author.name,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,

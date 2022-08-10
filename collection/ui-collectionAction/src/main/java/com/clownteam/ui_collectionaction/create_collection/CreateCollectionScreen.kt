@@ -1,10 +1,11 @@
 package com.clownteam.ui_collectionaction.create_collection
 
-import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,120 +20,133 @@ import com.clownteam.components.DefaultButton
 import com.clownteam.components.header.DefaultHeader
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.ui_collectionaction.R
-import kotlinx.coroutines.flow.collect
+
+private sealed class NavigationRoute {
+    object Login : NavigationRoute()
+    object SuccessCreationRoute : NavigationRoute()
+}
 
 @Composable
 fun CreateCollectionScreen(
     state: CreateCollectionState,
     eventHandler: EventHandler<CreateCollectionEvent>,
-    viewModel: CreateCollectionViewModel,
     onBack: () -> Unit,
-    onSuccessCreate: () -> Unit
+    onSuccessCreate: () -> Unit,
+    navigateToLogin: () -> Unit
 ) {
     val context = LocalContext.current
 
-    LaunchedEffect(key1 = context) {
-        viewModel.createResults.collect { event ->
-            when (event) {
-                CreateCollectionViewModel.CreateCollectionResult.Failed -> {
-                    Toast.makeText(context, "Ошибка при отправке данных", Toast.LENGTH_SHORT).show()
+    var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
+
+    LaunchedEffect(key1 = navigationRoute) {
+        navigationRoute?.let {
+            when (it) {
+                NavigationRoute.Login -> {
+                    navigateToLogin()
                 }
 
-                CreateCollectionViewModel.CreateCollectionResult.NetworkError -> {
-                    Toast.makeText(context, "Ошибка сети", Toast.LENGTH_SHORT).show()
-                }
-
-                CreateCollectionViewModel.CreateCollectionResult.Success -> {
-                    Toast.makeText(context, "Успешное создание", Toast.LENGTH_SHORT).show()
+                NavigationRoute.SuccessCreationRoute -> {
                     onSuccessCreate()
                 }
-
-                CreateCollectionViewModel.CreateCollectionResult.Unauthorized -> {
-                    Toast.makeText(context, "Требуется авторизация", Toast.LENGTH_SHORT).show()
-                }
             }
         }
     }
 
-    var title by rememberSaveable { mutableStateOf("") }
+    if (state.isUnauthorized) {
+        navigationRoute = NavigationRoute.Login
+    }
 
-    when (state) {
-        CreateCollectionState.Loading -> {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+    if (state.isSuccess) {
+        navigationRoute = NavigationRoute.SuccessCreationRoute
+    }
+
+    if (state.errorMessage != null) {
+        state.errorMessage.showToast(context)
+        eventHandler.obtainEvent(CreateCollectionEvent.ErrorMessageShown)
+    }
+
+    if (state.isLoading) {
+        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+    }
+
+    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+        val (header, label, textField, createButton) = createRefs()
+
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .constrainAs(header) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }) {
+            DefaultHeader(
+                stringResource(R.string.create_collection_title_text),
+                onArrowClick = { onBack() }
+            )
         }
 
-        CreateCollectionState.Idle -> {
-            ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-                val (header, label, textField, createButton) = createRefs()
-
-                Box(modifier = Modifier.fillMaxWidth().constrainAs(header) {
-                    top.linkTo(parent.top)
+        Text(
+            "Введите название новой подборки",
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .constrainAs(label) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }) {
-                    DefaultHeader(
-                        stringResource(R.string.create_collection_title_text),
-                        onArrowClick = { onBack() }
+                    bottom.linkTo(textField.top)
+                }
+                .padding(bottom = 75.dp)
+        )
+
+        TextField(
+            value = state.collectionTitle,
+            onValueChange = { eventHandler.obtainEvent(CreateCollectionEvent.TitleChanged(it)) },
+            placeholder = {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "Название",
+                        style = LocalTextStyle.current.copy(
+                            textAlign = TextAlign.Center,
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Medium
+                        ),
                     )
                 }
+            },
+            textStyle = LocalTextStyle.current.copy(
+                textAlign = TextAlign.Center,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Medium
+            ),
+            modifier = Modifier
+                .constrainAs(textField) {
+                    top.linkTo(header.bottom)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .fillMaxWidth()
+                .padding(horizontal = 26.dp),
+            colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent)
+        )
 
-                Text(
-                    "Введите название новой подборки",
-                    style = MaterialTheme.typography.h6,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.constrainAs(label) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(textField.top)
-                    }.padding(bottom = 75.dp)
-                )
-
-                TextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    placeholder = {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                "Название",
-                                style = LocalTextStyle.current.copy(
-                                    textAlign = TextAlign.Center,
-                                    fontSize = 32.sp,
-                                    fontWeight = FontWeight.Medium
-                                ),
-                            )
-                        }
-                    },
-                    textStyle = LocalTextStyle.current.copy(
-                        textAlign = TextAlign.Center,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    modifier = Modifier.constrainAs(textField) {
-                        top.linkTo(header.bottom)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }.fillMaxWidth().padding(horizontal = 26.dp),
-                    colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent)
-                )
-
-                DefaultButton(
-                    text = stringResource(R.string.create),
-                    onClick = {
-                        eventHandler.obtainEvent(
-                            CreateCollectionEvent.CreateCollection(title)
-                        )
-                    },
-                    modifier = Modifier.constrainAs(createButton) {
-                        top.linkTo(textField.bottom)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    })
-            }
-        }
+        DefaultButton(
+            text = stringResource(R.string.create),
+            onClick = {
+                eventHandler.obtainEvent(CreateCollectionEvent.CreateCollection)
+            },
+            modifier = Modifier.constrainAs(createButton) {
+                top.linkTo(textField.bottom)
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            },
+            enabled = state.collectionTitle.isNotEmpty()
+        )
     }
 }
+
+

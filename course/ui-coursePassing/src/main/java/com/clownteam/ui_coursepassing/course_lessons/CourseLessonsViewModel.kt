@@ -1,7 +1,6 @@
 package com.clownteam.ui_coursepassing.course_lessons
 
 import android.os.Parcelable
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -36,8 +35,6 @@ class CourseLessonsViewModel @Inject constructor(
     private val moduleName = savedStateHandle.get<CourseLessonsArgs>(LESSONS_ARG_KEY)?.moduleName
 
     init {
-        Log.d("Kmem", "cID: $courseId mID: $moduleId mName: $moduleName")
-
         obtainEvent(CourseLessonsEvent.GetLessons)
     }
 
@@ -61,11 +58,11 @@ class CourseLessonsViewModel @Inject constructor(
             val params = GetCourseLessonsParams(courseId, moduleId)
             val modulesResult = getCourseLessons.invoke(params)
 
-            handleGetCoursesLessonsResult(modulesResult)
+            handleGetCourseLessonsResult(modulesResult)
         }
     }
 
-    private fun handleGetCoursesLessonsResult(result: GetCourseLessonsUseCaseResult) {
+    private fun handleGetCourseLessonsResult(result: GetCourseLessonsUseCaseResult) {
         when (result) {
             GetCourseLessonsUseCaseResult.Failed -> {
                 updateState(CourseLessonsState.Error)

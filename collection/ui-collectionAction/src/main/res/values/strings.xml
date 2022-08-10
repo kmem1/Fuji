@@ -4,4 +4,6 @@
     <string name="create_collection_btn_text">Новая подборка</string>
     <string name="create_collection_title_text">Создание подборки</string>
     <string name="create">Создать</string>
+    <string name="create_collection_failed_message">Ошибка при отправке данных</string>
+    <string name="network_error_message">Ошибка сети</string>
 </resources>

@@ -4,6 +4,8 @@ import com.clownteam.components.UiText
 
 data class RegistrationState(
     val isLoading: Boolean = false,
+    val isSuccessRegistration: Boolean = false,
+    val message: UiText? = null,
     val login: String = "",
     val loginError: UiText? = null,
     val email: String = "",

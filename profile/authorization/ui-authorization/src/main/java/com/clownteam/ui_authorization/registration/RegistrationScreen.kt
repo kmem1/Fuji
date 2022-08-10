@@ -1,7 +1,5 @@
 package com.clownteam.ui_authorization.registration
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -10,8 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -33,14 +30,17 @@ import com.clownteam.ui_authorization.R
 import com.clownteam.ui_authorization.components.AuthorizationText
 import com.clownteam.ui_authorization.components.AuthorizationTextClickable
 import com.clownteam.ui_authorization.components.AuthorizationTextField
-import kotlinx.coroutines.flow.collect
+
+private sealed class NavigationRoute {
+    object Login : NavigationRoute()
+    object SuccessRegistrationRoute : NavigationRoute()
+}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RegistrationScreen(
     state: RegistrationState,
     eventHandler: EventHandler<RegistrationEvent>,
-    viewModel: RegistrationViewModel,
     navigateToLogin: () -> Unit = {},
     onSuccessRegistration: () -> Unit = {}
 ) {
@@ -54,25 +54,29 @@ fun RegistrationScreen(
         kc?.hide()
     }
 
-    LaunchedEffect(key1 = context) {
-        viewModel.registrationResults.collect { event ->
-            when (event) {
-                is RegistrationViewModel.RegistrationResult.Success -> {
-                    Toast.makeText(context, "Успешная регистрация", Toast.LENGTH_SHORT).show()
+    var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
+
+    LaunchedEffect(key1 = navigationRoute) {
+        navigationRoute?.let {
+            when (it) {
+                NavigationRoute.Login -> {
+                    navigateToLogin()
+                }
+
+                NavigationRoute.SuccessRegistrationRoute -> {
                     onSuccessRegistration()
-                }
-
-                RegistrationViewModel.RegistrationResult.Failed -> {
-                    Toast.makeText(context, "Ошибка во время регистрации", Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                RegistrationViewModel.RegistrationResult.NetworkError -> {
-                    Toast.makeText(context, "Ошибка сети", Toast.LENGTH_SHORT)
-                        .show()
                 }
             }
         }
+    }
+
+    LaunchedEffect(key1 = state.message) {
+        state.message?.showToast(context)
+        eventHandler.obtainEvent(RegistrationEvent.MessageShown)
+    }
+
+    if (state.isSuccessRegistration) {
+        navigationRoute = NavigationRoute.SuccessRegistrationRoute
     }
 
     if (state.isLoading) {
@@ -82,7 +86,11 @@ fun RegistrationScreen(
         )
     }
 
-    ConstraintLayout(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
         val (title, centerLayout, bottomLayout) = createRefs()
 
         Text(
@@ -104,7 +112,9 @@ fun RegistrationScreen(
             end.linkTo(parent.end)
         }) {
             AuthorizationTextField(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
                 value = state.login,
                 onValueChange = { eventHandler.obtainEvent(RegistrationEvent.LoginChanged(it)) },
                 hint = stringResource(R.string.login_hint),
@@ -121,7 +131,9 @@ fun RegistrationScreen(
             Spacer(modifier = Modifier.size(18.dp))
 
             AuthorizationTextField(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
                 value = state.email,
                 onValueChange = { eventHandler.obtainEvent(RegistrationEvent.EmailChanged(it)) },
                 hint = stringResource(R.string.email_hint),
@@ -141,7 +153,9 @@ fun RegistrationScreen(
             Spacer(modifier = Modifier.size(18.dp))
 
             AuthorizationTextField(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
                 value = state.password,
                 onValueChange = { eventHandler.obtainEvent(RegistrationEvent.PasswordChanged(it)) },
                 hint = stringResource(R.string.password_hint),
@@ -162,7 +176,9 @@ fun RegistrationScreen(
             Spacer(modifier = Modifier.size(18.dp))
 
             AuthorizationTextField(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
                 value = state.repeatedPassword,
                 onValueChange = {
                     eventHandler.obtainEvent(
@@ -180,7 +196,6 @@ fun RegistrationScreen(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        Log.d("Kmem", "onDone")
                         onRegisterButtonClick()
                     }
                 ),
@@ -211,7 +226,7 @@ fun RegistrationScreen(
 
                 AuthorizationTextClickable(
                     text = stringResource(R.string.login_action),
-                    onClick = { navigateToLogin() }
+                    onClick = { navigationRoute = NavigationRoute.Login }
                 )
             }
 

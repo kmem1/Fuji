@@ -1,6 +1,5 @@
 package com.clownteam.ui_collectiondetailed.ui
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,7 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,7 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.ImageLoader
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.clownteam.collection_domain.CourseCollection
 import com.clownteam.components.AutoResizeText
 import com.clownteam.components.DefaultButton
@@ -34,23 +33,43 @@ import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.components.ColumnCourseListItem
 import com.example.ui_collectiondetailed.R
 
+private sealed class NavigationRoute {
+    object Login : NavigationRoute()
+    class CourseDetailed(val courseId: String) : NavigationRoute()
+}
+
 @Composable
 fun CollectionDetailed(
     state: CollectionDetailedState,
     eventHandler: EventHandler<CollectionDetailedEvent>,
     imageLoader: ImageLoader,
-    onBackPressed: () -> Unit = {},
-    navigateToLogin: () -> Unit = {},
-    openCourse: (String) -> Unit = {}
+    onBackPressed: () -> Unit,
+    navigateToLogin: () -> Unit,
+    openCourse: (String) -> Unit
 ) {
+    var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
+
+    LaunchedEffect(key1 = navigationRoute) {
+        navigationRoute?.let {
+            when (it) {
+                NavigationRoute.Login -> {
+                    navigateToLogin()
+                }
+                is NavigationRoute.CourseDetailed -> {
+                    openCourse(it.courseId)
+                }
+            }
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         when (state) {
             is CollectionDetailedState.Data -> {
                 CollectionDetailedContent(
-                    state.collection,
-                    imageLoader,
-                    onBackPressed,
-                    openCourse
+                    collection = state.collection,
+                    imageLoader = imageLoader,
+                    onBackPressed = onBackPressed,
+                    openCourse = { navigationRoute = NavigationRoute.CourseDetailed(it) }
                 )
             }
 
@@ -78,7 +97,8 @@ fun CollectionDetailed(
 
                     DefaultButton(
                         text = "Авторизоваться",
-                        onClick = { navigateToLogin() })
+                        onClick = { navigationRoute = NavigationRoute.Login }
+                    )
                 }
             }
         }
@@ -106,14 +126,18 @@ fun CollectionDetailedContent(
 @Composable
 fun CollectionDetailedHeader(collection: CourseCollection, imageLoader: ImageLoader) {
     Row(
-        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colors.primary)
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colors.primary)
             .padding(vertical = 14.dp)
     ) {
-        Log.d("Kmem", collection.imageUrl)
         Image(
-            modifier = Modifier.padding(start = 16.dp).size(80.dp).clip(RoundedCornerShape(12.dp))
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .size(80.dp)
+                .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colors.primary),
-            painter = rememberImagePainter(
+            painter = rememberAsyncImagePainter(
                 collection.imageUrl,
                 imageLoader = imageLoader
             ),
@@ -121,7 +145,11 @@ fun CollectionDetailedHeader(collection: CourseCollection, imageLoader: ImageLoa
             contentScale = ContentScale.Crop
         )
 
-        Column(modifier = Modifier.weight(1F).padding(start = 26.dp)) {
+        Column(
+            modifier = Modifier
+                .weight(1F)
+                .padding(start = 26.dp)
+        ) {
             AutoResizeText(
                 text = collection.title,
                 style = MaterialTheme.typography.h4,
@@ -133,9 +161,12 @@ fun CollectionDetailedHeader(collection: CourseCollection, imageLoader: ImageLoa
 
             Row(modifier = Modifier.padding(top = 12.dp)) {
                 Image(
-                    modifier = Modifier.size(22.dp).clip(CircleShape)
-                        .background(MaterialTheme.colors.primary).align(Alignment.CenterVertically),
-                    painter = rememberImagePainter(
+                    modifier = Modifier
+                        .size(22.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colors.primary)
+                        .align(Alignment.CenterVertically),
+                    painter = rememberAsyncImagePainter(
                         collection.author.avatar_url,
                         imageLoader = imageLoader
                     ),
@@ -179,7 +210,10 @@ fun CollectionDetailedHeader(collection: CourseCollection, imageLoader: ImageLoa
         }
 
         Box(
-            modifier = Modifier.padding(horizontal = 16.dp).height(32.dp).width(46.dp)
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .height(32.dp)
+                .width(46.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(ratingBackgroundColor)
         ) {
@@ -200,7 +234,12 @@ fun CollectionCoursesList(
     imageLoader: ImageLoader,
     navigateToDetailed: (String) -> Unit
 ) {
-    LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(horizontal = 10.dp)) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(horizontal = 10.dp)
+    ) {
         itemsIndexed(courses) { index, course ->
             Spacer(modifier = Modifier.size(12.dp))
 

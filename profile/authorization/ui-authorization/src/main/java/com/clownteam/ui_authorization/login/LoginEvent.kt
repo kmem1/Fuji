@@ -6,5 +6,7 @@ sealed class LoginEvent {
 
     class PasswordChanged(val password: String): LoginEvent()
 
+    object FailMessageShown: LoginEvent()
+
     object Submit: LoginEvent()
 }

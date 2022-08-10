@@ -9,4 +9,6 @@ sealed class CourseListState {
     class Data(val myCourses: List<Course>, val popularCourses: List<Course>) : CourseListState()
 
     class Error(val message: String) : CourseListState()
+
+    object Unauthorized: CourseListState()
 }

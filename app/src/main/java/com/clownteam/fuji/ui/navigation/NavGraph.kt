@@ -10,6 +10,10 @@ import androidx.navigation.*
 import coil.ImageLoader
 import com.clownteam.fuji.auth.TokenManagerImpl
 import com.clownteam.fuji.auth.UserDataManagerImpl
+import com.clownteam.fuji.ui.navigation.animation.defaultEnterTransition
+import com.clownteam.fuji.ui.navigation.animation.defaultExitTransition
+import com.clownteam.fuji.ui.navigation.animation.defaultPopEnterTransition
+import com.clownteam.fuji.ui.navigation.animation.defaultPopExitTransition
 import com.clownteam.fuji.ui.navigation.bottom_navigation.BottomNavItem
 import com.clownteam.fuji.ui.navigation.screens.archive.ArchiveContainer
 import com.clownteam.fuji.ui.navigation.screens.course.CourseScreen
@@ -58,18 +62,16 @@ fun SetupNavGraph(
         startDestination = startDestination,
         enterTransition = { defaultEnterTransition() },
         exitTransition = { defaultExitTransition() },
-        popEnterTransition = { defaultEnterTransition() },
-        popExitTransition = { defaultExitTransition() }
+        popEnterTransition = { defaultPopEnterTransition() },
+        popExitTransition = { defaultPopExitTransition() }
     ) {
-        // ********* Bottom Bar navigation *********
+        // *************************** Bottom Bar navigation ***************************
 
         bottomItemComposable(BottomNavItem.Home.route) {
-            showBottomBar(true)
             val viewModel: CourseListViewModel = hiltViewModel()
             CourseList(
                 state = viewModel.state.value,
                 eventHandler = viewModel,
-                viewModel = viewModel,
                 navigateToDetailScreen = { courseId ->
                     navController.navigate(Route.CourseRoute.getRouteWithArgument(courseId))
                 },
@@ -77,68 +79,54 @@ fun SetupNavGraph(
                     navController.navigate(Route.AddToCollectionRoute.getRouteWithArgument(courseId))
                 },
                 imageLoader = imageLoader,
-                navigateToLogin = {
-                    navController.navigate(Route.LoginRoute.route) {
-                        popUpTo(BottomNavItem.Home.route) {
-                            inclusive = true
-                        }
-                    }
-                }
+                navigateToLogin = { defaultNavigateToLoginAction(navController) }
             )
+            showBottomBar(true)
         }
 
         bottomItemComposable(BottomNavItem.Search.route) {
-            showBottomBar(true)
             SearchScreen()
+            showBottomBar(true)
         }
 
         bottomItemComposable(BottomNavItem.Archive.route) {
-            showBottomBar(true)
             ArchiveContainer(
                 externalRouter = createExternalRouter { route, params, builder ->
                     navController.navigate(route, params, builder)
                 },
-                imageLoader = imageLoader
+                imageLoader = imageLoader,
+                navigateToLogin = { defaultNavigateToLoginAction(navController) }
             )
+            showBottomBar(true)
         }
 
         bottomItemComposable(BottomNavItem.Profile.route) {
-            showBottomBar(true)
             ProfileContainer(
                 createExternalRouter { route, params, builder ->
                     navController.navigate(route, params, builder)
                 },
-                showBottomBar
+                showBottomBar,
+                navigateToLogin = { defaultNavigateToLoginAction(navController) }
             )
+            showBottomBar(true)
         }
 
-        // ********* Login navigation *********
+        // *************************** Login navigation ***************************
 
         composable(Route.LoginRoute.route,
             enterTransition = {
                 val offsetX = if (initialState.destination.route == Route.RegistrationRoute.route) {
-                    -1000
+                    { width: Int -> -width }
                 } else {
-                    1000
+                    { width: Int -> width }
                 }
-                slideInHorizontally(initialOffsetX = { offsetX })
-            },
-            exitTransition = {
-                slideOutHorizontally(targetOffsetX = { -1000 })
-            },
-            popEnterTransition = {
-                slideInHorizontally(initialOffsetX = { -1000 })
-            },
-            popExitTransition = {
-                slideOutHorizontally(targetOffsetX = { 1000 })
+                slideInHorizontally(initialOffsetX = offsetX)
             }
         ) {
-            showBottomBar(false)
             val viewModel: LoginViewModel = hiltViewModel()
             LoginScreen(
-                state = viewModel.state,
+                state = viewModel.state.value,
                 eventHandler = viewModel,
-                viewModel = viewModel,
                 navigateToRegistration = { navController.navigate(Route.RegistrationRoute.route) },
                 navigateToRestorePassword = { navController.navigate(Route.RestorePasswordRoute.route) },
                 onSuccessLogin = { access, refresh, username ->
@@ -152,15 +140,22 @@ fun SetupNavGraph(
                     navController.navigate(BottomNavItem.Home.route)
                 }
             )
+            showBottomBar(false)
         }
 
-        composable(Route.RegistrationRoute.route) {
-            showBottomBar(false)
+        composable(Route.RegistrationRoute.route,
+            exitTransition = {
+                if ((initialState.destination.route == Route.LoginRoute.route)) {
+                    slideOutHorizontally { -it }
+                } else {
+                    slideOutHorizontally { it }
+                }
+            }
+        ) {
             val viewModel: RegistrationViewModel = hiltViewModel()
             RegistrationScreen(
                 state = viewModel.state,
                 eventHandler = viewModel,
-                viewModel = viewModel,
                 navigateToLogin = {
                     navController.navigate(
                         Route.LoginRoute.route,
@@ -176,22 +171,22 @@ fun SetupNavGraph(
                     )
                 }
             )
+            showBottomBar(false)
         }
 
         composable(Route.RestorePasswordRoute.route) {
-            showBottomBar(false)
             val viewModel: RestorePasswordViewModel = hiltViewModel()
             RestorePasswordScreen(
                 state = viewModel.state,
                 eventHandler = viewModel,
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.navigateUp() }
             )
+            showBottomBar(false)
         }
 
-        // ********* Collection navigation *********
+        // *************************** Collection navigation ***************************
 
         composable(Route.AddToCollectionRoute.route) {
-            showBottomBar(false)
             val viewModel: AddToCollectionScreenViewModel = hiltViewModel()
             AddToCollectionScreen(
                 state = viewModel.state.value,
@@ -200,26 +195,28 @@ fun SetupNavGraph(
                 onBack = { navController.navigateUp() },
                 navigateToCreateCollection = { courseId ->
                     navController.navigate(Route.CreateCollectionRoute.getRouteWithArgument(courseId))
-                }
+                },
+                navigateToLogin = { defaultNavigateToLoginAction(navController) }
             )
+            showBottomBar(false)
         }
 
         composable(Route.CreateCollectionRoute.route) {
-            showBottomBar(false)
             val viewModel: CreateCollectionViewModel = hiltViewModel()
             CreateCollectionScreen(
                 state = viewModel.state.value,
                 eventHandler = viewModel,
-                viewModel = viewModel,
                 onBack = { navController.navigateUp() },
                 onSuccessCreate = {
                     navController.navigateUp()
                     navController.navigateUp()
-                }
+                },
+                navigateToLogin = { defaultNavigateToLoginAction(navController) }
             )
+            showBottomBar(false)
         }
 
-        // ********* Course navigation *********
+        // *************************** Course navigation ***************************
 
         composable(
             route = Route.CourseRoute.route,
@@ -227,45 +224,46 @@ fun SetupNavGraph(
             enterTransition = { fadeIn(animationSpec = tween(700)) },
             popEnterTransition = { slideInHorizontally { -1000 } }
         ) {
-            showBottomBar(false)
             CourseScreen(
                 imageLoader,
                 onBack = { navController.popBackStack() },
                 navigateToPassing = { courseId ->
                     navController.navigate(Route.CourseModulesRoute.getRouteWithArgument(courseId))
-                }
+                },
+                navigateToLogin = { defaultNavigateToLoginAction(navController) }
             )
+            showBottomBar(false)
         }
 
         composable(
             route = Route.CourseModulesRoute.route,
             arguments = Route.CourseModulesRoute.arguments
         ) {
-            showBottomBar(false)
             val viewModel: CourseModulesViewModel = hiltViewModel()
             CourseModules(
                 state = viewModel.state.value,
                 eventHandler = viewModel,
-                onBack = { navController.popBackStack() },
+                onBack = { navController.navigateUp() },
                 onModuleClick = { courseId, moduleId, moduleName ->
                     val args =
                         CourseLessonsViewModel.CourseLessonsArgs(courseId, moduleId, moduleName)
                     val argsJson = Uri.encode(Gson().toJson(args))
                     navController.navigate(Route.CourseLessonsRoute.getRouteWithArgument(argsJson))
-                }
+                },
+                navigateToLogin = { defaultNavigateToLoginAction(navController) }
             )
+            showBottomBar(false)
         }
 
         composable(
             route = Route.CourseLessonsRoute.route,
             arguments = Route.CourseLessonsRoute.arguments
         ) {
-            showBottomBar(false)
             val viewModel: CourseLessonsViewModel = hiltViewModel()
             CourseLessons(
                 state = viewModel.state.value,
                 eventHandler = viewModel,
-                onBack = { navController.popBackStack() },
+                onBack = { navController.navigateUp() },
                 onLessonClick = { courseId, moduleId, lessonId, lessonName, stepId ->
                     val args = CourseStepsViewModel.CourseStepsArgs(
                         courseId, moduleId, lessonId, lessonName, stepId
@@ -273,21 +271,24 @@ fun SetupNavGraph(
 
                     val argsJson = Uri.encode(Gson().toJson(args))
                     navController.navigate(Route.CourseStepsRoute.getRouteWithArgument(argsJson))
-                }
+                },
+                navigateToLogin = { defaultNavigateToLoginAction(navController) }
             )
+            showBottomBar(false)
         }
 
         composable(
             route = Route.CourseStepsRoute.route,
             arguments = Route.CourseStepsRoute.arguments
         ) {
-            showBottomBar(false)
             val viewModel: CourseStepsViewModel = hiltViewModel()
             CourseSteps(
                 state = viewModel.state.value,
                 eventHandler = viewModel,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.navigateUp() },
+                navigateToLogin = { defaultNavigateToLoginAction(navController) }
             )
+            showBottomBar(false)
         }
     }
 }
@@ -315,10 +316,14 @@ private fun NavGraphBuilder.bottomItemComposable(
     )
 }
 
-private fun defaultEnterTransition(): EnterTransition = slideInHorizontally { 1000 }
-
-private fun defaultExitTransition(): ExitTransition = slideOutHorizontally { 1000 }
-
 private fun bottomItemEnterTransition(): EnterTransition = fadeIn(animationSpec = tween(700))
 
 private fun bottomItemExitTransition(): ExitTransition = fadeOut(animationSpec = tween(700))
+
+private fun defaultNavigateToLoginAction(navController: NavController) {
+    navController.navigate(Route.LoginRoute.route) {
+        popUpTo(BottomNavItem.Home.route) {
+            inclusive = true
+        }
+    }
+}

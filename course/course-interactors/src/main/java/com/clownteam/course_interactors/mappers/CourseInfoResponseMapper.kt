@@ -39,7 +39,7 @@ object CourseInfoResponseMapper {
         imgUrl += input.mainInfo?.imageUrl
 
         val course = Course(
-            id = "",
+            id = input.mainInfo?.id ?: "",
             title = input.mainInfo?.title ?: "",
             authorName = input.mainInfo?.author?.username ?: "",
             imgUrl = imgUrl,

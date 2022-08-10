@@ -1,17 +1,16 @@
 package com.clownteam.ui_collectionaction.create_collection
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clownteam.collection_interactors.*
+import com.clownteam.components.UiText
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.StateHolder
+import com.clownteam.ui_collectionaction.R
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,24 +28,29 @@ class CreateCollectionViewModel @Inject constructor(
     }
 
     override val state: MutableState<CreateCollectionState> =
-        mutableStateOf(CreateCollectionState.Idle)
+        mutableStateOf(CreateCollectionState())
 
     private val courseId = savedStateHandle.get<String>(COURSE_ID_ARG_KEY)
-
-    private val resultChannel = Channel<CreateCollectionResult>()
-    val createResults = resultChannel.receiveAsFlow()
 
     override fun obtainEvent(event: CreateCollectionEvent) {
         when (event) {
             is CreateCollectionEvent.CreateCollection -> {
-                createCollectionAndAddCourse(event.title)
+                createCollectionAndAddCourse(state.value.collectionTitle)
+            }
+
+            CreateCollectionEvent.ErrorMessageShown -> {
+                state.value = state.value.copy(errorMessage = null)
+            }
+
+            is CreateCollectionEvent.TitleChanged -> {
+                state.value = state.value.copy(collectionTitle = event.newTitle)
             }
         }
     }
 
     private fun createCollectionAndAddCourse(title: String) {
         viewModelScope.launch {
-            updateState(CreateCollectionState.Loading)
+            state.value = state.value.copy(isLoading = true)
 
             val createCollectionResult = createCollectionUseCase.invoke()
 
@@ -54,17 +58,17 @@ class CreateCollectionViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleCreateCollectionResult(
+    private fun handleCreateCollectionResult(
         result: CreateCollectionUseCaseResult,
         title: String
     ) {
         when (result) {
             CreateCollectionUseCaseResult.Failed -> {
-                resultChannel.send(CreateCollectionResult.Failed)
+                updateFailedState(isNetworkError = false)
             }
 
             CreateCollectionUseCaseResult.NetworkError -> {
-                resultChannel.send(CreateCollectionResult.NetworkError)
+                updateFailedState(isNetworkError = true)
             }
 
             is CreateCollectionUseCaseResult.Success -> {
@@ -72,15 +76,13 @@ class CreateCollectionViewModel @Inject constructor(
             }
 
             CreateCollectionUseCaseResult.Unauthorized -> {
-                resultChannel.send(CreateCollectionResult.Unauthorized)
+                state.value = state.value.copy(isUnauthorized = true)
             }
         }
     }
 
     private fun updateCollectionTitle(collectionId: String, title: String) {
         viewModelScope.launch {
-            Log.d("Kmem", "collectionId: $collectionId")
-
             val args = UpdateCollectionUseCaseArgs(collectionId, title)
             val result = updateCollectionUseCase.invoke(args)
 
@@ -88,17 +90,17 @@ class CreateCollectionViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleUpdateCollectionUseCaseResult(
+    private fun handleUpdateCollectionUseCaseResult(
         result: UpdateCollectionUseCaseResult,
         collectionId: String
     ) {
         when (result) {
             UpdateCollectionUseCaseResult.Failed -> {
-                resultChannel.send(CreateCollectionResult.Failed)
+                updateFailedState(isNetworkError = false)
             }
 
             UpdateCollectionUseCaseResult.NetworkError -> {
-                resultChannel.send(CreateCollectionResult.NetworkError)
+                updateFailedState(isNetworkError = true)
             }
 
             UpdateCollectionUseCaseResult.Success -> {
@@ -106,7 +108,7 @@ class CreateCollectionViewModel @Inject constructor(
             }
 
             UpdateCollectionUseCaseResult.Unauthorized -> {
-                resultChannel.send(CreateCollectionResult.Unauthorized)
+                updateUnauthorizedState()
             }
         }
     }
@@ -122,38 +124,41 @@ class CreateCollectionViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleAddCourseToCollectionUseCaseResult(result: AddCourseToCollectionUseCaseResult) {
-        when(result) {
+    private fun handleAddCourseToCollectionUseCaseResult(result: AddCourseToCollectionUseCaseResult) {
+        when (result) {
             AddCourseToCollectionUseCaseResult.Failed -> {
-                resultChannel.send(CreateCollectionResult.Failed)
+                updateFailedState(isNetworkError = false)
             }
 
             AddCourseToCollectionUseCaseResult.NetworkError -> {
-                resultChannel.send(CreateCollectionResult.NetworkError)
+                updateFailedState(isNetworkError = true)
             }
 
             AddCourseToCollectionUseCaseResult.Success -> {
-                resultChannel.send(CreateCollectionResult.Success)
-                updateState(CreateCollectionState.Idle)
+                updateSuccessState()
             }
 
             AddCourseToCollectionUseCaseResult.Unauthorized -> {
-                resultChannel.send(CreateCollectionResult.Unauthorized)
+                updateUnauthorizedState()
             }
         }
     }
 
-    private fun updateState(newState: CreateCollectionState) {
-        state.value = newState
+    private fun updateFailedState(isNetworkError: Boolean) {
+        val errorMessage = if (isNetworkError) {
+            UiText.StringResource(R.string.network_error_message)
+        } else {
+            UiText.StringResource(R.string.create_collection_failed_message)
+        }
+
+        state.value = state.value.copy(errorMessage = errorMessage)
     }
 
-    sealed class CreateCollectionResult {
-        object Success : CreateCollectionResult()
+    private fun updateUnauthorizedState() {
+        state.value = state.value.copy(isUnauthorized = true)
+    }
 
-        object Failed : CreateCollectionResult()
-
-        object NetworkError : CreateCollectionResult()
-
-        object Unauthorized : CreateCollectionResult()
+    private fun updateSuccessState() {
+        state.value = state.value.copy(isSuccess = true)
     }
 }

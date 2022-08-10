@@ -1,5 +1,6 @@
 package com.clownteam.ui_coursepassing.course_modules
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -62,6 +63,7 @@ class CourseModulesViewModel @Inject constructor(
     }
 
     private fun handleGetCoursesModulesResult(result: GetCourseModulesUseCaseResult) {
+        if (state.value is CourseModulesState.Unauthorized) return
         when (result) {
             GetCourseModulesUseCaseResult.Failed -> {
                 updateState(CourseModulesState.Error)
@@ -85,6 +87,7 @@ class CourseModulesViewModel @Inject constructor(
     }
 
     private fun handleCourseInfoUseCaseResult(result: GetCourseInfoByIdUseCaseResult) {
+        if (state.value is CourseModulesState.Unauthorized) return
         when (result) {
             GetCourseInfoByIdUseCaseResult.Failed -> {
                 updateState(CourseModulesState.Error)
@@ -108,6 +111,7 @@ class CourseModulesViewModel @Inject constructor(
     }
 
     private fun updateState(newState: CourseModulesState) {
+        Log.d("Kmem", "newState $newState")
         state.value = newState
     }
 }

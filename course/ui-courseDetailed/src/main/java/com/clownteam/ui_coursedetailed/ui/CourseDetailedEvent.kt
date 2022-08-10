@@ -4,7 +4,8 @@ sealed class CourseDetailedEvent {
 
     object GetCourseInfo: CourseDetailedEvent()
 
-    object StartLearning: CourseDetailedEvent()
+    object LearnCourse: CourseDetailedEvent()
 
-    object ContinueLearning: CourseDetailedEvent()
+    object LearningStarted: CourseDetailedEvent()
+
 }

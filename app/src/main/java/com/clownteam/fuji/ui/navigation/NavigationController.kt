@@ -7,6 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import com.clownteam.fuji.ui.navigation.animation.defaultEnterTransition
+import com.clownteam.fuji.ui.navigation.animation.defaultExitTransition
+import com.clownteam.fuji.ui.navigation.animation.defaultPopEnterTransition
+import com.clownteam.fuji.ui.navigation.animation.defaultPopExitTransition
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
@@ -44,12 +48,7 @@ data class NavigationControllerScreen @OptIn(ExperimentalAnimationApi::class) co
     val arguments: List<NamedNavArgument> = emptyList(),
     val enterTransition: (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = { defaultEnterTransition() },
     val exitTransition: (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = { defaultExitTransition() },
-    val popEnterTransition: (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = enterTransition,
-    val popExitTransition: (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = exitTransition,
+    val popEnterTransition: (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = { defaultPopEnterTransition() },
+    val popExitTransition: (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = { defaultPopExitTransition() },
     val content: @Composable (NavController, Router?, Bundle?) -> Unit
 )
-
-private fun defaultEnterTransition(): EnterTransition = slideInHorizontally { 1000 }
-
-private fun defaultExitTransition(): ExitTransition = slideOutHorizontally { 1000 }
-

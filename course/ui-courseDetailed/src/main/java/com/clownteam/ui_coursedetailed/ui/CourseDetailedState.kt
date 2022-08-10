@@ -7,7 +7,14 @@ sealed class CourseDetailedState {
 
     object Loading : CourseDetailedState()
 
-    data class Data(val course: Course, val courseInfo: CourseInfoUI) : CourseDetailedState()
+    /**
+     * @param shouldStartToLearn Determines if UI should navigate to learning course or not
+     */
+    data class Data(
+        val course: Course,
+        val courseInfo: CourseInfoUI,
+        var shouldStartToLearn: Boolean = false
+    ) : CourseDetailedState()
 
     object Error : CourseDetailedState()
 

@@ -1,6 +1,5 @@
 package com.clownteam.ui_courselist.ui
 
-import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,8 +34,13 @@ import com.clownteam.ui_courselist.components.ColumnCourseListItem
 import com.clownteam.ui_courselist.components.CourseListLazyRow
 import com.clownteam.ui_courselist.components.SimpleCourseListItem
 import com.clownteam.ui_courselist.components.TitleText
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+
+private sealed class NavigationRoute {
+    class CourseDetail(val courseId: String) : NavigationRoute()
+    class AddToCollection(val courseId: String) : NavigationRoute()
+    object Login : NavigationRoute()
+}
 
 @OptIn(ExperimentalMaterialApi::class)
 @ExperimentalComposeUiApi
@@ -46,18 +49,23 @@ import kotlinx.coroutines.launch
 fun CourseList(
     state: CourseListState,
     eventHandler: EventHandler<CourseListEvent>,
-    viewModel: CourseListViewModel,
     navigateToDetailScreen: (String) -> Unit,
     navigateToAddToCollection: (String) -> Unit,
     navigateToLogin: () -> Unit,
     imageLoader: ImageLoader
 ) {
-    val context = LocalContext.current
+    var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
 
-    LaunchedEffect(key1 = context) {
-        viewModel.events.collectLatest { event ->
-            when (event) {
-                CourseListViewModel.CourseListViewModelEvent.Unauthorized -> {
+    LaunchedEffect(key1 = navigationRoute) {
+        navigationRoute?.let {
+            when (it) {
+                is NavigationRoute.AddToCollection -> {
+                    navigateToAddToCollection(it.courseId)
+                }
+                is NavigationRoute.CourseDetail -> {
+                    navigateToDetailScreen(it.courseId)
+                }
+                NavigationRoute.Login -> {
                     navigateToLogin()
                 }
             }
@@ -79,7 +87,9 @@ fun CourseList(
                 ) {
                     coroutineScope.launch {
                         bottomState.hide()
-                        navigateToAddToCollection(selectedCourse.value?.id ?: "")
+                        navigationRoute =
+                            NavigationRoute.AddToCollection(selectedCourse.value?.id ?: "")
+
                         selectedCourse.value = null
                     }
                 }
@@ -88,7 +98,6 @@ fun CourseList(
             sheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
             sheetBackgroundColor = MaterialTheme.colors.background
         ) {
-            Log.d("kmem", "$state")
             when (state) {
                 is CourseListState.Data -> {
                     Column(
@@ -103,9 +112,11 @@ fun CourseList(
                                 itemList = state.myCourses,
                                 itemComposable = { item ->
                                     SimpleCourseListItem(
-                                        item,
-                                        imageLoader,
-                                        navigateToDetailScreen
+                                        course = item,
+                                        imageLoader = imageLoader,
+                                        onClick = { courseId ->
+                                            navigationRoute = NavigationRoute.CourseDetail(courseId)
+                                        }
                                     )
                                 }
                             )
@@ -119,9 +130,11 @@ fun CourseList(
                             ) {
                                 for (course in state.popularCourses) {
                                     ColumnCourseListItem(
-                                        course,
-                                        imageLoader,
-                                        navigateToDetailScreen,
+                                        course = course,
+                                        imageLoader = imageLoader,
+                                        onClick = {
+                                            navigationRoute = NavigationRoute.CourseDetail(it)
+                                        },
                                         onLongClick = { courseId ->
                                             coroutineScope.launch {
                                                 selectedCourse.value =
@@ -137,6 +150,7 @@ fun CourseList(
                     }
                 }
 
+
                 is CourseListState.Error -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Button(onClick = { eventHandler.obtainEvent(CourseListEvent.GetCourses) }) {
@@ -148,6 +162,10 @@ fun CourseList(
                 is CourseListState.Loading -> {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
+
+                CourseListState.Unauthorized -> {
+                    navigationRoute = NavigationRoute.Login
+                }
             }
         }
     }
@@ -155,57 +173,7 @@ fun CourseList(
 
 @Composable
 private fun BottomSheetContent(course: Course?, imageLoader: ImageLoader, onAddClick: () -> Unit) {
-    if (course != null) {
-        Column {
-            Row(modifier = Modifier.padding(horizontal = 18.dp, vertical = 22.dp)) {
-                Image(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(RoundedCornerShape(CornerSize(12.dp)))
-                        .background(MaterialTheme.colors.primary),
-                    painter = rememberAsyncImagePainter(
-                        course.imgUrl,
-                        imageLoader = imageLoader
-                    ),
-                    contentDescription = stringResource(R.string.course_image_content_description),
-                    contentScale = ContentScale.Crop
-                )
-
-                Column(modifier = Modifier.padding(start = 22.dp)) {
-                    AutoResizeText(
-                        text = course.title,
-                        style = MaterialTheme.typography.h5,
-                        fontWeight = FontWeight.Bold,
-                        fontSizeRange = FontSizeRange(min = 14.sp, max = 18.sp)
-                    )
-
-                    Spacer(modifier = Modifier.size(2.dp))
-
-                    Text(
-                        text = course.authorName,
-                        style = MaterialTheme.typography.caption,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Gray
-                    )
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(MaterialTheme.colors.secondary)
-            )
-
-            DefaultButton(
-                stringResource(R.string.add_to_collection_btn_text),
-                onClick = onAddClick,
-                modifier = Modifier
-                    .padding(vertical = 34.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-        }
-    } else {
+    if (course == null) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -214,7 +182,60 @@ private fun BottomSheetContent(course: Course?, imageLoader: ImageLoader, onAddC
         ) {
             Text(stringResource(R.string.bottom_sheet_error_text))
         }
+
+        return
+    }
+
+    Column {
+        Row(modifier = Modifier.padding(horizontal = 18.dp, vertical = 22.dp)) {
+            Image(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(CornerSize(12.dp)))
+                    .background(MaterialTheme.colors.primary),
+                painter = rememberAsyncImagePainter(
+                    course.imgUrl,
+                    imageLoader = imageLoader
+                ),
+                contentDescription = stringResource(R.string.course_image_content_description),
+                contentScale = ContentScale.Crop
+            )
+
+            Column(modifier = Modifier.padding(start = 22.dp)) {
+                AutoResizeText(
+                    text = course.title,
+                    style = MaterialTheme.typography.h5,
+                    fontWeight = FontWeight.Bold,
+                    fontSizeRange = FontSizeRange(min = 14.sp, max = 18.sp)
+                )
+
+                Spacer(modifier = Modifier.size(2.dp))
+
+                Text(
+                    text = course.authorName,
+                    style = MaterialTheme.typography.caption,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Gray
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(MaterialTheme.colors.secondary)
+        )
+
+        DefaultButton(
+            stringResource(R.string.add_to_collection_btn_text),
+            onClick = onAddClick,
+            modifier = Modifier
+                .padding(vertical = 34.dp)
+                .align(Alignment.CenterHorizontally)
+        )
     }
 }
+
 
 

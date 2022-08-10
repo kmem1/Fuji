@@ -7,7 +7,7 @@ open class PaginationResponse<T> {
     val count: Int? = null
 
     @SerializedName("next")
-    val next: Int? = null
+    val next: String? = null
 
     @SerializedName("pages")
     val pages: Int? = null

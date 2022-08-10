@@ -11,7 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.ImageLoader
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.clownteam.collection_domain.CourseCollection
 import com.clownteam.components.AutoResizeText
 import com.clownteam.components.DefaultButton
@@ -32,62 +32,103 @@ import com.clownteam.components.header.DefaultHeader
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.ui_collectionaction.R
 
+private sealed class NavigationRoute {
+    object Login : NavigationRoute()
+    object Back : NavigationRoute()
+    class CreateCollection(val courseId: String) : NavigationRoute()
+}
+
 @Composable
 fun AddToCollectionScreen(
     state: AddToCollectionScreenState,
     eventHandler: EventHandler<AddToCollectionScreenEvent>,
     imageLoader: ImageLoader,
     onBack: () -> Unit,
-    navigateToCreateCollection: (courseId: String) -> Unit
+    navigateToCreateCollection: (courseId: String) -> Unit,
+    navigateToLogin: () -> Unit
 ) {
-    when (state) {
-        is AddToCollectionScreenState.Data -> {
-            Column(modifier = Modifier.fillMaxSize()) {
-                DefaultHeader(titleText = "Выбор подборки", onArrowClick = onBack)
+    var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
 
-                Column(modifier = Modifier.fillMaxSize().padding(top = 24.dp)) {
-                    DefaultButton(
-                        text = stringResource(R.string.create_collection_btn_text),
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        onClick = { navigateToCreateCollection(state.courseId) }
-                    )
+    LaunchedEffect(key1 = navigationRoute) {
+        navigationRoute?.let {
+            when (it) {
+                NavigationRoute.Back -> {
+                    onBack()
+                }
 
-                    Spacer(Modifier.size(40.dp))
+                NavigationRoute.Login -> {
+                    navigateToLogin()
+                }
 
-                    if (state.collections.isNotEmpty()) {
-                        CollectionList(state.collections, imageLoader) {
-                            eventHandler.obtainEvent(
-                                AddToCollectionScreenEvent.AddToCollection(it)
-                            )
-                        }
-                    } else {
-                        Text(
-                            stringResource(R.string.no_collections_error_text),
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
-                    }
+                is NavigationRoute.CreateCollection -> {
+                    navigateToCreateCollection(it.courseId)
                 }
             }
         }
+    }
 
-        AddToCollectionScreenState.Error -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                DefaultButton(text = "Retry", onClick = { })
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (state) {
+            is AddToCollectionScreenState.Data -> {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    DefaultHeader(
+                        titleText = "Выбор подборки",
+                        onArrowClick = { navigationRoute = NavigationRoute.Back }
+                    )
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 24.dp)
+                    ) {
+                        DefaultButton(
+                            text = stringResource(R.string.create_collection_btn_text),
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            onClick = {
+                                navigationRoute = NavigationRoute.CreateCollection(state.courseId)
+                            }
+                        )
+
+                        Spacer(Modifier.size(40.dp))
+
+                        if (state.collections.isNotEmpty()) {
+                            CollectionList(state.collections, imageLoader) {
+                                eventHandler.obtainEvent(
+                                    AddToCollectionScreenEvent.AddToCollection(it)
+                                )
+                            }
+                        } else {
+                            Text(
+                                stringResource(R.string.no_collections_error_text),
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                        }
+                    }
+                }
             }
-        }
 
-        AddToCollectionScreenState.Loading -> {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-        }
-
-        AddToCollectionScreenState.Unauthorized -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                DefaultButton(text = "Unauthorized", onClick = { })
+            AddToCollectionScreenState.Error -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    DefaultButton(
+                        text = "Retry",
+                        onClick = {
+                            eventHandler.obtainEvent(AddToCollectionScreenEvent.GetMyCollections)
+                        }
+                    )
+                }
             }
-        }
 
-        AddToCollectionScreenState.SuccessAddCourse -> {
-            onBack()
+            AddToCollectionScreenState.Loading -> {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
+
+            AddToCollectionScreenState.Unauthorized -> {
+                navigationRoute = NavigationRoute.Login
+            }
+
+            AddToCollectionScreenState.SuccessAddCourse -> {
+                navigationRoute = NavigationRoute.Back
+            }
         }
     }
 }
@@ -105,7 +146,9 @@ private fun CollectionList(
         items(collections) { collection ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
                     .clickable { onCollectionClick(collection) }
             ) {
                 Image(
@@ -113,7 +156,7 @@ private fun CollectionList(
                         .size(65.dp)
                         .clip(RoundedCornerShape(CornerSize(10.dp)))
                         .background(MaterialTheme.colors.primary),
-                    painter = rememberImagePainter(
+                    painter = rememberAsyncImagePainter(
                         collection.imageUrl,
                         imageLoader = imageLoader
                     ),

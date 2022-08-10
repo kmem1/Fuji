@@ -13,39 +13,42 @@ import com.clownteam.ui_profile.ProfileScreen
 import com.clownteam.ui_profile.ProfileViewModel
 
 @Composable
-fun ProfileContainer(externalRouter: Router, showBottomBar: (Boolean) -> Unit) {
+fun ProfileContainer(
+    externalRouter: Router,
+    showBottomBar: (Boolean) -> Unit,
+    navigateToLogin: () -> Unit
+) {
     NavigationController(
         startDestination = Route.ProfileRoute.route,
         router = externalRouter,
         screens = listOf(
-            createProfileNavigationControllerScreen(showBottomBar)
+            createProfileNavigationControllerScreen(showBottomBar, navigateToLogin)
         )
     )
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-private fun createProfileNavigationControllerScreen(showBottomBar: (Boolean) -> Unit): NavigationControllerScreen {
+private fun createProfileNavigationControllerScreen(
+    showBottomBar: (Boolean) -> Unit,
+    navigateToLogin: () -> Unit
+): NavigationControllerScreen {
     return NavigationControllerScreen(
         route = Route.ProfileRoute.route
-    ) { navController, externalRouter, _ ->
+    ) { navController, _, _ ->
         showBottomBar(true)
-        OpenProfileScreen(navController, externalRouter)
+        OpenProfileScreen(navController, navigateToLogin)
     }
 }
 
 @Composable
-private fun OpenProfileScreen(navController: NavController, externalRouter: Router?) {
+private fun OpenProfileScreen(
+    navController: NavController,
+    navigateToLogin: () -> Unit
+) {
     val viewModel: ProfileViewModel = hiltViewModel()
     ProfileScreen(
         state = viewModel.state,
         eventHandler = viewModel,
-        viewModel = viewModel,
-        navigateToLogin = {
-            externalRouter?.routeTo(Route.LoginRoute.route) {
-                popUpTo(BottomNavItem.Home.route) {
-                    inclusive = true
-                }
-            }
-        }
+        navigateToLogin = navigateToLogin
     )
 }

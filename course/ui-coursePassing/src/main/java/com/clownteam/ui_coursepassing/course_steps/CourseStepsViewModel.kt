@@ -84,6 +84,7 @@ class CourseStepsViewModel @Inject constructor(
             val modulesResult = getCourseSteps.invoke(params)
 
             handleGetCourseStepsResult(modulesResult)
+//            handleGetCourseStepResult(GetCourseStepUseCaseResult.Unauthorized)
         }
     }
 
@@ -109,6 +110,7 @@ class CourseStepsViewModel @Inject constructor(
     }
 
     private fun handleGetCourseStepsResult(result: GetCourseStepsUseCaseResult) {
+        if (state.value is CourseStepsState.Unauthorized) return
         when (result) {
             GetCourseStepsUseCaseResult.Failed -> {
                 updateState(CourseStepsState.Error)
@@ -145,6 +147,7 @@ class CourseStepsViewModel @Inject constructor(
     }
 
     private fun handleGetCourseStepResult(result: GetCourseStepUseCaseResult) {
+        if (state.value is CourseStepsState.Unauthorized) return
         when (result) {
             GetCourseStepUseCaseResult.Failed -> {
                 updateState(CourseStepsState.Error)

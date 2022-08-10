@@ -32,6 +32,6 @@ internal fun AuthorizationTextClickable(
         modifier = modifier.then(Modifier.clickable { onClick() }),
         color = MaterialTheme.colors.secondary,
         style = MaterialTheme.typography.body2,
-        fontWeight = FontWeight.Medium
+        fontWeight = FontWeight.Medium,
     )
 }
