@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_icon_content_description">Search Icon</string>
+    <string name="search_bar_hint">Поиск</string>
+    <string name="empty_search_query_message">Введите название того, что вы ищете</string>
+</resources>

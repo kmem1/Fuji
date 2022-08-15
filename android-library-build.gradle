@@ -62,6 +62,9 @@ dependencies{
     implementation Compose.tooling
     implementation Compose.navigation
 
+    implementation Accompanist.pager
+    implementation Accompanist.pagerIndicators
+
     implementation Kotlinx.coroutinesCore
 
     implementation Google.material

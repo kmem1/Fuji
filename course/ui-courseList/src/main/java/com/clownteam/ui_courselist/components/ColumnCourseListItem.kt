@@ -22,9 +22,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.ImageLoader
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.clownteam.components.AutoResizeText
 import com.clownteam.components.FontSizeRange
+import com.clownteam.components.utils.getMembersCountString
 import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.R
 
@@ -50,7 +51,7 @@ fun ColumnCourseListItem(
                 .clip(RoundedCornerShape(corner = CornerSize(12.dp)))
                 .background(MaterialTheme.colors.primary)
                 .align(Alignment.CenterVertically),
-            painter = rememberImagePainter(
+            painter = rememberAsyncImagePainter(
                 course.imgUrl,
                 imageLoader = imageLoader
             ),
@@ -133,9 +134,3 @@ fun ColumnCourseListItem(
     }
 }
 
-private fun getMembersCountString(count: Int) =
-    if (count > 10000) {
-        "${count / 1000}K"
-    } else {
-        "$count"
-    }

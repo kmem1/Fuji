@@ -20,6 +20,7 @@ val Gotham = FontFamily(
 )
 
 val GothamTypography = Typography(
+    defaultFontFamily = Gotham,
     h1 = TextStyle(
         fontFamily = Gotham,
         fontWeight = FontWeight.Medium,

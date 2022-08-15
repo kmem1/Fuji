@@ -79,12 +79,19 @@ dependencies {
     implementation(project(Modules.ui_collectionDetailed))
     implementation(project(Modules.ui_collectionAction))
 
+    implementation(project(Modules.searchDomain))
+    implementation(project(Modules.searchInteractors))
+    implementation(project(Modules.searchDatasource))
+    implementation(project(Modules.ui_search))
+
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.coreSplashScreen)
     implementation(AndroidX.appCompat)
     implementation(AndroidX.constraintLayout)
 
     implementation(Accompanist.animations)
+    implementation(Accompanist.pager)
+    implementation(Accompanist.pagerIndicators)
 
     implementation(Google.material)
 

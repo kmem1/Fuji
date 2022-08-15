@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="back_button_content_description">Back button</string>
+    <string name="course_image_content_description">Course logo</string>
+    <string name="star_icon_content_description">Star Icon</string>
+    <string name="people_icon_content_description">People icon</string>
+    <string name="free">Бесплатно</string>
+    <plurals name="price_rubles">
+        <item quantity="zero">Бесплатно</item>
+        <item quantity="other">%1$d ₽</item>
+    </plurals>
 </resources>

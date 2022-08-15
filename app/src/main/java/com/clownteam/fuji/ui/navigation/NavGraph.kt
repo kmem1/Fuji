@@ -18,7 +18,6 @@ import com.clownteam.fuji.ui.navigation.bottom_navigation.BottomNavItem
 import com.clownteam.fuji.ui.navigation.screens.archive.ArchiveContainer
 import com.clownteam.fuji.ui.navigation.screens.course.CourseScreen
 import com.clownteam.fuji.ui.navigation.screens.profile.ProfileContainer
-import com.clownteam.fuji.ui.navigation.screens.search.SearchScreen
 import com.clownteam.ui_authorization.login.LoginScreen
 import com.clownteam.ui_authorization.login.LoginViewModel
 import com.clownteam.ui_authorization.registration.RegistrationScreen
@@ -37,6 +36,8 @@ import com.clownteam.ui_coursepassing.course_modules.CourseModules
 import com.clownteam.ui_coursepassing.course_modules.CourseModulesViewModel
 import com.clownteam.ui_coursepassing.course_steps.CourseSteps
 import com.clownteam.ui_coursepassing.course_steps.CourseStepsViewModel
+import com.clownteam.ui_search.ui.SearchScreen
+import com.clownteam.ui_search.ui.SearchViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.gson.Gson
@@ -85,7 +86,14 @@ fun SetupNavGraph(
         }
 
         bottomItemComposable(BottomNavItem.Search.route) {
-            SearchScreen()
+            val viewModel: SearchViewModel = hiltViewModel()
+            SearchScreen(
+                state = viewModel.state,
+                eventHandler = viewModel,
+                imageLoader = imageLoader,
+                navigateToLogin = { defaultNavigateToLoginAction(navController) },
+                navigateToCourse = { courseId -> }
+            )
             showBottomBar(true)
         }
 

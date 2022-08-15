@@ -4,11 +4,11 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.compose.rememberNavController
 import coil.ImageLoader
 import com.clownteam.fuji.ui.navigation.SetupNavGraph
 import com.clownteam.fuji.ui.navigation.bottom_navigation.AppBottomNavigation
@@ -35,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var imageLoader: ImageLoader
 
+    @OptIn(ExperimentalLayoutApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { viewModel.isLoading.value }
@@ -45,9 +45,21 @@ class MainActivity : AppCompatActivity() {
             FujiTheme {
                 val navController = rememberAnimatedNavController()
                 var bottomBarState by remember { mutableStateOf(true) }
-                Scaffold(bottomBar = { if (bottomBarState) AppBottomNavigation(navController) }) { innerPadding ->
+                val isImeVisible = WindowInsets.isImeVisible
+                Scaffold(
+                    bottomBar = {
+                        AnimatedVisibility(
+                            visible = bottomBarState && !isImeVisible,
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        ) {
+                            AppBottomNavigation(navController)
+                        }
+                    }
+                ) { innerPadding ->
                     Box(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
                             .padding(bottom = innerPadding.calculateBottomPadding())
                     ) {
                         SetupNavGraph(navController, imageLoader) { value ->
