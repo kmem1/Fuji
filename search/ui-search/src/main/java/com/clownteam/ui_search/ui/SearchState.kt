@@ -7,7 +7,9 @@ import com.clownteam.search_domain.SearchResultItem
 data class SearchState(
     val isLoading: Boolean = false,
     val query: String = "",
+    val shouldSearchItems: Boolean = false,
     val resultItems: List<SearchResultItem> = emptyList(),
     val searchFilter: SearchFilter = SearchFilter.Courses,
-    val errorMessage: UiText? = null
+    val errorMessage: UiText? = null,
+    val isUnauthorized: Boolean = false
 )

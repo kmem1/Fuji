@@ -13,7 +13,7 @@ open class PaginationResponse<T> {
     val pages: Int? = null
 
     @SerializedName("previous")
-    val previous: Int? = null
+    val previous: String? = null
 
     @SerializedName("results")
     val results: List<T>? = null

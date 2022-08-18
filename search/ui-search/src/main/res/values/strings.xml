@@ -3,4 +3,7 @@
     <string name="search_icon_content_description">Search Icon</string>
     <string name="search_bar_hint">Поиск</string>
     <string name="empty_search_query_message">Введите название того, что вы ищете</string>
+    <string name="nothing_found_message">По вашему запросу ничего не найдено</string>
+    <string name="on_failed_search_message">Ошибка подключения к серверу</string>
+    <string name="collection_label">Подборка</string>
 </resources>

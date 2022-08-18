@@ -8,6 +8,6 @@ import com.clownteam.profile_datasource.network.models.ProfileResponse
 class ProfileServiceImpl(private val api: ProfileApi) : ProfileService {
 
     override suspend fun getProfileData(token: String): NetworkResponse<ProfileResponse> =
-        baseRequest { api.getProfile("Bearer $token") }
+        baseRequest { api.getProfile(token) }
 
 }

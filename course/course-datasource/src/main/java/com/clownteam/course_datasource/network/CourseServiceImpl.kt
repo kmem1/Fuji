@@ -14,37 +14,37 @@ import com.clownteam.course_datasource.network.models.get_user_courses.GetUserCo
 class CourseServiceImpl(private val api: CourseApi) : CourseService {
 
     override suspend fun getCourses(token: String): NetworkResponse<GetCoursesResponse> =
-        baseRequest { api.getCourses("Bearer $token") }
+        baseRequest { api.getCourses(token) }
 
     override suspend fun getUserCourses(
         token: String,
         userPath: String
     ): NetworkResponse<GetUserCoursesResponse> =
-        baseRequest { api.getUserCourses("Bearer $token", userPath) }
+        baseRequest { api.getUserCourses(token, userPath) }
 
     override suspend fun startLearningCourse(
         token: String,
         courseId: String
-    ): NetworkResponse<Any> = baseRequest { api.startLearningCourse("Bearer $token", courseId) }
+    ): NetworkResponse<Any> = baseRequest { api.startLearningCourse(token, courseId) }
 
     override suspend fun getCourseInfo(
         token: String,
         id: String
     ): NetworkResponse<CourseInfoResponse> =
-        baseRequest { api.getCourseInfo("Bearer $token", id) }
+        baseRequest { api.getCourseInfo(token, id) }
 
     override suspend fun getCourseModules(
         token: String,
         courseId: String
     ): NetworkResponse<CourseModulesResponse> =
-        baseRequest { api.getCourseModules("Bearer $token", courseId) }
+        baseRequest { api.getCourseModules(token, courseId) }
 
     override suspend fun getCourseLessons(
         token: String,
         courseId: String,
         moduleId: String
     ): NetworkResponse<CourseLessonsResponse> =
-        baseRequest { api.getCourseLessons("Bearer $token", courseId, moduleId) }
+        baseRequest { api.getCourseLessons(token, courseId, moduleId) }
 
     override suspend fun getCourseSteps(
         token: String,
@@ -53,7 +53,7 @@ class CourseServiceImpl(private val api: CourseApi) : CourseService {
         lessonId: String,
         stepId: String
     ): NetworkResponse<CourseStepsResponse> =
-        baseRequest { api.getCourseSteps("Bearer $token", courseId, moduleId, lessonId, stepId) }
+        baseRequest { api.getCourseSteps(token, courseId, moduleId, lessonId, stepId) }
 
     override suspend fun getCourseStep(
         token: String,
@@ -62,5 +62,5 @@ class CourseServiceImpl(private val api: CourseApi) : CourseService {
         lessonId: String,
         stepId: String
     ): NetworkResponse<CourseStepResponse> =
-        baseRequest { api.getCourseStep("Bearer $token", courseId, moduleId, lessonId, stepId) }
+        baseRequest { api.getCourseStep(token, courseId, moduleId, lessonId, stepId) }
 }

@@ -13,19 +13,19 @@ import com.clownteam.core.network.baseRequest
 class CollectionServiceImpl(private val api: CollectionApi) : CollectionService {
 
     override suspend fun getCollections(token: String): NetworkResponse<GetCollectionsResponse> =
-        baseRequest { api.getCollections(createBearerToken(token)) }
+        baseRequest { api.getCollections(token) }
 
     override suspend fun getCollection(
         token: String,
         collectionId: String
     ): NetworkResponse<GetCollectionResponse> =
-        baseRequest { api.getCollection(createBearerToken(token), collectionId) }
+        baseRequest { api.getCollection(token, collectionId) }
 
     override suspend fun getUserCollections(
         token: String,
         userPath: String
     ): NetworkResponse<GetUserCollectionsResponse> =
-        baseRequest { api.getUserCollections(createBearerToken(token), userPath) }
+        baseRequest { api.getUserCollections(token, userPath) }
 
     override suspend fun addCourseToCollection(
         token: String,
@@ -34,23 +34,20 @@ class CollectionServiceImpl(private val api: CollectionApi) : CollectionService 
     ): NetworkResponse<Any> =
         baseRequest {
             api.addCourseToCollection(
-                createBearerToken(token),
+                token,
                 courseId,
                 AddCourseToCollectionBody(collectionId)
             )
         }
 
     override suspend fun createCollection(token: String): NetworkResponse<CreateCollectionResponse> =
-        baseRequest { api.createCollection(createBearerToken(token)) }
+        baseRequest { api.createCollection(token) }
 
     override suspend fun updateCollection(
         token: String,
         collectionId: String,
         body: UpdateCollectionResponseBody
     ): NetworkResponse<Any> =
-        baseRequest { api.updateCollection(createBearerToken(token), collectionId, body) }
+        baseRequest { api.updateCollection(token, collectionId, body) }
 
-    private fun createBearerToken(token: String): String {
-        return "Bearer $token"
-    }
 }

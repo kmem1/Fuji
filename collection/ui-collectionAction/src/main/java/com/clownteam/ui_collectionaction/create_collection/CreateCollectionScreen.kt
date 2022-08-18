@@ -1,5 +1,6 @@
 package com.clownteam.ui_collectionaction.create_collection
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -98,6 +100,8 @@ fun CreateCollectionScreen(
                 .padding(bottom = 75.dp)
         )
 
+        var isTextFieldFocused by remember { mutableStateOf(false) }
+
         TextField(
             value = state.collectionTitle,
             onValueChange = { eventHandler.obtainEvent(CreateCollectionEvent.TitleChanged(it)) },
@@ -106,6 +110,9 @@ fun CreateCollectionScreen(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
+                    val animatedColor =
+                        animateColorAsState(if (isTextFieldFocused) Color.Gray else Color.White)
+
                     Text(
                         "Название",
                         style = LocalTextStyle.current.copy(
@@ -113,6 +120,7 @@ fun CreateCollectionScreen(
                             fontSize = 32.sp,
                             fontWeight = FontWeight.Medium
                         ),
+                        color = animatedColor.value
                     )
                 }
             },
@@ -129,8 +137,9 @@ fun CreateCollectionScreen(
                     end.linkTo(parent.end)
                 }
                 .fillMaxWidth()
-                .padding(horizontal = 26.dp),
-            colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent)
+                .padding(horizontal = 26.dp)
+                .onFocusChanged { isTextFieldFocused = it.isFocused },
+            colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, cursorColor = Color.White)
         )
 
         DefaultButton(

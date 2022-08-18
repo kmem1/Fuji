@@ -1,4 +1,4 @@
-package com.clownteam.search_datasource.models
+package com.clownteam.search_datasource.models.get_courses
 
 import com.google.gson.annotations.SerializedName
 
@@ -22,7 +22,9 @@ data class SearchCourseResultItem(
     @SerializedName("status_progress")
     val statusProgress: String?,
     @SerializedName("title")
-    val title: String?
+    val title: String?,
+    @SerializedName("price")
+    val price: Double?
 )
 
 data class AuthorModel(

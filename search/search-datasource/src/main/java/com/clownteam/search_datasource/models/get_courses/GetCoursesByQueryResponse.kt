@@ -1,4 +1,4 @@
-package com.clownteam.search_datasource.models
+package com.clownteam.search_datasource.models.get_courses
 
 import com.clownteam.core.network.PaginationResponse
 

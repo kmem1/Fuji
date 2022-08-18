@@ -13,6 +13,9 @@ object AndroidX {
 
     private const val lifecycleVmKtxVersion = "2.4.0-alpha02"
     const val lifecycleVmKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVmKtxVersion"
+
+    private const val pagingVersion = "1.0.0-alpha14"
+    const val paging = "androidx.paging:paging-compose:$pagingVersion"
 }
 
 object AndroidXTest {

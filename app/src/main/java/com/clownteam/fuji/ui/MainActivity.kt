@@ -45,14 +45,18 @@ class MainActivity : AppCompatActivity() {
             FujiTheme {
                 val navController = rememberAnimatedNavController()
                 var bottomBarState by remember { mutableStateOf(true) }
+//                var animateBottomBar by remember { mutableStateOf(false) }
                 val isImeVisible = WindowInsets.isImeVisible
                 Scaffold(
                     bottomBar = {
-                        AnimatedVisibility(
-                            visible = bottomBarState && !isImeVisible,
-                            enter = fadeIn(),
-                            exit = fadeOut()
-                        ) {
+//                        AnimatedVisibility(
+//                            visible = bottomBarState && !isImeVisible,
+//                            enter = fadeIn(),
+//                            exit = fadeOut()
+//                        ) {
+//                            AppBottomNavigation(navController)
+//                        }
+                        if (bottomBarState && !isImeVisible) {
                             AppBottomNavigation(navController)
                         }
                     }

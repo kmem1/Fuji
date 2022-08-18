@@ -15,7 +15,6 @@ import com.clownteam.fuji.ui.navigation.animation.defaultExitTransition
 import com.clownteam.fuji.ui.navigation.animation.defaultPopEnterTransition
 import com.clownteam.fuji.ui.navigation.animation.defaultPopExitTransition
 import com.clownteam.fuji.ui.navigation.bottom_navigation.BottomNavItem
-import com.clownteam.fuji.ui.navigation.screens.archive.ArchiveContainer
 import com.clownteam.fuji.ui.navigation.screens.course.CourseScreen
 import com.clownteam.fuji.ui.navigation.screens.profile.ProfileContainer
 import com.clownteam.ui_authorization.login.LoginScreen
@@ -28,6 +27,10 @@ import com.clownteam.ui_collectionaction.add_to_collection.AddToCollectionScreen
 import com.clownteam.ui_collectionaction.add_to_collection.AddToCollectionScreenViewModel
 import com.clownteam.ui_collectionaction.create_collection.CreateCollectionScreen
 import com.clownteam.ui_collectionaction.create_collection.CreateCollectionViewModel
+import com.clownteam.ui_collectiondetailed.ui.CollectionDetailed
+import com.clownteam.ui_collectiondetailed.ui.CollectionDetailedViewModel
+import com.clownteam.ui_collectionlist.CollectionList
+import com.clownteam.ui_collectionlist.CollectionListViewModel
 import com.clownteam.ui_courselist.ui.CourseList
 import com.clownteam.ui_courselist.ui.CourseListViewModel
 import com.clownteam.ui_coursepassing.course_lessons.CourseLessons
@@ -48,7 +51,7 @@ import com.google.gson.Gson
 fun SetupNavGraph(
     navController: NavHostController,
     imageLoader: ImageLoader,
-    showBottomBar: (Boolean) -> Unit
+    showBottomBar: (isShown: Boolean) -> Unit
 ) {
     val tokenManager = TokenManagerImpl.create()
 
@@ -65,6 +68,7 @@ fun SetupNavGraph(
         exitTransition = { defaultExitTransition() },
         popEnterTransition = { defaultPopEnterTransition() },
         popExitTransition = { defaultPopExitTransition() }
+
     ) {
         // *************************** Bottom Bar navigation ***************************
 
@@ -91,18 +95,35 @@ fun SetupNavGraph(
                 state = viewModel.state,
                 eventHandler = viewModel,
                 imageLoader = imageLoader,
+                coursesFlow = viewModel.coursesFlow,
+                collectionsFlow = viewModel.collectionsFlow,
                 navigateToLogin = { defaultNavigateToLoginAction(navController) },
-                navigateToCourse = { courseId -> }
+                navigateToCourse = { courseId ->
+                    navController.navigate(Route.CourseRoute.getRouteWithArgument(courseId))
+                },
+                navigateToCollection = { id ->
+                    navController.navigate(Route.CourseCollectionRoute.getRouteWithArgument(id))
+                }
             )
             showBottomBar(true)
         }
 
         bottomItemComposable(BottomNavItem.Archive.route) {
-            ArchiveContainer(
-                externalRouter = createExternalRouter { route, params, builder ->
-                    navController.navigate(route, params, builder)
-                },
+//            ArchiveContainer(
+//                externalRouter = createExternalRouter { route, params, builder ->
+//                    navController.navigate(route, params, builder)
+//                },
+//                imageLoader = imageLoader,
+//                navigateToLogin = { defaultNavigateToLoginAction(navController) }
+//            )
+            val viewModel: CollectionListViewModel = hiltViewModel()
+            CollectionList(
+                state = viewModel.state.value,
+                eventHandler = viewModel,
                 imageLoader = imageLoader,
+                navigateToDetailed = { id ->
+                    navController.navigate(Route.CourseCollectionRoute.getRouteWithArgument(id))
+                },
                 navigateToLogin = { defaultNavigateToLoginAction(navController) }
             )
             showBottomBar(true)
@@ -220,6 +241,19 @@ fun SetupNavGraph(
                     navController.navigateUp()
                 },
                 navigateToLogin = { defaultNavigateToLoginAction(navController) }
+            )
+            showBottomBar(false)
+        }
+
+        composable(Route.CourseCollectionRoute.route) {
+            val viewModel: CollectionDetailedViewModel = hiltViewModel()
+            CollectionDetailed(
+                state = viewModel.state.value,
+                eventHandler = viewModel,
+                imageLoader = imageLoader,
+                onBackPressed = { navController.popBackStack() },
+                navigateToLogin = { defaultNavigateToLoginAction(navController) },
+                openCourse = { navController.navigate(Route.CourseRoute.getRouteWithArgument(it)) }
             )
             showBottomBar(false)
         }

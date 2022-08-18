@@ -9,6 +9,7 @@ dependencies {
     "implementation"(project(Modules.searchInteractors))
 
     "implementation"(Coil.coil)
+    "implementation"(AndroidX.paging)
 
     "testImplementation"(Junit.junit4)
     "testImplementation"(Mockito.mockitoKotlin)

@@ -9,4 +9,7 @@
         <item quantity="zero">Бесплатно</item>
         <item quantity="other">%1$d ₽</item>
     </plurals>
+    <string name="network_error_message">Ошибка сети. Проверьте подключение к интернету.</string>
+    <string name="retry">Повторить</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
 </resources>

@@ -15,6 +15,7 @@ sealed class SearchResultItem {
         val collectionId: String,
         val title: String,
         val membersAmount: Int,
+        val authorName: String,
         val imgUrl: String
     ): SearchResultItem()
 

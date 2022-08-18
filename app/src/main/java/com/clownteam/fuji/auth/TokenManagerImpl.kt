@@ -24,7 +24,7 @@ class TokenManagerImpl(private val tokenService: TokenService) : TokenManager {
     }
 
     override fun setToken(token: String) {
-        TokenPreferences.accessToken = token
+        TokenPreferences.accessToken = "Bearer $token"
     }
 
     override fun setRefresh(refreshToken: String) {
@@ -47,8 +47,8 @@ class TokenManagerImpl(private val tokenService: TokenService) : TokenManager {
                     val accessToken = response.body()?.access
                     val refreshToken = response.body()?.refresh
 
-                    TokenPreferences.accessToken = accessToken
-                    TokenPreferences.refreshToken = refreshToken
+                    setToken(accessToken ?: "")
+                    setRefresh(refreshToken ?: "")
 
                     NetworkResponse(statusCode = response.code(), data = accessToken)
                 } else {
@@ -75,10 +75,10 @@ class TokenManagerImpl(private val tokenService: TokenService) : TokenManager {
 
             if (response.isSuccessful && response.body() != null) {
                 val accessToken = response.body()?.access
-                TokenPreferences.accessToken = accessToken
+                setToken(accessToken ?: "")
 
                 Log.d("Kmem", "Token refreshed: $accessToken")
-                NetworkResponse(statusCode = response.code(), data = accessToken)
+                NetworkResponse(statusCode = response.code(), data = getToken())
             } else {
                 NetworkResponse(statusCode = response.code(), data = null)
             }
