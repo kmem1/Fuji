@@ -2,6 +2,7 @@ package com.clownteam.ui_search.ui
 
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -61,7 +62,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 private sealed class NavigationRoute {
-    object Login: NavigationRoute()
+    object Login : NavigationRoute()
     class CourseDetailed(val courseId: String) : NavigationRoute()
     class CollectionDetailed(val collectionId: String) : NavigationRoute()
 }
@@ -75,7 +76,7 @@ fun SearchScreen(
     collectionsFlow: Flow<PagingData<SearchResultItem.Collection>>,
     navigateToLogin: () -> Unit,
     navigateToCourse: (String) -> Unit,
-    navigateToCollection: (String) -> Unit,
+    navigateToCollection: (String) -> Unit
 ) {
     var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
 

@@ -1,6 +1,8 @@
 package com.clownteam.ui_courselist.ui
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -108,7 +110,7 @@ fun CourseList(
                         if (state.myCourses.isNotEmpty()) {
                             TitleText(stringResource(R.string.my_courses))
                             CourseListLazyRow(
-                                modifier = Modifier.padding(top = 24.dp),
+                                modifier = Modifier.padding(top = 24.dp).animateContentSize(),
                                 itemList = state.myCourses,
                                 itemComposable = { item ->
                                     SimpleCourseListItem(
