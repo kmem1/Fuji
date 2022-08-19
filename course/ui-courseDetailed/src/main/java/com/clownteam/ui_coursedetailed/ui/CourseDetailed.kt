@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
@@ -32,6 +33,7 @@ import com.clownteam.ui_coursedetailed.components.*
 
 private sealed class NavigationRoutes {
     class Passing(val courseId: String) : NavigationRoutes()
+    class AddToCollection(val courseId: String) : NavigationRoutes()
     object Login : NavigationRoutes()
 }
 
@@ -42,6 +44,7 @@ fun CourseDetailed(
     imageLoader: ImageLoader,
     onBack: () -> Unit,
     navigateToPassing: (String) -> Unit,
+    navigateToAddToCollection: (String) -> Unit,
     navigateToLogin: () -> Unit
 ) {
     var navigationRoute by remember { mutableStateOf<NavigationRoutes?>(null) }
@@ -49,8 +52,17 @@ fun CourseDetailed(
     LaunchedEffect(key1 = navigationRoute) {
         navigationRoute?.let {
             when (it) {
-                NavigationRoutes.Login -> { navigateToLogin() }
-                is NavigationRoutes.Passing -> { navigateToPassing(it.courseId) }
+                NavigationRoutes.Login -> {
+                    navigateToLogin()
+                }
+
+                is NavigationRoutes.Passing -> {
+                    navigateToPassing(it.courseId)
+                }
+
+                is NavigationRoutes.AddToCollection -> {
+                    navigateToAddToCollection(it.courseId)
+                }
             }
         }
     }
@@ -64,13 +76,21 @@ fun CourseDetailed(
                 eventHandler.obtainEvent(CourseDetailedEvent.LearningStarted)
             }
 
-            MainContent(state, eventHandler, imageLoader, onBack)
+            MainContent(
+                state = state,
+                eventHandler = eventHandler,
+                imageLoader = imageLoader,
+                onBack = onBack,
+                navigateToAddToCollection = {
+                    navigationRoute = NavigationRoutes.AddToCollection(it)
+                }
+            )
         }
 
         if (state is CourseDetailedState.Error) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Button(onClick = { eventHandler.obtainEvent(CourseDetailedEvent.GetCourseInfo) }) {
-                    Text("Retry")
+                    Text(stringResource(R.string.retry))
                 }
             }
         }
@@ -88,7 +108,8 @@ private fun MainContent(
     state: CourseDetailedState.Data,
     eventHandler: EventHandler<CourseDetailedEvent>,
     imageLoader: ImageLoader,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    navigateToAddToCollection: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -96,17 +117,35 @@ private fun MainContent(
             .verticalScroll(rememberScrollState())
     ) {
         Column(modifier = Modifier.padding(horizontal = 14.dp)) {
-            IconButton(
+            Row(
                 modifier = Modifier
-                    .padding(vertical = 24.dp)
-                    .size(34.dp),
-                onClick = { onBack() }
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    modifier = Modifier.size(34.dp),
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.back_button_content_description)
-                )
+                IconButton(
+                    modifier = Modifier
+                        .size(34.dp),
+                    onClick = { onBack() }
+                ) {
+                    Icon(
+                        modifier = Modifier.size(34.dp),
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back_button_content_description)
+                    )
+                }
+
+                IconButton(
+                    modifier = Modifier
+                        .size(34.dp),
+                    onClick = { navigateToAddToCollection(state.course.id) }
+                ) {
+                    Icon(
+                        modifier = Modifier.size(34.dp),
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = stringResource(R.string.back_button_content_description)
+                    )
+                }
             }
 
             Image(

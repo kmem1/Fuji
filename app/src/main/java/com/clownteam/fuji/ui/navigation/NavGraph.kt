@@ -272,7 +272,10 @@ fun SetupNavGraph(
                 navigateToPassing = { courseId ->
                     navController.navigate(Route.CourseModulesRoute.getRouteWithArgument(courseId))
                 },
-                navigateToLogin = { defaultNavigateToLoginAction(navController) }
+                navigateToLogin = { defaultNavigateToLoginAction(navController) },
+                navigateToAddToCollection = { courseId ->
+                    navController.navigate(Route.AddToCollectionRoute.getRouteWithArgument(courseId))
+                }
             )
             showBottomBar(false)
         }

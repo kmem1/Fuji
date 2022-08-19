@@ -11,6 +11,7 @@ fun CourseScreen(
     imageLoader: ImageLoader,
     onBack: () -> Unit,
     navigateToPassing: (String) -> Unit,
+    navigateToAddToCollection: (courseId: String) -> Unit,
     navigateToLogin: () -> Unit
 ) {
     val viewModel: CourseDetailedViewModel = hiltViewModel()
@@ -20,6 +21,7 @@ fun CourseScreen(
         imageLoader = imageLoader,
         onBack = onBack,
         navigateToPassing = navigateToPassing,
+        navigateToAddToCollection = navigateToAddToCollection,
         navigateToLogin = navigateToLogin
     )
 }
