@@ -9,11 +9,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.clownteam.components.UiText
+import com.clownteam.components.paging.DefaultPagingSource
 import com.clownteam.core.domain.EventHandler
+import com.clownteam.core.paging.PagingSourceData
+import com.clownteam.search_domain.SearchResultItem
 import com.clownteam.search_interactors.*
 import com.clownteam.ui_search.R
-import com.clownteam.ui_search.paging_sources.CollectionSource
-import com.clownteam.ui_search.paging_sources.CourseSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -35,12 +36,12 @@ class SearchViewModel @Inject constructor(
     private var isCoursesRequestLoading = false
     private var isCollectionsRequestLoading = false
 
-    private val courseSource: CourseSource
+    private val courseSource: DefaultPagingSource<SearchResultItem.Course>
         get() {
-            return CourseSource { page ->
+            return DefaultPagingSource { page ->
                 Log.d("Kmem", "Courses: getNewItems")
 
-                if (state.query.isEmpty()) return@CourseSource null
+                if (state.query.isEmpty()) return@DefaultPagingSource PagingSourceData.empty()
 
                 isCoursesRequestLoading = true
 
@@ -59,12 +60,15 @@ class SearchViewModel @Inject constructor(
 
                 when (result) {
                     is GetCoursesByQueryUseCaseResult.Success -> {
-                        Log.d("Kmem", "Courses itemsCount: ${result.results.size} page: $page")
-                        result.results
+                        Log.d(
+                            "Kmem",
+                            "Courses itemsCount: ${result.pagingData.data?.size} page: $page"
+                        )
+                        result.pagingData
                     }
                     else -> {
                         handleGetCoursesByQueryUseCaseResult(result)
-                        null
+                        PagingSourceData.failed()
                     }
                 }
             }
@@ -76,12 +80,12 @@ class SearchViewModel @Inject constructor(
         }.flow
     )
 
-    private val collectionSource: CollectionSource
+    private val collectionSource: DefaultPagingSource<SearchResultItem.Collection>
         get() {
-            return CollectionSource { page ->
+            return DefaultPagingSource { page ->
                 Log.d("Kmem", "Collections: getNewItems")
 
-                if (state.query.isEmpty()) return@CollectionSource emptyList()
+                if (state.query.isEmpty()) return@DefaultPagingSource PagingSourceData.empty()
 
                 isCollectionsRequestLoading = true
 
@@ -100,12 +104,15 @@ class SearchViewModel @Inject constructor(
 
                 when (result) {
                     is GetCollectionsByQueryUseCaseResult.Success -> {
-                        Log.d("Kmem", "Collections itemsCount: ${result.results.size} page: $page")
-                        result.results
+                        Log.d(
+                            "Kmem",
+                            "Collections itemsCount: ${result.pagingData.data?.size} page: $page"
+                        )
+                        result.pagingData
                     }
                     else -> {
                         handleGetCollectionsByQueryUseCaseResult(result)
-                        null
+                        PagingSourceData.failed()
                     }
                 }
             }
@@ -154,11 +161,7 @@ class SearchViewModel @Inject constructor(
             }
 
             is GetCoursesByQueryUseCaseResult.Success -> {
-                state = state.copy(
-                    errorMessage = null,
-                    resultItems = result.results,
-                    isUnauthorized = false
-                )
+                state = state.copy(errorMessage = null, isUnauthorized = false)
             }
 
             GetCoursesByQueryUseCaseResult.Unauthorized -> {
@@ -180,11 +183,7 @@ class SearchViewModel @Inject constructor(
             }
 
             is GetCollectionsByQueryUseCaseResult.Success -> {
-                state = state.copy(
-                    errorMessage = null,
-                    resultItems = result.results,
-                    isUnauthorized = false
-                )
+                state = state.copy(errorMessage = null, isUnauthorized = false)
             }
 
             GetCollectionsByQueryUseCaseResult.Unauthorized -> {

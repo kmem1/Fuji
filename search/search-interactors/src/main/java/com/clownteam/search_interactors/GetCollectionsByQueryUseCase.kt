@@ -3,6 +3,7 @@ package com.clownteam.search_interactors
 import com.clownteam.core.domain.IUseCase
 import com.clownteam.core.network.authorizationRequest
 import com.clownteam.core.network.token.TokenManager
+import com.clownteam.core.paging.PagingSourceData
 import com.clownteam.search_datasource.SearchService
 import com.clownteam.search_domain.SearchResultItem
 import com.clownteam.search_interactors.mappers.CollectionSearchResultsMapper
@@ -23,14 +24,16 @@ internal class GetCollectionsByQueryUseCase(
 
         return if (result.isSuccessCode && result.data != null) {
             if ((result.data?.pages ?: 0) < param.page) {
-                return GetCollectionsByQueryUseCaseResult.Success(emptyList())
+                return GetCollectionsByQueryUseCaseResult.Success(PagingSourceData.empty())
             }
 
             result.data?.results?.let {
                 val mappedResult =
                     it.map { model -> CollectionSearchResultsMapper.map(model, baseUrl) }
+                val hasNextPage = result.data?.hasNextPage ?: false
+                val pagingData = PagingSourceData(mappedResult, hasNextPage)
 
-                GetCollectionsByQueryUseCaseResult.Success(mappedResult)
+                GetCollectionsByQueryUseCaseResult.Success(pagingData)
             } ?: GetCollectionsByQueryUseCaseResult.Failed
         } else {
             GetCollectionsByQueryUseCaseResult.Failed
@@ -38,7 +41,8 @@ internal class GetCollectionsByQueryUseCase(
     }
 }
 
-interface IGetCollectionsByQueryUseCase : IUseCase.InOut<GetCollectionsByQueryParams, GetCollectionsByQueryUseCaseResult>
+interface IGetCollectionsByQueryUseCase :
+    IUseCase.InOut<GetCollectionsByQueryParams, GetCollectionsByQueryUseCaseResult>
 
 data class GetCollectionsByQueryParams(
     val query: String,
@@ -46,7 +50,7 @@ data class GetCollectionsByQueryParams(
 )
 
 sealed class GetCollectionsByQueryUseCaseResult {
-    class Success(val results: List<SearchResultItem.Collection>) :
+    class Success(val pagingData: PagingSourceData<SearchResultItem.Collection>) :
         GetCollectionsByQueryUseCaseResult()
 
     object Failed : GetCollectionsByQueryUseCaseResult()

@@ -11,13 +11,28 @@ interface CollectionService {
 
     suspend fun getCollections(token: String): NetworkResponse<GetCollectionsResponse>
 
-    suspend fun getCollection(token: String, collectionId: String): NetworkResponse<GetCollectionResponse>
+    suspend fun getCollection(
+        token: String,
+        collectionId: String
+    ): NetworkResponse<GetCollectionResponse>
 
-    suspend fun getUserCollections(token: String, userPath: String): NetworkResponse<GetUserCollectionsResponse>
+    suspend fun getUserCollections(
+        token: String,
+        userPath: String,
+        search: String
+    ): NetworkResponse<GetUserCollectionsResponse>
 
-    suspend fun addCourseToCollection(token: String, courseId: String, collectionId: String): NetworkResponse<Any>
+    suspend fun addCourseToCollection(
+        token: String,
+        courseId: String,
+        collectionId: String
+    ): NetworkResponse<Any>
 
     suspend fun createCollection(token: String): NetworkResponse<CreateCollectionResponse>
 
-    suspend fun updateCollection(token: String, collectionId: String, body: UpdateCollectionResponseBody): NetworkResponse<Any>
+    suspend fun updateCollection(
+        token: String,
+        collectionId: String,
+        body: UpdateCollectionResponseBody
+    ): NetworkResponse<Any>
 }

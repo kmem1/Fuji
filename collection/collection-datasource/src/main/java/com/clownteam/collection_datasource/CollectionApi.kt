@@ -23,7 +23,8 @@ interface CollectionApi {
     @GET("api/collections/created/{userPath}/")
     fun getUserCollections(
         @Header("Authorization") token: String,
-        @Path("userPath") userPath: String
+        @Path("userPath") userPath: String,
+        @Query("search") search: String
     ): Call<GetUserCollectionsResponse>
 
     @POST("api/courses/add/{courseId}/")

@@ -78,7 +78,7 @@ class AddToCollectionScreenViewModel @Inject constructor(
 
     private fun getCollections() {
         viewModelScope.launch {
-            val result = getUserCollections.invoke()
+            val result = getUserCollections.invoke("")
 
             handleGetUserCollectionsResult(result)
         }

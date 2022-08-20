@@ -17,4 +17,7 @@ open class PaginationResponse<T> {
 
     @SerializedName("results")
     val results: List<T>? = null
+
+    val hasNextPage: Boolean
+        get() = next != null && next.isNotEmpty()
 }

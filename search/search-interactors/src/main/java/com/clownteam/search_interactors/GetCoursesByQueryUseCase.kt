@@ -3,6 +3,7 @@ package com.clownteam.search_interactors
 import com.clownteam.core.domain.IUseCase
 import com.clownteam.core.network.authorizationRequest
 import com.clownteam.core.network.token.TokenManager
+import com.clownteam.core.paging.PagingSourceData
 import com.clownteam.search_datasource.SearchService
 import com.clownteam.search_domain.SearchResultItem
 import com.clownteam.search_interactors.mappers.CourseSearchResultsMapper
@@ -22,15 +23,15 @@ internal class GetCoursesByQueryUseCase(
         if (result.isNetworkError) GetCoursesByQueryUseCaseResult.NetworkError
 
         return if (result.isSuccessCode && result.data != null) {
-            println("${(result.data?.pages ?: 0)} ${param.page}")
-
             if ((result.data?.pages ?: 0) < param.page) {
-                return GetCoursesByQueryUseCaseResult.Success(emptyList())
+                return GetCoursesByQueryUseCaseResult.Success(PagingSourceData.empty())
             }
 
             result.data?.results?.let {
                 val mappedResult = it.map { model -> CourseSearchResultsMapper.map(model, baseUrl) }
-                GetCoursesByQueryUseCaseResult.Success(mappedResult)
+                val hasNextPage = result.data?.hasNextPage ?: false
+
+                GetCoursesByQueryUseCaseResult.Success(PagingSourceData(mappedResult, hasNextPage))
             } ?: GetCoursesByQueryUseCaseResult.Failed
         } else {
             GetCoursesByQueryUseCaseResult.Failed
@@ -47,7 +48,8 @@ data class GetCoursesByQueryParams(
 )
 
 sealed class GetCoursesByQueryUseCaseResult {
-    class Success(val results: List<SearchResultItem.Course>) : GetCoursesByQueryUseCaseResult()
+    class Success(val pagingData: PagingSourceData<SearchResultItem.Course>) :
+        GetCoursesByQueryUseCaseResult()
 
     object Failed : GetCoursesByQueryUseCaseResult()
 

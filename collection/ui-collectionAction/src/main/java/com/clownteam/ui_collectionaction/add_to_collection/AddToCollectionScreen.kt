@@ -1,6 +1,5 @@
 package com.clownteam.ui_collectionaction.add_to_collection
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,6 +29,7 @@ import com.clownteam.components.AutoResizeText
 import com.clownteam.components.DefaultButton
 import com.clownteam.components.FontSizeRange
 import com.clownteam.components.header.DefaultHeader
+import com.clownteam.components.utils.showToast
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.ui_collectionaction.R
 
@@ -129,13 +128,7 @@ fun AddToCollectionScreen(
             }
 
             AddToCollectionScreenState.SuccessAddCourse -> {
-                val context = LocalContext.current
-                Toast.makeText(
-                    context,
-                    stringResource(R.string.add_to_collection_success_message),
-                    Toast.LENGTH_SHORT
-                ).show()
-
+                showToast(text = stringResource(R.string.add_to_collection_success_message))
                 navigationRoute = NavigationRoute.Back
             }
         }

@@ -15,12 +15,12 @@ internal class GetUserCollectionsUseCase(
     private val baseUrl: String
 ) : IGetUserCollectionsUseCase {
 
-    override suspend fun invoke(): GetUserCollectionsUseCaseResult {
+    override suspend fun invoke(param: String): GetUserCollectionsUseCaseResult {
         val userPath =
             userDataManager.getUserPath() ?: return GetUserCollectionsUseCaseResult.Unauthorized
 
         val result = authorizationRequest(tokenManager) { token ->
-            service.getUserCollections(token, userPath)
+            service.getUserCollections(token, userPath, param)
         }
 
         if (result.isUnauthorized) return GetUserCollectionsUseCaseResult.Unauthorized
@@ -30,7 +30,11 @@ internal class GetUserCollectionsUseCase(
             result.data?.results?.let {
                 val mappedResult =
                     it.map { model -> GetUserCollectionsResponseItemMapper.map(model, baseUrl) }
-                GetUserCollectionsUseCaseResult.Success(mappedResult)
+
+                val hasNextPage =
+                    result.data?.next != null && result.data?.next?.isNotEmpty() == true
+
+                GetUserCollectionsUseCaseResult.Success(mappedResult, hasNextPage)
             } ?: GetUserCollectionsUseCaseResult.Failed
         } else {
             GetUserCollectionsUseCaseResult.Failed
@@ -38,11 +42,12 @@ internal class GetUserCollectionsUseCase(
     }
 }
 
-interface IGetUserCollectionsUseCase : IUseCase.Out<GetUserCollectionsUseCaseResult>
+interface IGetUserCollectionsUseCase : IUseCase.InOut<String, GetUserCollectionsUseCaseResult>
 
 sealed class GetUserCollectionsUseCaseResult {
 
-    class Success(val data: List<CourseCollection>) : GetUserCollectionsUseCaseResult()
+    class Success(val data: List<CourseCollection>, val hasNextPage: Boolean) :
+        GetUserCollectionsUseCaseResult()
 
     object Failed : GetUserCollectionsUseCaseResult()
 
