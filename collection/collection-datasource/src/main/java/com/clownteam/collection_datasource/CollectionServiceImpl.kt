@@ -24,9 +24,10 @@ class CollectionServiceImpl(private val api: CollectionApi) : CollectionService 
     override suspend fun getUserCollections(
         token: String,
         userPath: String,
-        search: String
+        search: String,
+        page: Int
     ): NetworkResponse<GetUserCollectionsResponse> =
-        baseRequest { api.getUserCollections(token, userPath, search) }
+        baseRequest { api.getUserCollections(token, userPath, search, page) }
 
     override suspend fun addCourseToCollection(
         token: String,

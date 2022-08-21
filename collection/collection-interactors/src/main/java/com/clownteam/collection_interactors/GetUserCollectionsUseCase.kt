@@ -6,6 +6,7 @@ import com.clownteam.collection_interactors.mappers.GetUserCollectionsResponseIt
 import com.clownteam.core.domain.IUseCase
 import com.clownteam.core.network.authorizationRequest
 import com.clownteam.core.network.token.TokenManager
+import com.clownteam.core.paging.PagingSourceData
 import com.clownteam.core.user_data.UserDataManager
 
 internal class GetUserCollectionsUseCase(
@@ -15,12 +16,12 @@ internal class GetUserCollectionsUseCase(
     private val baseUrl: String
 ) : IGetUserCollectionsUseCase {
 
-    override suspend fun invoke(param: String): GetUserCollectionsUseCaseResult {
+    override suspend fun invoke(param: GetUserCollectionsParams): GetUserCollectionsUseCaseResult {
         val userPath =
             userDataManager.getUserPath() ?: return GetUserCollectionsUseCaseResult.Unauthorized
 
         val result = authorizationRequest(tokenManager) { token ->
-            service.getUserCollections(token, userPath, param)
+            service.getUserCollections(token, userPath, param.query, param.page)
         }
 
         if (result.isUnauthorized) return GetUserCollectionsUseCaseResult.Unauthorized
@@ -31,10 +32,9 @@ internal class GetUserCollectionsUseCase(
                 val mappedResult =
                     it.map { model -> GetUserCollectionsResponseItemMapper.map(model, baseUrl) }
 
-                val hasNextPage =
-                    result.data?.next != null && result.data?.next?.isNotEmpty() == true
+                val hasNextPage = result.data?.hasNextPage ?: false
 
-                GetUserCollectionsUseCaseResult.Success(mappedResult, hasNextPage)
+                GetUserCollectionsUseCaseResult.Success(PagingSourceData(mappedResult, hasNextPage))
             } ?: GetUserCollectionsUseCaseResult.Failed
         } else {
             GetUserCollectionsUseCaseResult.Failed
@@ -42,11 +42,17 @@ internal class GetUserCollectionsUseCase(
     }
 }
 
-interface IGetUserCollectionsUseCase : IUseCase.InOut<String, GetUserCollectionsUseCaseResult>
+interface IGetUserCollectionsUseCase :
+    IUseCase.InOut<GetUserCollectionsParams, GetUserCollectionsUseCaseResult>
+
+data class GetUserCollectionsParams(
+    val query: String,
+    val page: Int
+)
 
 sealed class GetUserCollectionsUseCaseResult {
 
-    class Success(val data: List<CourseCollection>, val hasNextPage: Boolean) :
+    class Success(val pagingData: PagingSourceData<CourseCollection>) :
         GetUserCollectionsUseCaseResult()
 
     object Failed : GetUserCollectionsUseCaseResult()

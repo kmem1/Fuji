@@ -221,6 +221,7 @@ fun SetupNavGraph(
                 state = viewModel.state.value,
                 eventHandler = viewModel,
                 imageLoader = imageLoader,
+                collectionsFlow = viewModel.collectionsFlow,
                 onBack = { navController.navigateUp() },
                 navigateToCreateCollection = { courseId ->
                     navController.navigate(Route.CreateCollectionRoute.getRouteWithArgument(courseId))

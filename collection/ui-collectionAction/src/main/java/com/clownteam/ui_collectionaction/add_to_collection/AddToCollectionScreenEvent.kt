@@ -4,8 +4,6 @@ import com.clownteam.collection_domain.CourseCollection
 
 sealed class AddToCollectionScreenEvent {
 
-    object GetMyCollections : AddToCollectionScreenEvent()
-
     class AddToCollection(val collection: CourseCollection) : AddToCollectionScreenEvent()
-
+    class SetSearchQuery(val query: String) : AddToCollectionScreenEvent()
 }

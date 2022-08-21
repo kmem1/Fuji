@@ -19,7 +19,8 @@ interface CollectionService {
     suspend fun getUserCollections(
         token: String,
         userPath: String,
-        search: String
+        search: String,
+        page: Int
     ): NetworkResponse<GetUserCollectionsResponse>
 
     suspend fun addCourseToCollection(

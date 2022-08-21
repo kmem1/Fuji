@@ -1,14 +1,24 @@
 package com.clownteam.ui_collectionaction.add_to_collection
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import com.clownteam.collection_domain.CourseCollection
 import com.clownteam.collection_interactors.*
+import com.clownteam.components.UiText
+import com.clownteam.components.paging.DefaultPagingSource
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.StateHolder
+import com.clownteam.core.paging.PagingSourceData
+import com.clownteam.ui_collectionaction.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,16 +32,49 @@ class AddToCollectionScreenViewModel @Inject constructor(
 
     companion object {
         const val COURSE_ID_ARG_KEY = "addToCollection_COURSE_ID_KEY"
+        private const val SEARCH_DELAY_MS = 200L
     }
 
     private val courseId = savedStateHandle.get<String>(COURSE_ID_ARG_KEY)
 
-    init {
-        obtainEvent(AddToCollectionScreenEvent.GetMyCollections)
-    }
+    override val state = mutableStateOf(AddToCollectionScreenState(courseId = courseId ?: ""))
 
-    override val state: MutableState<AddToCollectionScreenState> =
-        mutableStateOf(AddToCollectionScreenState.Loading)
+    private val collectionSource: DefaultPagingSource<CourseCollection>
+        get() {
+            return DefaultPagingSource { page ->
+                Log.d("Kmem", "Collections: getNewItems")
+
+                val result =
+                    getUserCollections.invoke(
+                        GetUserCollectionsParams(
+                            query = state.value.searchQuery,
+                            page
+                        )
+                    )
+
+                Log.d("Kmem", "Collections result: $result")
+
+                updateState(state.value.copy(isCollectionListLoading = false))
+
+                when (result) {
+                    is GetUserCollectionsUseCaseResult.Success -> {
+                        Log.d(
+                            "Kmem",
+                            "Collections itemsCount: ${result.pagingData.data?.size} page: $page"
+                        )
+                        result.pagingData
+                    }
+                    else -> {
+                        handleGetUserCollectionsResult(result)
+                        PagingSourceData.failed()
+                    }
+                }
+            }
+        }
+
+    val collectionsFlow = Pager(PagingConfig(pageSize = 40)) { collectionSource }.flow
+
+    private var searchJob: Job? = null
 
     override fun obtainEvent(event: AddToCollectionScreenEvent) {
         when (event) {
@@ -39,15 +82,27 @@ class AddToCollectionScreenViewModel @Inject constructor(
                 addCourseToCollection(event.collection.id)
             }
 
-            AddToCollectionScreenEvent.GetMyCollections -> {
-                getCollections()
+            is AddToCollectionScreenEvent.SetSearchQuery -> {
+                updateState(
+                    state.value.copy(
+                        searchQuery = event.query,
+                        shouldSearchItems = false,
+                        isCollectionListLoading = true
+                    )
+                )
+
+                searchJob?.cancel()
+                searchJob = viewModelScope.launch {
+                    delay(SEARCH_DELAY_MS)
+                    updateState(state.value.copy(shouldSearchItems = true))
+                }
             }
         }
     }
 
     private fun addCourseToCollection(collectionId: String) {
         viewModelScope.launch {
-            updateState(AddToCollectionScreenState.Loading)
+            updateState(state.value.copy(isLoading = true))
 
             val params = AddCourseToCollectionParams(courseId ?: "", collectionId)
             val result = addCourseToCollectionUseCase.invoke(params)
@@ -57,49 +112,65 @@ class AddToCollectionScreenViewModel @Inject constructor(
     }
 
     private fun handleAddCourseToCollectionResult(result: AddCourseToCollectionUseCaseResult) {
-        when(result) {
+        when (result) {
             AddCourseToCollectionUseCaseResult.Failed -> {
-                updateState(AddToCollectionScreenState.SuccessAddCourse)
+                updateState(
+                    state.value.copy(
+                        getCollectionsErrorMessage = UiText.StringResource(
+                            R.string.add_to_collection_error_message
+                        )
+                    )
+                )
             }
 
             AddCourseToCollectionUseCaseResult.NetworkError -> {
-                updateState(AddToCollectionScreenState.Error)
+                updateState(
+                    state.value.copy(
+                        getCollectionsErrorMessage = UiText.StringResource(
+                            R.string.network_error_message
+                        )
+                    )
+                )
             }
 
             AddCourseToCollectionUseCaseResult.Success -> {
-                updateState(AddToCollectionScreenState.SuccessAddCourse)
+                updateState(state.value.copy(isSuccess = true))
             }
 
             AddCourseToCollectionUseCaseResult.Unauthorized -> {
-                updateState(AddToCollectionScreenState.Unauthorized)
+                updateState(state.value.copy(isUnauthorized = true))
             }
-        }
-    }
-
-    private fun getCollections() {
-        viewModelScope.launch {
-            val result = getUserCollections.invoke("")
-
-            handleGetUserCollectionsResult(result)
         }
     }
 
     private fun handleGetUserCollectionsResult(result: GetUserCollectionsUseCaseResult) {
         when (result) {
             GetUserCollectionsUseCaseResult.Failed -> {
-                updateState(AddToCollectionScreenState.Error)
+                updateState(
+                    state.value.copy(
+                        getCollectionsErrorMessage = UiText.StringResource(
+                            R.string.get_user_collections_failed_message
+                        )
+                    )
+                )
             }
 
             GetUserCollectionsUseCaseResult.NetworkError -> {
-                updateState(AddToCollectionScreenState.Error)
+                updateState(
+                    state.value.copy(
+                        getCollectionsErrorMessage = UiText.StringResource(
+                            R.string.network_error_message
+                        )
+                    )
+                )
             }
 
             is GetUserCollectionsUseCaseResult.Success -> {
-                updateState(AddToCollectionScreenState.Data(result.data, courseId ?: ""))
+                updateState(state.value.copy(getCollectionsErrorMessage = null))
             }
 
             GetUserCollectionsUseCaseResult.Unauthorized -> {
-                updateState(AddToCollectionScreenState.Unauthorized)
+                updateState(state.value.copy(isUnauthorized = true))
             }
         }
     }

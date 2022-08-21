@@ -74,11 +74,7 @@ class SearchViewModel @Inject constructor(
             }
         }
 
-    var coursesFlow by mutableStateOf(
-        Pager(PagingConfig(pageSize = 10)) {
-            courseSource
-        }.flow
-    )
+    var coursesFlow = Pager(PagingConfig(pageSize = 10)) { courseSource }.flow
 
     private val collectionSource: DefaultPagingSource<SearchResultItem.Collection>
         get() {
@@ -118,11 +114,7 @@ class SearchViewModel @Inject constructor(
             }
         }
 
-    var collectionsFlow by mutableStateOf(
-        Pager(PagingConfig(pageSize = 10)) {
-            collectionSource
-        }.flow
-    )
+    var collectionsFlow = Pager(PagingConfig(pageSize = 10)) { collectionSource }.flow
 
     private fun checkLoadingRequests() {
         if (!isCoursesRequestLoading && !isCollectionsRequestLoading && state.isLoading) {

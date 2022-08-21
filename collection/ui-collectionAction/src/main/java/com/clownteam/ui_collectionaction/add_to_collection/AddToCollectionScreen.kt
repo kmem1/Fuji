@@ -1,27 +1,47 @@
 package com.clownteam.ui_collectionaction.add_to_collection
 
+import android.util.Log
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import com.clownteam.collection_domain.CourseCollection
@@ -32,6 +52,7 @@ import com.clownteam.components.header.DefaultHeader
 import com.clownteam.components.utils.showToast
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.ui_collectionaction.R
+import kotlinx.coroutines.flow.Flow
 
 private sealed class NavigationRoute {
     object Login : NavigationRoute()
@@ -44,6 +65,7 @@ fun AddToCollectionScreen(
     state: AddToCollectionScreenState,
     eventHandler: EventHandler<AddToCollectionScreenEvent>,
     imageLoader: ImageLoader,
+    collectionsFlow: Flow<PagingData<CourseCollection>>,
     onBack: () -> Unit,
     navigateToCreateCollection: (courseId: String) -> Unit,
     navigateToLogin: () -> Unit
@@ -68,126 +90,387 @@ fun AddToCollectionScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        when (state) {
-            is AddToCollectionScreenState.Data -> {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    DefaultHeader(
-                        titleText = "Выбор подборки",
-                        onArrowClick = { navigationRoute = NavigationRoute.Back }
-                    )
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 24.dp)
-                    ) {
-                        DefaultButton(
-                            text = stringResource(R.string.create_collection_btn_text),
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            onClick = {
-                                navigationRoute = NavigationRoute.CreateCollection(state.courseId)
-                            }
-                        )
-
-                        Spacer(Modifier.size(40.dp))
-
-                        if (state.collections.isNotEmpty()) {
-                            CollectionList(state.collections, imageLoader) {
-                                eventHandler.obtainEvent(
-                                    AddToCollectionScreenEvent.AddToCollection(it)
-                                )
-                            }
-                        } else {
-                            Text(
-                                stringResource(R.string.no_collections_error_text),
-                                modifier = Modifier.align(Alignment.CenterHorizontally)
-                            )
-                        }
-                    }
-                }
-            }
-
-            AddToCollectionScreenState.Error -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    DefaultButton(
-                        text = "Retry",
-                        onClick = {
-                            eventHandler.obtainEvent(AddToCollectionScreenEvent.GetMyCollections)
-                        }
-                    )
-                }
-            }
-
-            AddToCollectionScreenState.Loading -> {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
-
-            AddToCollectionScreenState.Unauthorized -> {
-                navigationRoute = NavigationRoute.Login
-            }
-
-            AddToCollectionScreenState.SuccessAddCourse -> {
-                showToast(text = stringResource(R.string.add_to_collection_success_message))
-                navigationRoute = NavigationRoute.Back
-            }
+    when {
+        state.isSuccess -> {
+            showToast(text = stringResource(R.string.add_to_collection_success_message))
+            navigationRoute = NavigationRoute.Back
         }
+
+        state.isUnauthorized -> navigationRoute = NavigationRoute.Login
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+//        if (state.isLoading) {
+//            LinearProgressIndicator(
+//                modifier = Modifier.fillMaxWidth(),
+//                color = MaterialTheme.colors.secondary
+//            )
+//        }
+//
+//        Column(modifier = Modifier.fillMaxSize()) {
+//            DefaultHeader(
+//                titleText = "Выбор подборки",
+//                onArrowClick = { navigationRoute = NavigationRoute.Back }
+//            )
+//
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .padding(top = 24.dp)
+//            ) {
+//                DefaultButton(
+//                    text = stringResource(R.string.create_collection_btn_text),
+//                    modifier = Modifier.align(Alignment.CenterHorizontally),
+//                    onClick = {
+//                        navigationRoute = NavigationRoute.CreateCollection(state.courseId)
+//                    }
+//                )
+//
+//                Spacer(Modifier.size(40.dp))
+//
+//                SearchBar(
+//                    state = state,
+//                    eventHandler = eventHandler,
+//                    modifier = Modifier.padding(horizontal = 16.dp)
+//                )
+//
+//                Spacer(Modifier.size(32.dp))
+
+                CollectionList(
+                    state = state,
+                    collectionsFlow = collectionsFlow,
+                    imageLoader = imageLoader,
+                    onCollectionClick = {
+                        eventHandler.obtainEvent(
+                            AddToCollectionScreenEvent.AddToCollection(it)
+                        )
+                    },
+                    eventHandler = eventHandler
+                )
+//            }
+//        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun SearchBar(
+    modifier: Modifier = Modifier,
+    state: AddToCollectionScreenState,
+    eventHandler: EventHandler<AddToCollectionScreenEvent>
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colors.primary),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            modifier = Modifier
+                .padding(start = 10.dp)
+                .height(24.dp)
+                .width(24.dp),
+            painter = painterResource(id = R.drawable.ic_search),
+            contentDescription = stringResource(R.string.search_icon_content_description)
+        )
+
+        var isTextFieldFocused by remember { mutableStateOf(false) }
+
+        val fieldTextStyle = TextStyle(
+            fontWeight = FontWeight.W400,
+            fontSize = 14.sp,
+            color = Color.White
+        )
+
+        val focusManager = LocalFocusManager.current
+        val keyboardController = LocalSoftwareKeyboardController.current
+
+        BasicTextField(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
+                .onFocusChanged { isTextFieldFocused = it.isFocused },
+            value = state.searchQuery,
+            onValueChange = { eventHandler.obtainEvent(AddToCollectionScreenEvent.SetSearchQuery(it)) },
+            cursorBrush = SolidColor(Color.White),
+            textStyle = fieldTextStyle,
+            singleLine = true,
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+                focusManager.clearFocus()
+            }),
+            decorationBox = { innerTextField ->
+                Box(modifier = Modifier.padding(vertical = 8.dp)) {
+                    val animatedColor =
+                        animateColorAsState(if (isTextFieldFocused) Color.Gray else Color.LightGray)
+
+                    if (state.searchQuery.isEmpty()) {
+                        Text(
+                            stringResource(R.string.search_collection_bar_hint),
+                            color = animatedColor.value,
+                            style = fieldTextStyle
+                        )
+                    }
+
+                    innerTextField()
+                }
+            }
+        )
     }
 }
 
 @Composable
 private fun CollectionList(
-    collections: List<CourseCollection>,
+    state: AddToCollectionScreenState,
+    collectionsFlow: Flow<PagingData<CourseCollection>>,
     imageLoader: ImageLoader,
-    onCollectionClick: (CourseCollection) -> Unit
+    onCollectionClick: (CourseCollection) -> Unit,
+    eventHandler: EventHandler<AddToCollectionScreenEvent>
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        items(collections) { collection ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-                    .clickable { onCollectionClick(collection) }
-            ) {
-                Image(
-                    modifier = Modifier
-                        .size(65.dp)
-                        .clip(RoundedCornerShape(CornerSize(10.dp)))
-                        .background(MaterialTheme.colors.primary),
-                    painter = rememberAsyncImagePainter(
-                        collection.imageUrl,
-                        imageLoader = imageLoader
-                    ),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop
-                )
+    val collectionItems = collectionsFlow.collectAsLazyPagingItems()
 
-                Column(modifier = Modifier.padding(start = 16.dp)) {
-                    AutoResizeText(
-                        text = collection.title,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.body2,
-                        fontSizeRange = FontSizeRange(min = 12.sp, max = 14.sp),
-                        fontWeight = FontWeight.Bold
-                    )
+    LaunchedEffect(key1 = state.searchQuery, key2 = state.shouldSearchItems) {
+        if (state.shouldSearchItems) {
+            collectionItems.refresh()
+        }
+    }
 
-                    Spacer(Modifier.size(2.dp))
+    val isLoading =
+        collectionItems.loadState.refresh is LoadState.Loading || state.isCollectionListLoading
+    val isError = collectionItems.loadState.refresh is LoadState.Error
 
-                    Text(
-                        text = collection.author.name,
-                        maxLines = 2,
-                        style = MaterialTheme.typography.caption,
-                        fontSize = 11.sp,
-                        color = Color.Gray,
-                        fontWeight = FontWeight.Bold
+    if (!isLoading && !isError) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                if (state.isLoading) {
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colors.secondary
                     )
                 }
             }
+
+            item {
+                DefaultButton(
+                    text = stringResource(R.string.create_collection_btn_text),
+//                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    onClick = {
+//                        navigationRoute = NavigationRoute.CreateCollection(state.courseId)
+                    }
+                )
+
+                Spacer(Modifier.size(40.dp))
+
+                SearchBar(
+                    state = state,
+                    eventHandler = eventHandler,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+
+                Spacer(Modifier.size(32.dp))
+            }
+
+            items(collectionItems) { collection ->
+                collection?.let {
+                    CollectionRowItem(
+                        collection = collection,
+                        imageLoader = imageLoader,
+                        onCollectionClick = onCollectionClick
+                    )
+                }
+            }
+
+            with(collectionItems) {
+                when (loadState.append) {
+                    is LoadState.Loading -> {
+                        item { AppendLoadingItem() }
+                    }
+
+                    is LoadState.Error -> {
+                        item {
+                            val message = getLoadCollectionsErrorMessage(state)
+                            ErrorItem(message = message, modifier = Modifier.fillMaxWidth()) {
+                                retry()
+                            }
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
         }
+
+        if (collectionItems.itemCount == 0 && !isLoading && !isError) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = stringResource(R.string.nothing_found_message),
+                    fontWeight = FontWeight.W800,
+                    fontSize = 14.sp
+                )
+            }
+        }
+    } else if (isLoading) {
+        LoadingCollectionsView()
+    } else if (isError) {
+        ErrorItem(getLoadCollectionsErrorMessage(state), modifier = Modifier.fillMaxSize()) {
+            collectionItems.retry()
+        }
+    }
+}
+
+@Composable
+fun LoadingCollectionsView() {
+    val shimmerColors = listOf(
+        MaterialTheme.colors.primary.copy(alpha = 0.8f),
+        MaterialTheme.colors.primary.copy(alpha = 0.4f),
+        MaterialTheme.colors.primary.copy(alpha = 0.8f),
+    )
+
+    val transition = rememberInfiniteTransition()
+    val translateAnim = transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 1000,
+                easing = FastOutSlowInEasing
+            ),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    val brush = Brush.linearGradient(
+        colors = shimmerColors,
+        start = Offset.Zero,
+        end = Offset(x = translateAnim.value, y = translateAnim.value)
+    )
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        repeat(7) {
+            CollectionLoadingItem(brush)
+        }
+    }
+}
+
+@Composable
+private fun CollectionLoadingItem(brush: Brush) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 10.dp, start = 32.dp, end = 32.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(
+            modifier = Modifier
+                .size(65.dp)
+                .clip(RoundedCornerShape(corner = CornerSize(14.dp)))
+                .background(brush)
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Column(verticalArrangement = Arrangement.Center) {
+            Spacer(
+                modifier = Modifier
+                    .height(16.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .fillMaxWidth(fraction = 0.8f)
+                    .background(brush)
+            )
+            Spacer(modifier = Modifier.padding(5.dp))
+            Spacer(
+                modifier = Modifier
+                    .height(16.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .fillMaxWidth(fraction = 0.6f)
+                    .background(brush)
+            )
+        }
+    }
+}
+
+@Composable
+private fun getLoadCollectionsErrorMessage(state: AddToCollectionScreenState): String {
+    return if (state.getCollectionsErrorMessage != null) {
+        state.getCollectionsErrorMessage.asString(LocalContext.current)
+    } else {
+        stringResource(id = R.string.unknown_error)
+    }
+}
+
+@Composable
+private fun CollectionRowItem(
+    collection: CourseCollection,
+    imageLoader: ImageLoader,
+    onCollectionClick: (CourseCollection) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp)
+            .clickable { onCollectionClick(collection) }
+    ) {
+        Image(
+            modifier = Modifier
+                .size(65.dp)
+                .clip(RoundedCornerShape(CornerSize(10.dp)))
+                .background(MaterialTheme.colors.primary),
+            painter = rememberAsyncImagePainter(
+                collection.imageUrl,
+                imageLoader = imageLoader
+            ),
+            contentDescription = null,
+            contentScale = ContentScale.Crop
+        )
+
+        Column(modifier = Modifier.padding(start = 16.dp)) {
+            AutoResizeText(
+                text = collection.title,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.body2,
+                fontSizeRange = FontSizeRange(min = 12.sp, max = 14.sp),
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(Modifier.size(2.dp))
+
+            Text(
+                text = collection.author.name,
+                maxLines = 2,
+                style = MaterialTheme.typography.caption,
+                fontSize = 11.sp,
+                color = Color.Gray,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+fun AppendLoadingItem() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = MaterialTheme.colors.secondary)
+    }
+}
+
+@Composable
+fun ErrorItem(message: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Column(
+        modifier = modifier.padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = message, fontSize = 16.sp)
+        Spacer(modifier = Modifier.size(8.dp))
+        DefaultButton(text = stringResource(R.string.retry), onClick = onClick)
     }
 }

@@ -12,4 +12,6 @@
     <string name="network_error_message">Ошибка сети. Проверьте подключение к интернету.</string>
     <string name="retry">Повторить</string>
     <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="search_icon_content_description">Search Icon</string>
+    <string name="nothing_found_message">По вашему запросу ничего не найдено</string>
 </resources>
