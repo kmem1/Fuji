@@ -68,7 +68,6 @@ fun SetupNavGraph(
         exitTransition = { defaultExitTransition() },
         popEnterTransition = { defaultPopEnterTransition() },
         popExitTransition = { defaultPopExitTransition() }
-
     ) {
         // *************************** Bottom Bar navigation ***************************
 
@@ -158,16 +157,7 @@ fun SetupNavGraph(
                 eventHandler = viewModel,
                 navigateToRegistration = { navController.navigate(Route.RegistrationRoute.route) },
                 navigateToRestorePassword = { navController.navigate(Route.RestorePasswordRoute.route) },
-                onSuccessLogin = { access, refresh, username ->
-                    val userDataManager = UserDataManagerImpl()
-
-                    tokenManager.setToken(access)
-                    tokenManager.setRefresh(refresh)
-
-                    userDataManager.setUserPath(username)
-
-                    navController.navigate(BottomNavItem.Home.route)
-                }
+                onSuccessLogin = { navController.navigate(BottomNavItem.Home.route) }
             )
             showBottomBar(false)
         }

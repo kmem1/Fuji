@@ -2,6 +2,8 @@ package com.clownteam.fuji.di.interactors
 
 import com.clownteam.authorization_datasource.network.AuthorizationApi
 import com.clownteam.authorization_interactors.AuthorizationInteractors
+import com.clownteam.core.network.token.TokenManager
+import com.clownteam.core.user_data.UserDataManager
 import com.clownteam.fuji.api.FujiApi
 import dagger.Module
 import dagger.Provides
@@ -21,7 +23,11 @@ object AuthorizationInteractorsModule {
 
     @Provides
     @Singleton
-    fun provideAuthorizationInteractors(authorizationApi: AuthorizationApi): AuthorizationInteractors {
-        return AuthorizationInteractors.build(authorizationApi)
+    fun provideAuthorizationInteractors(
+        authorizationApi: AuthorizationApi,
+        tokenManager: TokenManager,
+        userDataManager: UserDataManager
+    ): AuthorizationInteractors {
+        return AuthorizationInteractors.build(authorizationApi, tokenManager, userDataManager)
     }
 }

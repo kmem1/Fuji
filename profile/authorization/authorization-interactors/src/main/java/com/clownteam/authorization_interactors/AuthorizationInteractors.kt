@@ -2,6 +2,8 @@ package com.clownteam.authorization_interactors
 
 import com.clownteam.authorization_datasource.network.AuthorizationApi
 import com.clownteam.authorization_datasource.network.AuthorizationServiceImpl
+import com.clownteam.core.network.token.TokenManager
+import com.clownteam.core.user_data.UserDataManager
 
 class AuthorizationInteractors private constructor(
     val validateLogin: IValidateLoginUseCase,
@@ -13,7 +15,11 @@ class AuthorizationInteractors private constructor(
     val restorePassword: IRestorePasswordUseCase
 ) {
     companion object Factory {
-        fun build(authorizationApi: AuthorizationApi): AuthorizationInteractors {
+        fun build(
+            authorizationApi: AuthorizationApi,
+            tokenManager: TokenManager,
+            userDataManager: UserDataManager
+        ): AuthorizationInteractors {
             val authorizationService = AuthorizationServiceImpl(authorizationApi)
             return AuthorizationInteractors(
                 ValidateLoginUseCase(),
@@ -21,7 +27,7 @@ class AuthorizationInteractors private constructor(
                 ValidatePasswordUseCase(),
                 ValidateRepeatedPasswordUseCase(),
                 RegistrationUseCase(authorizationService),
-                LoginUseCase(authorizationService),
+                LoginUseCase(authorizationService, tokenManager, userDataManager),
                 RestorePasswordUseCase(authorizationService)
             )
         }

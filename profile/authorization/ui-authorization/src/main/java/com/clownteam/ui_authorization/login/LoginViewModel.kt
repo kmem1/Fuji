@@ -83,7 +83,7 @@ class LoginViewModel @Inject constructor(
     private suspend fun tryToLogin() {
         val data = LoginData(state.value.email, state.value.password)
 
-        when (val result = loginUseCase.invoke(data)) {
+        when (loginUseCase.invoke(data)) {
             is LoginUseCaseResult.Failed -> {
                 state.value =
                     state.value.copy(
@@ -102,11 +102,7 @@ class LoginViewModel @Inject constructor(
             is LoginUseCaseResult.Success -> {
                 state.value = state.value.copy(
                     isNetworkError = false,
-                    loginResult = LoginResult(
-                        result.accessToken,
-                        result.refreshToken,
-                        state.value.email
-                    )
+                    isSuccess = true
                 )
             }
         }

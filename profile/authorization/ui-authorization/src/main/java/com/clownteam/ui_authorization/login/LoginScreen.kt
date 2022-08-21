@@ -34,12 +34,7 @@ import com.clownteam.ui_authorization.components.AuthorizationTextField
 private sealed class NavigationRoute {
     object Registration : NavigationRoute()
     object RestorePassword : NavigationRoute()
-
-    class SuccessLoginRoute(
-        val accessToken: String,
-        val refreshToken: String,
-        val userPath: String
-    ) : NavigationRoute()
+    object SuccessLoginRoute : NavigationRoute()
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -49,7 +44,7 @@ fun LoginScreen(
     eventHandler: EventHandler<LoginEvent>,
     navigateToRegistration: () -> Unit = {},
     navigateToRestorePassword: () -> Unit = {},
-    onSuccessLogin: (access: String, refresh: String, username: String) -> Unit
+    onSuccessLogin: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -70,7 +65,7 @@ fun LoginScreen(
                 }
 
                 is NavigationRoute.SuccessLoginRoute -> {
-                    onSuccessLogin(it.accessToken, it.refreshToken, it.userPath)
+                    onSuccessLogin()
                 }
             }
         }
@@ -81,12 +76,8 @@ fun LoginScreen(
         eventHandler.obtainEvent(LoginEvent.FailMessageShown)
     }
 
-    if (state.loginResult != null) {
-        navigationRoute = NavigationRoute.SuccessLoginRoute(
-            state.loginResult.access,
-            state.loginResult.refresh,
-            state.loginResult.userPath
-        )
+    if (state.isSuccess) {
+        navigationRoute = NavigationRoute.SuccessLoginRoute
     }
 
     if (state.isLoading) {
