@@ -97,6 +97,10 @@ class AddToCollectionScreenViewModel @Inject constructor(
                     updateState(state.value.copy(shouldSearchItems = true))
                 }
             }
+
+            AddToCollectionScreenEvent.ErrorMessageShown -> {
+                updateState(state.value.copy(addToCollectionErrorMessage = null))
+            }
         }
     }
 
@@ -116,7 +120,7 @@ class AddToCollectionScreenViewModel @Inject constructor(
             AddCourseToCollectionUseCaseResult.Failed -> {
                 updateState(
                     state.value.copy(
-                        getCollectionsErrorMessage = UiText.StringResource(
+                        addToCollectionErrorMessage = UiText.StringResource(
                             R.string.add_to_collection_error_message
                         )
                     )
@@ -126,7 +130,7 @@ class AddToCollectionScreenViewModel @Inject constructor(
             AddCourseToCollectionUseCaseResult.NetworkError -> {
                 updateState(
                     state.value.copy(
-                        getCollectionsErrorMessage = UiText.StringResource(
+                        addToCollectionErrorMessage = UiText.StringResource(
                             R.string.network_error_message
                         )
                     )
@@ -141,6 +145,8 @@ class AddToCollectionScreenViewModel @Inject constructor(
                 updateState(state.value.copy(isUnauthorized = true))
             }
         }
+
+        updateState(state.value.copy(isLoading = false))
     }
 
     private fun handleGetUserCollectionsResult(result: GetUserCollectionsUseCaseResult) {

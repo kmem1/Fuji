@@ -61,6 +61,8 @@ fun SetupNavGraph(
         BottomNavItem.Home.route
     }
 
+//    val startDestination = Route.AddToCollectionRoute.route
+
     AnimatedNavHost(
         navController = navController,
         startDestination = startDestination,

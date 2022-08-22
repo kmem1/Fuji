@@ -1,6 +1,5 @@
 package com.clownteam.ui_collectionaction.add_to_collection
 
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -12,10 +11,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -26,7 +22,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -38,6 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -53,6 +50,7 @@ import com.clownteam.components.utils.showToast
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.ui_collectionaction.R
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 private sealed class NavigationRoute {
     object Login : NavigationRoute()
@@ -60,6 +58,7 @@ private sealed class NavigationRoute {
     class CreateCollection(val courseId: String) : NavigationRoute()
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddToCollectionScreen(
     state: AddToCollectionScreenState,
@@ -69,6 +68,53 @@ fun AddToCollectionScreen(
     onBack: () -> Unit,
     navigateToCreateCollection: (courseId: String) -> Unit,
     navigateToLogin: () -> Unit
+) {
+    val bottomState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val coroutineScope = rememberCoroutineScope()
+
+    ModalBottomSheetLayout(
+        sheetState = bottomState,
+        sheetContent = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 80.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Bottom Sheet")
+            }
+        },
+        scrimColor = Color.Black.copy(alpha = 0.7F),
+        sheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
+        sheetBackgroundColor = MaterialTheme.colors.background
+    ) {
+        ScreenContent(
+            state = state,
+            eventHandler = eventHandler,
+            imageLoader = imageLoader,
+            collectionsFlow = collectionsFlow,
+            onBack = onBack,
+            navigateToCreateCollection = navigateToCreateCollection,
+            navigateToLogin = navigateToLogin,
+            onSortClick = {
+                coroutineScope.launch {
+                    bottomState.show()
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun ScreenContent(
+    state: AddToCollectionScreenState,
+    eventHandler: EventHandler<AddToCollectionScreenEvent>,
+    imageLoader: ImageLoader,
+    collectionsFlow: Flow<PagingData<CourseCollection>>,
+    onBack: () -> Unit,
+    navigateToCreateCollection: (courseId: String) -> Unit,
+    navigateToLogin: () -> Unit,
+    onSortClick: () -> Unit
 ) {
     var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
 
@@ -100,41 +146,73 @@ fun AddToCollectionScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-//        if (state.isLoading) {
-//            LinearProgressIndicator(
-//                modifier = Modifier.fillMaxWidth(),
-//                color = MaterialTheme.colors.secondary
-//            )
-//        }
-//
-//        Column(modifier = Modifier.fillMaxSize()) {
-//            DefaultHeader(
-//                titleText = "Выбор подборки",
-//                onArrowClick = { navigationRoute = NavigationRoute.Back }
-//            )
-//
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(top = 24.dp)
-//            ) {
-//                DefaultButton(
-//                    text = stringResource(R.string.create_collection_btn_text),
-//                    modifier = Modifier.align(Alignment.CenterHorizontally),
-//                    onClick = {
-//                        navigationRoute = NavigationRoute.CreateCollection(state.courseId)
-//                    }
-//                )
-//
-//                Spacer(Modifier.size(40.dp))
-//
-//                SearchBar(
-//                    state = state,
-//                    eventHandler = eventHandler,
-//                    modifier = Modifier.padding(horizontal = 16.dp)
-//                )
-//
-//                Spacer(Modifier.size(32.dp))
+        if (state.isLoading) {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colors.secondary
+            )
+        }
+
+        Column(modifier = Modifier.fillMaxSize()) {
+            DefaultHeader(
+                titleText = "Выбор подборки",
+                onArrowClick = { navigationRoute = NavigationRoute.Back }
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 24.dp)
+            ) {
+                DefaultButton(
+                    text = stringResource(R.string.create_collection_btn_text),
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    onClick = {
+                        navigationRoute = NavigationRoute.CreateCollection(state.courseId)
+                    }
+                )
+
+                Spacer(Modifier.size(40.dp))
+
+                ConstraintLayout(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    val (searchBar, sortButton) = createRefs()
+
+                    SearchBar(
+                        state = state,
+                        eventHandler = eventHandler,
+                        modifier = Modifier.constrainAs(searchBar) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                            end.linkTo(sortButton.start, margin = 10.dp)
+                            width = Dimension.fillToConstraints
+                        }
+                    )
+
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .background(MaterialTheme.colors.primary)
+                            .clickable { onSortClick() }
+                            .constrainAs(sortButton) {
+                                top.linkTo(searchBar.top)
+                                bottom.linkTo(searchBar.bottom)
+                                end.linkTo(parent.end)
+                                width = Dimension.ratio("1:1")
+                                height = Dimension.fillToConstraints
+                            },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_sort),
+                            contentDescription = null
+                        )
+                    }
+                }
+
+                Spacer(Modifier.size(32.dp))
 
                 CollectionList(
                     state = state,
@@ -144,11 +222,10 @@ fun AddToCollectionScreen(
                         eventHandler.obtainEvent(
                             AddToCollectionScreenEvent.AddToCollection(it)
                         )
-                    },
-                    eventHandler = eventHandler
+                    }
                 )
-//            }
-//        }
+            }
+        }
     }
 }
 
@@ -161,7 +238,6 @@ private fun SearchBar(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
             .background(MaterialTheme.colors.primary),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -188,8 +264,8 @@ private fun SearchBar(
         BasicTextField(
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .fillMaxWidth()
-                .onFocusChanged { isTextFieldFocused = it.isFocused },
+                .onFocusChanged { isTextFieldFocused = it.isFocused }
+                .fillMaxWidth(),
             value = state.searchQuery,
             onValueChange = { eventHandler.obtainEvent(AddToCollectionScreenEvent.SetSearchQuery(it)) },
             cursorBrush = SolidColor(Color.White),
@@ -224,8 +300,7 @@ private fun CollectionList(
     state: AddToCollectionScreenState,
     collectionsFlow: Flow<PagingData<CourseCollection>>,
     imageLoader: ImageLoader,
-    onCollectionClick: (CourseCollection) -> Unit,
-    eventHandler: EventHandler<AddToCollectionScreenEvent>
+    onCollectionClick: (CourseCollection) -> Unit
 ) {
     val collectionItems = collectionsFlow.collectAsLazyPagingItems()
 
@@ -241,39 +316,12 @@ private fun CollectionList(
 
     if (!isLoading && !isError) {
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            item {
-                if (state.isLoading) {
-                    LinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colors.secondary
-                    )
-                }
-            }
-
-            item {
-                DefaultButton(
-                    text = stringResource(R.string.create_collection_btn_text),
-//                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = {
-//                        navigationRoute = NavigationRoute.CreateCollection(state.courseId)
-                    }
-                )
-
-                Spacer(Modifier.size(40.dp))
-
-                SearchBar(
-                    state = state,
-                    eventHandler = eventHandler,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-
-                Spacer(Modifier.size(32.dp))
-            }
-
             items(collectionItems) { collection ->
                 collection?.let {
                     CollectionRowItem(
@@ -309,7 +357,7 @@ private fun CollectionList(
                 Text(
                     text = stringResource(R.string.nothing_found_message),
                     fontWeight = FontWeight.W800,
-                    fontSize = 14.sp
+                    fontSize = 16.sp
                 )
             }
         }

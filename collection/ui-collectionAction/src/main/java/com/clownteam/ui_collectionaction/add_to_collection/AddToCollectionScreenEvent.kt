@@ -6,4 +6,5 @@ sealed class AddToCollectionScreenEvent {
 
     class AddToCollection(val collection: CourseCollection) : AddToCollectionScreenEvent()
     class SetSearchQuery(val query: String) : AddToCollectionScreenEvent()
+    object ErrorMessageShown: AddToCollectionScreenEvent()
 }
