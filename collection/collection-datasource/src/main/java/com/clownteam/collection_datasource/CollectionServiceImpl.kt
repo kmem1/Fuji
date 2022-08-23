@@ -1,11 +1,13 @@
 package com.clownteam.collection_datasource
 
+import com.clownteam.collection_datasource.mappers.CollectionSortOptionApiMapper
 import com.clownteam.collection_datasource.models.add_course_to_collection.AddCourseToCollectionBody
 import com.clownteam.collection_datasource.models.create_collection.CreateCollectionResponse
 import com.clownteam.collection_datasource.models.get_collection.GetCollectionResponse
 import com.clownteam.collection_datasource.models.get_collections.GetCollectionsResponse
 import com.clownteam.collection_datasource.models.get_user_collections.GetUserCollectionsResponse
 import com.clownteam.collection_datasource.models.update_collection.UpdateCollectionResponseBody
+import com.clownteam.collection_domain.CollectionSortOption
 import com.clownteam.core.network.NetworkResponse
 import com.clownteam.core.network.baseRequest
 
@@ -25,9 +27,13 @@ class CollectionServiceImpl(private val api: CollectionApi) : CollectionService 
         token: String,
         userPath: String,
         search: String,
-        page: Int
+        page: Int,
+        sortOption: CollectionSortOption
     ): NetworkResponse<GetUserCollectionsResponse> =
-        baseRequest { api.getUserCollections(token, userPath, search, page) }
+        baseRequest {
+            val ordering = CollectionSortOptionApiMapper.map(sortOption)
+            api.getUserCollections(token, userPath, search, page, ordering)
+        }
 
     override suspend fun addCourseToCollection(
         token: String,

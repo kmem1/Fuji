@@ -25,7 +25,8 @@ interface CollectionApi {
         @Header("Authorization") token: String,
         @Path("userPath") userPath: String,
         @Query("search") search: String,
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("ordering") ordering: String
     ): Call<GetUserCollectionsResponse>
 
     @POST("api/courses/add/{courseId}/")

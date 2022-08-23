@@ -11,4 +11,8 @@
     <string name="add_to_collection_error_message">Не удалось добавить курс в коллекцию</string>
     <string name="search_collection_bar_hint">Поиск подборки</string>
     <string name="add_to_collection_screen_title">Выбор подборки</string>
+    <string name="rating_sort_option_name">Популярности</string>
+    <string name="title_sort_option_name">Алфавиту</string>
+    <string name="date_sort_option_name">Дате добавления</string>
+    <string name="sort_bottom_sheet_title">Сортировать по</string>
 </resources>

@@ -1,10 +1,13 @@
 package com.clownteam.ui_collectionaction.add_to_collection
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CornerSize
@@ -12,11 +15,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -41,7 +48,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
+import com.clownteam.collection_domain.CollectionSortOption
+import com.clownteam.collection_domain.CollectionSortType
 import com.clownteam.collection_domain.CourseCollection
+import com.clownteam.collection_domain.SortDirection
 import com.clownteam.components.AutoResizeText
 import com.clownteam.components.DefaultButton
 import com.clownteam.components.FontSizeRange
@@ -75,13 +85,11 @@ fun AddToCollectionScreen(
     ModalBottomSheetLayout(
         sheetState = bottomState,
         sheetContent = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 80.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Bottom Sheet")
+            BottomSheetContent(state.sortOption) {
+                coroutineScope.launch {
+                    eventHandler.obtainEvent(AddToCollectionScreenEvent.SetSortOption(it))
+                    bottomState.hide()
+                }
             }
         },
         scrimColor = Color.Black.copy(alpha = 0.7F),
@@ -101,6 +109,119 @@ fun AddToCollectionScreen(
                     bottomState.show()
                 }
             }
+        )
+    }
+}
+
+@Composable
+private fun BottomSheetContent(
+    currentOption: CollectionSortOption,
+    modifier: Modifier = Modifier,
+    onSortChanged: (newOption: CollectionSortOption) -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(22.dp)
+    ) {
+        Text(
+            stringResource(R.string.sort_bottom_sheet_title),
+            style = MaterialTheme.typography.subtitle1,
+            color = Color.Gray
+        )
+
+        Spacer(modifier = Modifier.size(24.dp))
+
+        val sortOptions = listOf(
+            CollectionSortOption(
+                type = CollectionSortType.Rating,
+                direction = if (currentOption.type == CollectionSortType.Rating)
+                    currentOption.direction else SortDirection.DESC
+            ),
+            CollectionSortOption(
+                type = CollectionSortType.Title,
+                direction = if (currentOption.type == CollectionSortType.Title)
+                    currentOption.direction else SortDirection.DESC
+            ),
+            CollectionSortOption(
+                type = CollectionSortType.Date,
+                direction = if (currentOption.type == CollectionSortType.Date)
+                    currentOption.direction else SortDirection.DESC
+            )
+        )
+
+        Column(modifier = Modifier.fillMaxWidth()) {
+            for (option in sortOptions) {
+                SortOptionRow(option, isSelected = option.type == currentOption.type) {
+                    onSortChanged(option)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SortOptionRow(
+    option: CollectionSortOption,
+    isSelected: Boolean,
+    onClick: (CollectionSortOption) -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    var isRowFocused by remember { mutableStateOf(false) }
+
+    val interactionFlow = interactionSource.interactions.collectAsState(initial = null)
+
+    when (interactionFlow.value) {
+        is PressInteraction.Press -> {
+            isRowFocused = true
+        }
+
+        is PressInteraction.Cancel -> {
+            isRowFocused = false
+        }
+
+        is PressInteraction.Release -> {
+            isRowFocused = false
+        }
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(intrinsicSize = IntrinsicSize.Min)
+            .padding(start = 8.dp, end = 16.dp)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) { onClick(option) }
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        val optionName = when (option.type) {
+            CollectionSortType.Rating -> stringResource(R.string.rating_sort_option_name)
+            CollectionSortType.Title -> stringResource(R.string.title_sort_option_name)
+            CollectionSortType.Date -> stringResource(R.string.date_sort_option_name)
+        }
+
+        Text(
+            optionName,
+            style = MaterialTheme.typography.subtitle1,
+            color = if (isRowFocused) Color.Gray else Color.White,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        val arrowAlpha = if (isSelected) 1F else 0F
+        val rotationAngle = if (option.direction == SortDirection.DESC) -90F else 90F
+
+        Icon(
+            Icons.Filled.ArrowBack,
+            contentDescription = null,
+            modifier = Modifier
+                .alpha(arrowAlpha)
+                .rotate(rotationAngle)
+                .fillMaxHeight(),
+            tint = MaterialTheme.colors.secondary,
         )
     }
 }
@@ -304,7 +425,14 @@ private fun CollectionList(
 ) {
     val collectionItems = collectionsFlow.collectAsLazyPagingItems()
 
-    LaunchedEffect(key1 = state.searchQuery, key2 = state.shouldSearchItems) {
+    Log.d("Kmem", "sortOption ${state.sortOption}")
+
+    LaunchedEffect(
+        key1 = state.searchQuery,
+        key2 = state.shouldSearchItems,
+        key3 = state.sortOption
+    ) {
+        Log.d("Kmem", "Hello launched")
         if (state.shouldSearchItems) {
             collectionItems.refresh()
         }

@@ -1,6 +1,8 @@
 package com.clownteam.collection_interactors
 
 import com.clownteam.collection_datasource.CollectionService
+import com.clownteam.collection_domain.CollectionSortOption
+import com.clownteam.collection_domain.CollectionSortType
 import com.clownteam.collection_domain.CourseCollection
 import com.clownteam.collection_interactors.mappers.GetUserCollectionsResponseItemMapper
 import com.clownteam.core.domain.IUseCase
@@ -21,7 +23,7 @@ internal class GetUserCollectionsUseCase(
             userDataManager.getUserPath() ?: return GetUserCollectionsUseCaseResult.Unauthorized
 
         val result = authorizationRequest(tokenManager) { token ->
-            service.getUserCollections(token, userPath, param.query, param.page)
+            service.getUserCollections(token, userPath, param.query, param.page, param.sortOption)
         }
 
         if (result.isUnauthorized) return GetUserCollectionsUseCaseResult.Unauthorized
@@ -47,7 +49,8 @@ interface IGetUserCollectionsUseCase :
 
 data class GetUserCollectionsParams(
     val query: String,
-    val page: Int
+    val page: Int,
+    val sortOption: CollectionSortOption = CollectionSortOption(type = CollectionSortType.Rating)
 )
 
 sealed class GetUserCollectionsUseCaseResult {

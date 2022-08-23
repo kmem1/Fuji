@@ -5,6 +5,7 @@ import com.clownteam.collection_datasource.models.get_collection.GetCollectionRe
 import com.clownteam.collection_datasource.models.get_collections.GetCollectionsResponse
 import com.clownteam.collection_datasource.models.get_user_collections.GetUserCollectionsResponse
 import com.clownteam.collection_datasource.models.update_collection.UpdateCollectionResponseBody
+import com.clownteam.collection_domain.CollectionSortOption
 import com.clownteam.core.network.NetworkResponse
 
 interface CollectionService {
@@ -20,7 +21,8 @@ interface CollectionService {
         token: String,
         userPath: String,
         search: String,
-        page: Int
+        page: Int,
+        sortOption: CollectionSortOption
     ): NetworkResponse<GetUserCollectionsResponse>
 
     suspend fun addCourseToCollection(

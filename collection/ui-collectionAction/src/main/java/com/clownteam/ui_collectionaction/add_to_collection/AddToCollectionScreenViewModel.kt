@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import com.clownteam.collection_domain.CollectionSortOption
 import com.clownteam.collection_domain.CourseCollection
 import com.clownteam.collection_interactors.*
 import com.clownteam.components.UiText
@@ -48,7 +49,8 @@ class AddToCollectionScreenViewModel @Inject constructor(
                     getUserCollections.invoke(
                         GetUserCollectionsParams(
                             query = state.value.searchQuery,
-                            page
+                            page = page,
+                            sortOption = state.value.sortOption
                         )
                     )
 
@@ -101,7 +103,29 @@ class AddToCollectionScreenViewModel @Inject constructor(
             AddToCollectionScreenEvent.ErrorMessageShown -> {
                 updateState(state.value.copy(addToCollectionErrorMessage = null))
             }
+
+            is AddToCollectionScreenEvent.SetSortOption -> {
+                setNewSortOption(event.sortOption)
+            }
         }
+    }
+
+    private fun setNewSortOption(sortOption: CollectionSortOption) {
+        // Create new object
+        val newOption = if (sortOption.type == state.value.sortOption.type) {
+            val currentDirection = state.value.sortOption.direction
+            state.value.sortOption.copy(direction = currentDirection.reverse())
+        } else {
+            sortOption
+        }
+
+        updateState(
+            state.value.copy(
+                sortOption = newOption,
+                isCollectionListLoading = true,
+                shouldSearchItems = true
+            )
+        )
     }
 
     private fun addCourseToCollection(collectionId: String) {
