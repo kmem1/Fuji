@@ -132,23 +132,14 @@ private fun BottomSheetContent(
 
         Spacer(modifier = Modifier.size(24.dp))
 
-        val sortOptions = listOf(
-            CollectionSortOption(
-                type = CollectionSortType.Rating,
-                direction = if (currentOption.type == CollectionSortType.Rating)
-                    currentOption.direction else SortDirection.DESC
-            ),
-            CollectionSortOption(
-                type = CollectionSortType.Title,
-                direction = if (currentOption.type == CollectionSortType.Title)
-                    currentOption.direction else SortDirection.DESC
-            ),
-            CollectionSortOption(
-                type = CollectionSortType.Date,
-                direction = if (currentOption.type == CollectionSortType.Date)
-                    currentOption.direction else SortDirection.DESC
-            )
+        var sortOptions = listOf(
+            CollectionSortOption(type = CollectionSortType.Rating),
+            CollectionSortOption(type = CollectionSortType.Title),
+            CollectionSortOption(type = CollectionSortType.Date)
         )
+
+        // Set current option
+        sortOptions = sortOptions.map { if (it.type == currentOption.type) currentOption else it }
 
         Column(modifier = Modifier.fillMaxWidth()) {
             for (option in sortOptions) {
@@ -254,6 +245,14 @@ private fun ScreenContent(
                     navigateToCreateCollection(it.courseId)
                 }
             }
+        }
+    }
+
+    val context = LocalContext.current
+    LaunchedEffect(key1 = state.addToCollectionErrorMessage) {
+        if (state.addToCollectionErrorMessage != null) {
+            state.addToCollectionErrorMessage.showToast(context)
+            eventHandler.obtainEvent(AddToCollectionScreenEvent.ErrorMessageShown)
         }
     }
 
