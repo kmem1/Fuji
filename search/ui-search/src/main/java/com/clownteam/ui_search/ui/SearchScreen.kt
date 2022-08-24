@@ -399,7 +399,7 @@ private fun <T : Any> ItemsList(
 
 @Composable
 fun MessageBox(message: String, modifier: Modifier = Modifier) {
-    Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Text(
             text = message,
             fontWeight = FontWeight.W800,

@@ -136,7 +136,8 @@ fun CreateCollectionScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 26.dp)
                 .onFocusChanged { isTextFieldFocused = it.isFocused },
-            colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, cursorColor = Color.White)
+            colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, cursorColor = Color.White),
+            singleLine = true
         )
 
         DefaultButton(

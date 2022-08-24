@@ -13,7 +13,14 @@ data class CourseModulesResponseItem(
     @SerializedName("path")
     val path: String?,
     @SerializedName("progress")
-    val progress: Int?,
+    val progress: ProgressModel?,
     @SerializedName("title")
     val title: String?
+)
+
+data class ProgressModel(
+    @SerializedName("progress")
+    val currentProgress: Int,
+    @SerializedName("max_progress")
+    val maxProgress: Int
 )

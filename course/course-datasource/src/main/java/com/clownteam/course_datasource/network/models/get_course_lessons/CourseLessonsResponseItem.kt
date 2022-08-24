@@ -1,6 +1,7 @@
 package com.clownteam.course_datasource.network.models.get_course_lessons
 
 
+import com.clownteam.course_datasource.network.models.get_courses_modules.ProgressModel
 import com.google.gson.annotations.SerializedName
 
 data class CourseLessonsResponseItem(
@@ -15,7 +16,7 @@ data class CourseLessonsResponseItem(
     @SerializedName("path")
     val path: String?,
     @SerializedName("progress")
-    val progress: Int?,
+    val progress: ProgressModel?,
     @SerializedName("title")
     val title: String?
 )

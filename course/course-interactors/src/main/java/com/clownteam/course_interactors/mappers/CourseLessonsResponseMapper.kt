@@ -9,7 +9,7 @@ object CourseLessonsResponseMapper {
         return CourseLesson(
             id = input.path ?: "",
             title = input.title ?: "",
-            currentProgress = input.progress ?: 0,
+            currentProgress = input.progress?.currentProgress ?: 0,
             maxProgress = input.countStep ?: 0,
             currentStepId = getCurrentStepId(input.currentStep)
         )
