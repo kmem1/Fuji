@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import coil.ImageLoader
 import com.clownteam.fuji.ui.navigation.SetupNavGraph
 import com.clownteam.fuji.ui.navigation.bottom_navigation.AppBottomNavigation
@@ -38,13 +39,16 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
             FujiTheme {
                 val navController = rememberAnimatedNavController()
                 var bottomBarState by remember { mutableStateOf(true) }
 //                var animateBottomBar by remember { mutableStateOf(false) }
-                val isImeVisible = WindowInsets.isImeVisible
+//                val isImeVisible = WindowInsets.isImeVisible
                 Scaffold(
+                    modifier = Modifier.systemBarsPadding().navigationBarsPadding(),
                     bottomBar = {
 //                        AnimatedVisibility(
 //                            visible = bottomBarState && !isImeVisible,
@@ -53,9 +57,7 @@ class MainActivity : AppCompatActivity() {
 //                        ) {
 //                            AppBottomNavigation(navController)
 //                        }
-                        if (bottomBarState && !isImeVisible) {
-                            AppBottomNavigation(navController)
-                        }
+                        if (bottomBarState) { AppBottomNavigation(navController) }
                     }
                 ) { innerPadding ->
                     Box(

@@ -1,8 +1,6 @@
 package com.clownteam.ui_search.ui
 
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -27,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -48,6 +47,7 @@ import com.clownteam.components.DefaultButton
 import com.clownteam.components.FontSizeRange
 import com.clownteam.components.PriceText
 import com.clownteam.components.utils.getMembersCountString
+import com.clownteam.components.utils.toDp
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.search_domain.SearchFilter
 import com.clownteam.search_domain.SearchResultItem
@@ -384,25 +384,27 @@ private fun <T : Any> ItemsList(
         }
 
         if (pagingItems.itemCount == 0 && !isLoading && !isError) {
-            Log.d("Kmem", "EMPTY")
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(
-                    text = stringResource(R.string.nothing_found_message),
-                    fontWeight = FontWeight.W800,
-                    fontSize = 18.sp
-                )
-            }
-        }
-    } else {
-        val messageText = stringResource(R.string.empty_search_query_message)
-
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = messageText,
-                fontWeight = FontWeight.W800,
-                fontSize = 18.sp
+            MessageBox(
+                message = stringResource(R.string.nothing_found_message),
+                modifier = Modifier.fillMaxSize().imePadding()
             )
         }
+    } else {
+        MessageBox(
+            message = stringResource(R.string.empty_search_query_message),
+            modifier = Modifier.fillMaxSize().imePadding()
+        )
+    }
+}
+
+@Composable
+fun MessageBox(message: String, modifier: Modifier = Modifier) {
+    Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
+        Text(
+            text = message,
+            fontWeight = FontWeight.W800,
+            fontSize = 18.sp
+        )
     }
 }
 

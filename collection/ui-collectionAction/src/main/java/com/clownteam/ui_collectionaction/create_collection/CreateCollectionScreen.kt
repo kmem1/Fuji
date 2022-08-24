@@ -1,10 +1,7 @@
 package com.clownteam.ui_collectionaction.create_collection
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -71,7 +68,7 @@ fun CreateCollectionScreen(
         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
     }
 
-    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+    ConstraintLayout(modifier = Modifier.imePadding().fillMaxSize()) {
         val (header, label, textField, createButton) = createRefs()
 
         Box(modifier = Modifier
