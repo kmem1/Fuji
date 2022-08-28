@@ -31,9 +31,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -293,7 +295,7 @@ private fun SearchResultsWindow(
                 imageLoader,
                 navigateToCourse,
                 itemContent = { course, _imageLoader, navigateToDetailed ->
-                    ColumnCourseListItem(course, _imageLoader, navigateToDetailed)
+                    ColumnCourseListItem1(course, _imageLoader, navigateToDetailed)
                 },
                 loadingState = { LoadingWindow(searchFilter = SearchFilter.Courses) }
             )
@@ -532,6 +534,118 @@ private fun ColumnCourseListItem(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ColumnCourseListItem1(
+    course: SearchResultItem.Course,
+    imageLoader: ImageLoader,
+    onClick: (String) -> Unit,
+    onLongClick: (String) -> Unit = {}
+) {
+    // Main Row
+    Column(
+        modifier = Modifier
+            .combinedClickable(
+                onClick = { onClick(course.courseId) },
+                onLongClick = { onLongClick(course.courseId) })
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colors.primary),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        // Logo
+        Image(
+            modifier = Modifier
+                .height(220.dp)
+                .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                .background(MaterialTheme.colors.primary)
+                .fillMaxWidth(),
+            painter = rememberAsyncImagePainter(
+                course.imgUrl,
+                imageLoader = imageLoader
+            ),
+            contentDescription = stringResource(R.string.course_image_content_description),
+            contentScale = ContentScale.Crop
+        )
+
+        AutoResizeText(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth(),
+            text = course.title,
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            fontSizeRange = FontSizeRange(min = 10.sp, max = 16.sp),
+            textAlign = TextAlign.Center
+        )
+
+        ConstraintLayout(
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .fillMaxWidth()
+        ) {
+            val (membersAmount, price, rating) = createRefs()
+
+            // Members count
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.constrainAs(membersAmount) {
+                    start.linkTo(parent.start)
+                }
+            ) {
+                Image(
+                    modifier = Modifier.height(20.dp),
+                    painter = painterResource(id = R.drawable.ic_baseline_people_24),
+                    contentDescription = stringResource(R.string.people_icon_content_description)
+                )
+                Text(
+                    modifier = Modifier.padding(start = 3.dp),
+                    text = getMembersCountString(course.membersAmount),
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.Light
+                )
+            }
+
+            PriceText(course.price.toInt(), modifier = Modifier.constrainAs(price) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            })
+
+            // Rating
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.constrainAs(rating) {
+                    end.linkTo(parent.end)
+                }
+            ) {
+                Text(
+                    text = course.rating.toString(),
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.W400,
+                    color = Color(0xFFF2FF5F)
+                )
+                Image(
+                    modifier = Modifier.height(20.dp),
+                    painter = painterResource(id = R.drawable.ic_baseline_star_rate_24),
+                    contentDescription = stringResource(R.string.star_icon_content_description)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.size(8.dp))
+
+        Text(
+            text = course.authorName,
+            style = MaterialTheme.typography.subtitle1,
+            color = Color.Gray,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(horizontal = 10.dp)
+        )
+
+        Spacer(modifier = Modifier.size(10.dp))
     }
 }
 

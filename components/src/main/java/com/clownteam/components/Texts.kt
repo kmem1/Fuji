@@ -1,6 +1,5 @@
 package com.clownteam.components
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -9,15 +8,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.clownteam.components.utils.pluralResource
 
 @Composable
-fun PriceText(price: Int) {
+fun PriceText(price: Int, modifier: Modifier = Modifier) {
     val isFree = price == 0
 
     Text(
-        modifier = Modifier.padding(top = 6.dp),
+        modifier = modifier,
         text = if (isFree) {
             stringResource(R.string.free)
         } else {
@@ -29,7 +28,8 @@ fun PriceText(price: Int) {
         },
         style = if (isFree) MaterialTheme.typography.caption else MaterialTheme.typography.body1,
         fontWeight = FontWeight.W600,
-        color = if (isFree) Color(0xFF2ED573) else Color.White,
+        color = if (isFree) Color(0xFF2ED573) else MaterialTheme.colors.secondary,
+        fontSize = 16.sp,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
