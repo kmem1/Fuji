@@ -41,4 +41,10 @@ object Modules {
     const val searchDomain = ":search:search-domain"
     const val searchInteractors = ":search:search-interactors"
     const val ui_search = ":search:ui-search"
+
+    const val userArchive = ":user_archive"
+    const val userArchiveDatasource = ":user_archive:user_archive-datasource"
+    const val userArchiveDomain = ":user_archive:user_archive-domain"
+    const val userArchiveInteractors = ":user_archive:user_archive-interactors"
+    const val ui_userArchive = ":user_archive:ui-user_archive"
 }

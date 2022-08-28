@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -42,18 +41,12 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
-import com.clownteam.components.AutoResizeText
-import com.clownteam.components.DefaultButton
-import com.clownteam.components.FontSizeRange
-import com.clownteam.components.PriceText
+import com.clownteam.components.*
 import com.clownteam.components.utils.getMembersCountString
-import com.clownteam.components.utils.toDp
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.search_domain.SearchFilter
 import com.clownteam.search_domain.SearchResultItem
 import com.clownteam.ui_search.R
-import com.clownteam.ui_search.components.SearchTabRow
-import com.clownteam.ui_search.components.pagerTabIndicatorOffset
 import com.clownteam.ui_search.styles.SearchScreenColors
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -386,13 +379,17 @@ private fun <T : Any> ItemsList(
         if (pagingItems.itemCount == 0 && !isLoading && !isError) {
             MessageBox(
                 message = stringResource(R.string.nothing_found_message),
-                modifier = Modifier.fillMaxSize().imePadding()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding()
             )
         }
     } else {
         MessageBox(
             message = stringResource(R.string.empty_search_query_message),
-            modifier = Modifier.fillMaxSize().imePadding()
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding()
         )
     }
 }

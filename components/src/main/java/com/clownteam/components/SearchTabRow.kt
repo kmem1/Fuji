@@ -1,4 +1,4 @@
-package com.clownteam.ui_search.components
+package com.clownteam.components
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.FastOutSlowInEasing

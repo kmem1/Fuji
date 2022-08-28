@@ -84,6 +84,11 @@ dependencies {
     implementation(project(Modules.searchDatasource))
     implementation(project(Modules.ui_search))
 
+    implementation(project(Modules.userArchiveDomain))
+    implementation(project(Modules.userArchiveInteractors))
+    implementation(project(Modules.userArchiveDatasource))
+    implementation(project(Modules.ui_userArchive))
+
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.coreSplashScreen)
     implementation(AndroidX.appCompat)

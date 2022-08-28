@@ -9,7 +9,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.*
 import coil.ImageLoader
 import com.clownteam.fuji.auth.TokenManagerImpl
-import com.clownteam.fuji.auth.UserDataManagerImpl
 import com.clownteam.fuji.ui.navigation.animation.defaultEnterTransition
 import com.clownteam.fuji.ui.navigation.animation.defaultExitTransition
 import com.clownteam.fuji.ui.navigation.animation.defaultPopEnterTransition
@@ -29,8 +28,6 @@ import com.clownteam.ui_collectionaction.create_collection.CreateCollectionScree
 import com.clownteam.ui_collectionaction.create_collection.CreateCollectionViewModel
 import com.clownteam.ui_collectiondetailed.ui.CollectionDetailed
 import com.clownteam.ui_collectiondetailed.ui.CollectionDetailedViewModel
-import com.clownteam.ui_collectionlist.CollectionList
-import com.clownteam.ui_collectionlist.CollectionListViewModel
 import com.clownteam.ui_courselist.ui.CourseList
 import com.clownteam.ui_courselist.ui.CourseListViewModel
 import com.clownteam.ui_coursepassing.course_lessons.CourseLessons
@@ -41,6 +38,8 @@ import com.clownteam.ui_coursepassing.course_steps.CourseSteps
 import com.clownteam.ui_coursepassing.course_steps.CourseStepsViewModel
 import com.clownteam.ui_search.ui.SearchScreen
 import com.clownteam.ui_search.ui.SearchViewModel
+import com.example.ui_user_archive.ArchiveScreen
+import com.example.ui_user_archive.ArchiveScreenViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.gson.Gson
@@ -117,17 +116,30 @@ fun SetupNavGraph(
 //                imageLoader = imageLoader,
 //                navigateToLogin = { defaultNavigateToLoginAction(navController) }
 //            )
-            val viewModel: CollectionListViewModel = hiltViewModel()
-            CollectionList(
+
+//            val viewModel: CollectionListViewModel = hiltViewModel()
+//            CollectionList(
+//                state = viewModel.state.value,
+//                eventHandler = viewModel,
+//                imageLoader = imageLoader,
+//                navigateToDetailed = { id ->
+//                    navController.navigate(Route.CourseCollectionRoute.getRouteWithArgument(id))
+//                },
+//                navigateToLogin = { defaultNavigateToLoginAction(navController) }
+//            )
+//            showBottomBar(true)
+
+            val viewModel = hiltViewModel<ArchiveScreenViewModel>()
+            ArchiveScreen(
                 state = viewModel.state.value,
                 eventHandler = viewModel,
                 imageLoader = imageLoader,
-                navigateToDetailed = { id ->
-                    navController.navigate(Route.CourseCollectionRoute.getRouteWithArgument(id))
-                },
-                navigateToLogin = { defaultNavigateToLoginAction(navController) }
+                coursesFlow = viewModel.coursesFlow,
+                collectionsFlow = viewModel.collectionsFlow,
+                navigateToLogin = { defaultNavigateToLoginAction(navController) },
+                navigateToCourse = { },
+                navigateToCollection = { }
             )
-            showBottomBar(true)
         }
 
         bottomItemComposable(BottomNavItem.Profile.route) {

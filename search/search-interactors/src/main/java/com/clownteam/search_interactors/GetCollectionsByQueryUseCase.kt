@@ -59,3 +59,4 @@ sealed class GetCollectionsByQueryUseCaseResult {
 
     object NetworkError : GetCollectionsByQueryUseCaseResult()
 }
+
