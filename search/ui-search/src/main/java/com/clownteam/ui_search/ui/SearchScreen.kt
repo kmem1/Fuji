@@ -295,7 +295,7 @@ private fun SearchResultsWindow(
                 imageLoader,
                 navigateToCourse,
                 itemContent = { course, _imageLoader, navigateToDetailed ->
-                    ColumnCourseListItem1(course, _imageLoader, navigateToDetailed)
+                    ColumnCourseListItem(course, _imageLoader, navigateToDetailed)
                 },
                 loadingState = { LoadingWindow(searchFilter = SearchFilter.Courses) }
             )
@@ -435,111 +435,6 @@ fun ErrorItem(message: String, modifier: Modifier = Modifier, onClick: () -> Uni
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ColumnCourseListItem(
-    course: SearchResultItem.Course,
-    imageLoader: ImageLoader,
-    onClick: (String) -> Unit,
-    onLongClick: (String) -> Unit = {}
-) {
-    // Main Row
-    Row(
-        modifier = Modifier.combinedClickable(
-            onClick = { onClick(course.courseId) },
-            onLongClick = { onLongClick(course.courseId) })
-    ) {
-        // Logo
-        Image(
-            modifier = Modifier
-                .width(148.dp)
-                .height(88.dp)
-                .clip(RoundedCornerShape(corner = CornerSize(12.dp)))
-                .background(MaterialTheme.colors.primary)
-                .align(Alignment.CenterVertically),
-            painter = rememberAsyncImagePainter(
-                course.imgUrl,
-                imageLoader = imageLoader
-            ),
-            contentDescription = stringResource(R.string.course_image_content_description),
-            contentScale = ContentScale.Crop
-        )
-
-        // Content column
-        Column(modifier = Modifier.padding(start = 9.dp)) {
-            // Title
-            AutoResizeText(
-                modifier = Modifier
-                    .padding(vertical = 5.dp)
-                    .fillMaxWidth(),
-                text = course.title,
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                fontSizeRange = FontSizeRange(min = 10.sp, max = 16.sp)
-            )
-            // Sub-Contents row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Left sub-content
-                Column {
-                    // Rating
-                    Row {
-                        Text(
-                            text = course.rating.toString(),
-                            style = MaterialTheme.typography.body2,
-                            fontWeight = FontWeight.W400,
-                            color = Color(0xFFF2FF5F)
-                        )
-                        Image(
-                            modifier = Modifier.height(20.dp),
-                            painter = painterResource(id = R.drawable.ic_baseline_star_rate_24),
-                            contentDescription = stringResource(R.string.star_icon_content_description)
-                        )
-                    }
-
-                    // Members count
-                    Row {
-                        Image(
-                            modifier = Modifier.height(20.dp),
-                            painter = painterResource(id = R.drawable.ic_baseline_people_24),
-                            contentDescription = stringResource(R.string.people_icon_content_description)
-                        )
-                        Text(
-                            modifier = Modifier.padding(start = 3.dp),
-                            text = getMembersCountString(course.membersAmount),
-                            style = MaterialTheme.typography.body2,
-                            fontWeight = FontWeight.Light
-                        )
-                    }
-                }
-
-                // Right sub-content
-                Column(
-                    modifier = Modifier.padding(start = 24.dp),
-                    horizontalAlignment = Alignment.End
-                ) {
-                    Row {
-                        Text(
-                            text = course.authorName,
-                            style = MaterialTheme.typography.caption,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
-                    Row {
-                        PriceText(course.price.toInt())
-                    }
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun ColumnCourseListItem1(
     course: SearchResultItem.Course,
     imageLoader: ImageLoader,
     onClick: (String) -> Unit,
