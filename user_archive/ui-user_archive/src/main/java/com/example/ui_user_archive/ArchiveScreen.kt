@@ -329,7 +329,8 @@ private fun SearchResultsWindow(
                 itemContent = { collection, _imageLoader, navigateToDetailed ->
                     CourseCollectionItem(collection, _imageLoader, navigateToDetailed)
                 },
-                loadingState = { LoadingWindow() }
+                loadingState = { LoadingWindow() },
+                noItemsMessage = stringResource(R.string.no_added_collections_message)
             )
         }
 
@@ -343,7 +344,8 @@ private fun SearchResultsWindow(
                 itemContent = { course, _imageLoader, navigateToDetailed ->
                     CourseItem(course, _imageLoader, navigateToDetailed)
                 },
-                loadingState = { LoadingWindow() }
+                loadingState = { LoadingWindow() },
+                noItemsMessage = stringResource(R.string.no_added_courses_message)
             )
         }
     }
@@ -356,7 +358,8 @@ private fun <T : Any> ItemsList(
     imageLoader: ImageLoader,
     navigateAction: (id: String) -> Unit,
     itemContent: @Composable (T, ImageLoader, (String) -> Unit) -> Unit,
-    loadingState: @Composable () -> Unit
+    loadingState: @Composable () -> Unit,
+    noItemsMessage: String
 ) {
     val context = LocalContext.current
 
@@ -422,12 +425,21 @@ private fun <T : Any> ItemsList(
     }
 
     if (pagingItems.itemCount == 0 && !isLoading && !isError) {
-        MessageBox(
-            message = stringResource(R.string.nothing_found_message),
-            modifier = Modifier
-                .fillMaxSize()
-                .imePadding()
-        )
+        if (state.query.isNotEmpty()) {
+            MessageBox(
+                message = stringResource(R.string.nothing_found_message),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding()
+            )
+        } else {
+            MessageBox(
+                message = noItemsMessage,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding()
+            )
+        }
     }
 }
 

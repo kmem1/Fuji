@@ -137,9 +137,14 @@ fun SetupNavGraph(
                 coursesFlow = viewModel.coursesFlow,
                 collectionsFlow = viewModel.collectionsFlow,
                 navigateToLogin = { defaultNavigateToLoginAction(navController) },
-                navigateToCourse = { },
-                navigateToCollection = { }
+                navigateToCourse = { courseId ->
+                    navController.navigate(Route.CourseRoute.getRouteWithArgument(courseId))
+                },
+                navigateToCollection = { id ->
+                    navController.navigate(Route.CourseCollectionRoute.getRouteWithArgument(id))
+                }
             )
+            showBottomBar(true)
         }
 
         bottomItemComposable(BottomNavItem.Profile.route) {
