@@ -27,14 +27,11 @@ class CollectionDetailedViewModel @Inject constructor(
     private val collectionId = savedStateHandle.get<String>(COLLECTION_ID_ARG_KEY)
 
     init {
-        Log.d("Kmem", "saved: $collectionId")
         if (collectionId == null) {
             updateState(CollectionDetailedState.Error)
         } else {
             obtainEvent(CollectionDetailedEvent.GetCollection)
         }
-
-
     }
 
     override fun obtainEvent(event: CollectionDetailedEvent) {

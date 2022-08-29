@@ -39,8 +39,6 @@ class ArchiveScreenViewModel @Inject constructor(
     private val courseSource: DefaultPagingSource<ArchiveItem.Course>
         get() {
             return DefaultPagingSource { page ->
-                Log.d("Kmem", "Courses: getNewItems")
-
                 isCoursesRequestLoading = true
 
                 val result = getArchiveCourses.invoke(
@@ -50,17 +48,11 @@ class ArchiveScreenViewModel @Inject constructor(
                     )
                 )
 
-                Log.d("Kmem", "Courses result: $result")
-
                 isCoursesRequestLoading = false
                 checkLoadingRequests()
 
                 when (result) {
                     is GetArchiveCoursesUseCaseResult.Success -> {
-                        Log.d(
-                            "Kmem",
-                            "Courses itemsCount: ${result.pagingData.data?.size} page: $page"
-                        )
                         result.pagingData
                     }
                     else -> {
@@ -76,8 +68,6 @@ class ArchiveScreenViewModel @Inject constructor(
     private val collectionSource: DefaultPagingSource<ArchiveItem.Collection>
         get() {
             return DefaultPagingSource { page ->
-                Log.d("Kmem", "Collections: getNewItems")
-
                 isCollectionsRequestLoading = true
 
                 val result =
@@ -88,19 +78,14 @@ class ArchiveScreenViewModel @Inject constructor(
                         )
                     )
 
-                Log.d("Kmem", "Collections result: $result")
-
                 isCollectionsRequestLoading = false
                 checkLoadingRequests()
 
                 when (result) {
                     is GetArchiveCollectionsUseCaseResult.Success -> {
-                        Log.d(
-                            "Kmem",
-                            "Collections itemsCount: ${result.pagingData.data?.size} page: $page"
-                        )
                         result.pagingData
                     }
+
                     else -> {
                         handleResult(result)
                         PagingSourceData.failed()

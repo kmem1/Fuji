@@ -111,7 +111,6 @@ class CourseModulesViewModel @Inject constructor(
     }
 
     private fun updateState(newState: CourseModulesState) {
-        Log.d("Kmem", "newState $newState")
         state.value = newState
     }
 }

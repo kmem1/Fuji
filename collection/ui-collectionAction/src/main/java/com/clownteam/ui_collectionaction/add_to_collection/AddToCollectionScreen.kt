@@ -424,14 +424,11 @@ private fun CollectionList(
 ) {
     val collectionItems = collectionsFlow.collectAsLazyPagingItems()
 
-    Log.d("Kmem", "sortOption ${state.sortOption}")
-
     LaunchedEffect(
         key1 = state.searchQuery,
         key2 = state.shouldSearchItems,
         key3 = state.sortOption
     ) {
-        Log.d("Kmem", "Hello launched")
         if (state.shouldSearchItems) {
             collectionItems.refresh()
         }

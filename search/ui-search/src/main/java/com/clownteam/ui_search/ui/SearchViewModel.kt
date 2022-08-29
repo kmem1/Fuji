@@ -39,8 +39,6 @@ class SearchViewModel @Inject constructor(
     private val courseSource: DefaultPagingSource<SearchResultItem.Course>
         get() {
             return DefaultPagingSource { page ->
-                Log.d("Kmem", "Courses: getNewItems")
-
                 if (state.query.isEmpty()) return@DefaultPagingSource PagingSourceData.empty()
 
                 isCoursesRequestLoading = true
@@ -53,17 +51,11 @@ class SearchViewModel @Inject constructor(
                         )
                     )
 
-                Log.d("Kmem", "Courses result: $result")
-
                 isCoursesRequestLoading = false
                 checkLoadingRequests()
 
                 when (result) {
                     is GetCoursesByQueryUseCaseResult.Success -> {
-                        Log.d(
-                            "Kmem",
-                            "Courses itemsCount: ${result.pagingData.data?.size} page: $page"
-                        )
                         result.pagingData
                     }
                     else -> {
@@ -79,8 +71,6 @@ class SearchViewModel @Inject constructor(
     private val collectionSource: DefaultPagingSource<SearchResultItem.Collection>
         get() {
             return DefaultPagingSource { page ->
-                Log.d("Kmem", "Collections: getNewItems")
-
                 if (state.query.isEmpty()) return@DefaultPagingSource PagingSourceData.empty()
 
                 isCollectionsRequestLoading = true
@@ -93,17 +83,11 @@ class SearchViewModel @Inject constructor(
                         )
                     )
 
-                Log.d("Kmem", "Collections result: $result")
-
                 isCollectionsRequestLoading = false
                 checkLoadingRequests()
 
                 when (result) {
                     is GetCollectionsByQueryUseCaseResult.Success -> {
-                        Log.d(
-                            "Kmem",
-                            "Collections itemsCount: ${result.pagingData.data?.size} page: $page"
-                        )
                         result.pagingData
                     }
                     else -> {

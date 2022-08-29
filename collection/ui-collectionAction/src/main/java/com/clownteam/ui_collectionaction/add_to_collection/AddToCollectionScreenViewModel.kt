@@ -43,8 +43,6 @@ class AddToCollectionScreenViewModel @Inject constructor(
     private val collectionSource: DefaultPagingSource<CourseCollection>
         get() {
             return DefaultPagingSource { page ->
-                Log.d("Kmem", "Collections: getNewItems")
-
                 val result =
                     getUserCollections.invoke(
                         GetUserCollectionsParams(
@@ -54,16 +52,10 @@ class AddToCollectionScreenViewModel @Inject constructor(
                         )
                     )
 
-                Log.d("Kmem", "Collections result: $result")
-
                 updateState(state.value.copy(isCollectionListLoading = false))
 
                 when (result) {
                     is GetUserCollectionsUseCaseResult.Success -> {
-                        Log.d(
-                            "Kmem",
-                            "Collections itemsCount: ${result.pagingData.data?.size} page: $page"
-                        )
                         result.pagingData
                     }
                     else -> {
