@@ -1,6 +1,5 @@
 package com.clownteam.ui_collectionaction.add_to_collection
 
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -477,7 +476,12 @@ private fun CollectionList(
         }
 
         if (collectionItems.itemCount == 0 && !isLoading && !isError) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding(),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
                     text = stringResource(R.string.nothing_found_message),
                     fontWeight = FontWeight.W800,

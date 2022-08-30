@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.R
 
@@ -34,15 +34,17 @@ fun SimpleCourseListItem(
         bottomEnd = CornerSize(0.dp),
         bottomStart = CornerSize(0.dp)
     )
-    Column(modifier = Modifier.width(240.dp).clip(roundedTopCornersShape)
+    Column(modifier = Modifier
+        .width(240.dp)
+        .clip(roundedTopCornersShape)
         .clickable { onClick(course.id) }) {
         Image(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(125.dp)
                 .clip(RoundedCornerShape(CornerSize(16.dp)))
-                .background(Color.LightGray),
-            painter = rememberImagePainter(
+                .background(MaterialTheme.colors.primary),
+            painter = rememberAsyncImagePainter(
                 course.imgUrl,
                 imageLoader = imageLoader
             ),
