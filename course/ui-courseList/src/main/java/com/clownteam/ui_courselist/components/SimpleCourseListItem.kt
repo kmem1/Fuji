@@ -1,8 +1,6 @@
 package com.clownteam.ui_courselist.components
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,11 +20,13 @@ import coil.compose.rememberAsyncImagePainter
 import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.R
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SimpleCourseListItem(
     course: Course,
     imageLoader: ImageLoader,
-    onClick: (String) -> Unit
+    onClick: (String) -> Unit,
+    onLongClick: (String) -> Unit
 ) {
     val roundedTopCornersShape = RoundedCornerShape(
         topStart = CornerSize(16.dp),
@@ -37,7 +37,11 @@ fun SimpleCourseListItem(
     Column(modifier = Modifier
         .width(240.dp)
         .clip(roundedTopCornersShape)
-        .clickable { onClick(course.id) }) {
+        .combinedClickable(
+            onClick = { onClick(course.id) },
+            onLongClick = { onLongClick(course.id) }
+        )
+    ) {
         Image(
             modifier = Modifier
                 .fillMaxWidth()

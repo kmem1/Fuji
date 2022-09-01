@@ -67,7 +67,7 @@ private sealed class NavigationRoute {
     class CreateCollection(val courseId: String) : NavigationRoute()
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun AddToCollectionScreen(
     state: AddToCollectionScreenState,
@@ -95,6 +95,8 @@ fun AddToCollectionScreen(
         sheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
         sheetBackgroundColor = MaterialTheme.colors.background
     ) {
+        val kc = LocalSoftwareKeyboardController.current
+
         ScreenContent(
             state = state,
             eventHandler = eventHandler,
@@ -105,6 +107,7 @@ fun AddToCollectionScreen(
             navigateToLogin = navigateToLogin,
             onSortClick = {
                 coroutineScope.launch {
+                    kc?.hide()
                     bottomState.show()
                 }
             }
@@ -421,79 +424,79 @@ private fun CollectionList(
     imageLoader: ImageLoader,
     onCollectionClick: (CourseCollection) -> Unit
 ) {
-    val collectionItems = collectionsFlow.collectAsLazyPagingItems()
+    Box(modifier = Modifier.imePadding()) {
+        val collectionItems = collectionsFlow.collectAsLazyPagingItems()
 
-    LaunchedEffect(
-        key1 = state.searchQuery,
-        key2 = state.shouldSearchItems,
-        key3 = state.sortOption
-    ) {
-        if (state.shouldSearchItems) {
-            collectionItems.refresh()
-        }
-    }
-
-    val isLoading =
-        collectionItems.loadState.refresh is LoadState.Loading || state.isCollectionListLoading
-    val isError = collectionItems.loadState.refresh is LoadState.Error
-
-    if (!isLoading && !isError) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        LaunchedEffect(
+            key1 = state.searchQuery,
+            key2 = state.shouldSearchItems,
+            key3 = state.sortOption
         ) {
-            items(collectionItems) { collection ->
-                collection?.let {
-                    CollectionRowItem(
-                        collection = collection,
-                        imageLoader = imageLoader,
-                        onCollectionClick = onCollectionClick
+            if (state.shouldSearchItems) {
+                collectionItems.refresh()
+            }
+        }
+
+        val isLoading =
+            collectionItems.loadState.refresh is LoadState.Loading || state.isCollectionListLoading
+        val isError = collectionItems.loadState.refresh is LoadState.Error
+
+        if (!isLoading && !isError) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                items(collectionItems) { collection ->
+                    collection?.let {
+                        CollectionRowItem(
+                            collection = collection,
+                            imageLoader = imageLoader,
+                            onCollectionClick = onCollectionClick
+                        )
+                    }
+                }
+
+                with(collectionItems) {
+                    when (loadState.append) {
+                        is LoadState.Loading -> {
+                            item { AppendLoadingItem() }
+                        }
+
+                        is LoadState.Error -> {
+                            item {
+                                val message = getLoadCollectionsErrorMessage(state)
+                                ErrorItem(message = message, modifier = Modifier.fillMaxWidth()) {
+                                    retry()
+                                }
+                            }
+                        }
+
+                        else -> {}
+                    }
+                }
+            }
+
+            if (collectionItems.itemCount == 0 && !isLoading && !isError) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.nothing_found_message),
+                        fontWeight = FontWeight.W800,
+                        fontSize = 16.sp
                     )
                 }
             }
-
-            with(collectionItems) {
-                when (loadState.append) {
-                    is LoadState.Loading -> {
-                        item { AppendLoadingItem() }
-                    }
-
-                    is LoadState.Error -> {
-                        item {
-                            val message = getLoadCollectionsErrorMessage(state)
-                            ErrorItem(message = message, modifier = Modifier.fillMaxWidth()) {
-                                retry()
-                            }
-                        }
-                    }
-
-                    else -> {}
-                }
+        } else if (isLoading) {
+            LoadingCollectionsView()
+        } else if (isError) {
+            ErrorItem(getLoadCollectionsErrorMessage(state), modifier = Modifier.fillMaxSize()) {
+                collectionItems.retry()
             }
-        }
-
-        if (collectionItems.itemCount == 0 && !isLoading && !isError) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .imePadding(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.nothing_found_message),
-                    fontWeight = FontWeight.W800,
-                    fontSize = 16.sp
-                )
-            }
-        }
-    } else if (isLoading) {
-        LoadingCollectionsView()
-    } else if (isError) {
-        ErrorItem(getLoadCollectionsErrorMessage(state), modifier = Modifier.fillMaxSize()) {
-            collectionItems.retry()
         }
     }
 }

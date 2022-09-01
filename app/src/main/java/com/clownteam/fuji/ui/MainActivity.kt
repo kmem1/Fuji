@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import coil.ImageLoader
@@ -60,6 +61,7 @@ class MainActivity : AppCompatActivity() {
                         if (bottomBarState) { AppBottomNavigation(navController) }
                     }
                 ) { innerPadding ->
+//                    val bottomBarPadding = if (isImeVisible) 0.dp else innerPadding.calculateBottomPadding()
                     Box(
                         modifier = Modifier
                             .fillMaxSize()

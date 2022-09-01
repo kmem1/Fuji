@@ -1,6 +1,5 @@
 package com.clownteam.ui_courselist.ui
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
@@ -110,7 +109,9 @@ fun CourseList(
                         if (state.myCourses.isNotEmpty()) {
                             TitleText(stringResource(R.string.my_courses))
                             CourseListLazyRow(
-                                modifier = Modifier.padding(top = 24.dp).animateContentSize(),
+                                modifier = Modifier
+                                    .padding(top = 24.dp)
+                                    .animateContentSize(),
                                 itemList = state.myCourses,
                                 itemComposable = { item ->
                                     SimpleCourseListItem(
@@ -118,6 +119,14 @@ fun CourseList(
                                         imageLoader = imageLoader,
                                         onClick = { courseId ->
                                             navigationRoute = NavigationRoute.CourseDetail(courseId)
+                                        },
+                                        onLongClick = { courseId ->
+                                            coroutineScope.launch {
+                                                selectedCourse.value =
+                                                    state.myCourses.find { it.id == courseId }
+
+                                                bottomState.show()
+                                            }
                                         }
                                     )
                                 }
@@ -154,10 +163,19 @@ fun CourseList(
 
 
                 is CourseListState.Error -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Button(onClick = { eventHandler.obtainEvent(CourseListEvent.GetCourses) }) {
-                            Text("Retry")
-                        }
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("Ошибка подключения к серверу")
+
+                        Spacer(modifier = Modifier.size(8.dp))
+
+                        DefaultButton(
+                            text = stringResource(R.string.retry),
+                            onClick = { eventHandler.obtainEvent(CourseListEvent.GetCourses) }
+                        )
                     }
                 }
 
