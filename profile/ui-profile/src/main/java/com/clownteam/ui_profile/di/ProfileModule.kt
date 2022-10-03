@@ -1,8 +1,6 @@
 package com.clownteam.ui_profile.di
 
-import com.clownteam.profile_interactors.IGetProfileUseCase
-import com.clownteam.profile_interactors.ISignOutUseCase
-import com.clownteam.profile_interactors.ProfileInteractors
+import com.clownteam.profile_interactors.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,6 +15,18 @@ object ProfileModule {
     @Singleton
     fun provideGetProfileUseCase(interactors: ProfileInteractors): IGetProfileUseCase {
         return interactors.getProfile
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetProfileCoursesUseCase(interactors: ProfileInteractors): IGetProfileCoursesUseCase {
+        return interactors.getProfileCourses
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetProfileCollectionsUseCase(interactors: ProfileInteractors): IGetProfileCollectionsUseCase {
+        return interactors.getProfileCollections
     }
 
     @Provides

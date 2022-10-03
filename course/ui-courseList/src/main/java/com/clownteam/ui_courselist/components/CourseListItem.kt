@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.clownteam.components.utils.pluralResource
 import com.clownteam.course_domain.Course
 import com.clownteam.ui_courselist.R
@@ -32,7 +32,7 @@ internal fun CourseListItem(course: Course, imageLoader: ImageLoader) {
                 .height(122.dp)
                 .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
                 .background(Color.LightGray),
-            painter = rememberImagePainter(
+            painter = rememberAsyncImagePainter(
                 course.imgUrl,
                 imageLoader = imageLoader
             ),

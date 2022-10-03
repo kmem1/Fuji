@@ -153,7 +153,8 @@ fun SetupNavGraph(
                     navController.navigate(route, params, builder)
                 },
                 showBottomBar,
-                navigateToLogin = { defaultNavigateToLoginAction(navController) }
+                imageLoader = imageLoader,
+                navigateToLogin = { defaultNavigateToLoginAction(navController) },
             )
             showBottomBar(true)
         }

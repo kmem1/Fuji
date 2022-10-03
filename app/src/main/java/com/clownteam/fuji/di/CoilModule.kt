@@ -24,7 +24,7 @@ object CoilModule {
     fun provideImageLoader(app: Application): ImageLoader {
         return ImageLoader.Builder(app)
             .error(R.drawable.placeholder_error)
-//            .placeholder(R.drawable.placeholder_gray)
+//            .placeholder(R.drawable.placeholder_dark_gray)
             .memoryCache {
                 MemoryCache.Builder(app.applicationContext)
                     .maxSizePercent(0.4) // Don't know what is recommended?

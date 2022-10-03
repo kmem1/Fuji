@@ -11,7 +11,8 @@ import com.clownteam.profile_interactors.mappers.ProfileDataMapper
 internal class GetProfileUseCase(
     private val profileService: ProfileService,
     private val userDataManager: UserDataManager,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val baseUrl: String
 ) : IGetProfileUseCase {
 
     override suspend fun invoke(): GetProfileUseCaseResult {
@@ -25,9 +26,9 @@ internal class GetProfileUseCase(
         return if (result.isSuccessCode && result.data != null) {
             result.data?.let {
                 userDataManager.setUserPath(it.path ?: "")
-                GetProfileUseCaseResult.Success(ProfileDataMapper.map(it))
+                GetProfileUseCaseResult.Success(ProfileDataMapper.map(it, baseUrl))
             } ?: GetProfileUseCaseResult.Failed
-        }else {
+        } else {
             GetProfileUseCaseResult.Failed
         }
     }

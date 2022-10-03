@@ -1,19 +1,18 @@
 package com.clownteam.course_interactors.mappers
 
+import com.clownteam.core.utils.ImageUrlMapper
+import com.clownteam.core.utils.ImageUrlMapperImpl
 import com.clownteam.course_datasource.network.models.get_user_courses.GetUserCourseItem
 import com.clownteam.course_domain.Course
 
-object UserCourseResponseMapper {
+object UserCourseResponseMapper: ImageUrlMapper by ImageUrlMapperImpl() {
 
     fun map(input: GetUserCourseItem, baseUrl: String): Course {
-        var imgUrl = if (baseUrl.last() == '/') baseUrl.substring(0 until baseUrl.lastIndex) else baseUrl
-        imgUrl += input.imageUrl
-
         return Course(
             id = input.path ?: "",
             title = input.title ?: "",
             authorName = input.author?.username ?: "",
-            imgUrl = imgUrl,
+            imgUrl = mapImageUrl(baseUrl, input.imageUrl ?: ""),
             durationInMinutes = input.durationInMinutes ?: 0,
             rating = input.rating?.toFloat() ?: 0F,
             membersAmount = input.membersAmount ?: 0,

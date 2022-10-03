@@ -9,6 +9,8 @@ sealed class SResult<out T : Any> : ISResult<T> {
 
     object Completed : SResult<Nothing>()
 
+    object Empty: SResult<Nothing>()
+
     data class Toast(val message: Any) : SResult<Nothing>() {
         override var isNeedHandle: Boolean = true
     }

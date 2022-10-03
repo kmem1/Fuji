@@ -26,8 +26,8 @@ fun PriceText(price: Int, modifier: Modifier = Modifier) {
                 price
             )
         },
-        style = if (isFree) MaterialTheme.typography.caption else MaterialTheme.typography.body1,
-        fontWeight = FontWeight.W600,
+        style = MaterialTheme.typography.subtitle1,
+        fontWeight = FontWeight.Medium,
         color = if (isFree) Color(0xFF2ED573) else MaterialTheme.colors.secondary,
         fontSize = 16.sp,
         maxLines = 1,

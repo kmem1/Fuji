@@ -8,4 +8,6 @@ dependencies {
 
     "implementation"(project(Modules.profileDomain))
     "implementation"(project(Modules.profileInteractors))
+
+    "implementation"(Coil.coil)
 }

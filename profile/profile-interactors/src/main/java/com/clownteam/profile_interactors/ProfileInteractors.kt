@@ -7,17 +7,41 @@ import com.clownteam.profile_datasource.network.ProfileServiceImpl
 
 class ProfileInteractors private constructor(
     val getProfile: IGetProfileUseCase,
+    val getProfileCourses: IGetProfileCoursesUseCase,
+    val getProfileCollections: IGetProfileCollectionsUseCase,
     val signOut: ISignOutUseCase
 ) {
 
     companion object Factory {
 
-        fun build(profileApi: ProfileApi, tokenManager: TokenManager, userDataManager: UserDataManager): ProfileInteractors {
+        fun build(
+            profileApi: ProfileApi,
+            tokenManager: TokenManager,
+            userDataManager: UserDataManager,
+            baseUrl: String
+        ): ProfileInteractors {
             val profileService = ProfileServiceImpl(profileApi)
 
             return ProfileInteractors(
-                GetProfileUseCase(profileService, userDataManager, tokenManager),
-                SignOutUseCase(tokenManager, userDataManager)
+                getProfile = GetProfileUseCase(
+                    profileService,
+                    userDataManager,
+                    tokenManager,
+                    baseUrl
+                ),
+                getProfileCourses = GetProfileCoursesUseCase(
+                    profileService,
+                    userDataManager,
+                    tokenManager,
+                    baseUrl
+                ),
+                getProfileCollections = GetProfileCollectionsUseCase(
+                    profileService,
+                    userDataManager,
+                    tokenManager,
+                    baseUrl
+                ),
+                signOut = SignOutUseCase(tokenManager, userDataManager)
             )
         }
     }

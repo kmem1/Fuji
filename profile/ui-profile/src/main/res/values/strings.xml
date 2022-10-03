@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_courses_subtitle">Курсы</string>
+    <string name="open_all_text">Открыть все</string>
+    <string name="profile_collection_item_author_text">Автор:</string>
+    <string name="profile_collections_subtitle">Подборки</string>
+</resources>

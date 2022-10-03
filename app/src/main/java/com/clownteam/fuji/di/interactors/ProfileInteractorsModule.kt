@@ -28,6 +28,10 @@ object ProfileInteractorsModule {
         tokenManager: TokenManager,
         userDataManager: UserDataManager
     ): ProfileInteractors {
-        return ProfileInteractors.build(profileApi, tokenManager, userDataManager)
+        return ProfileInteractors.build(
+            profileApi = profileApi,
+            tokenManager = tokenManager,
+            userDataManager = userDataManager, baseUrl = FujiApi.BASE_URL
+        )
     }
 }
