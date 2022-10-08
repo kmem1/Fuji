@@ -1,7 +1,6 @@
 package com.clownteam.ui_profile
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -11,7 +10,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -19,16 +17,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.*
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.PopupProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
@@ -36,22 +31,24 @@ import com.clownteam.components.AutoResizeText
 import com.clownteam.components.DefaultButton
 import com.clownteam.components.FontSizeRange
 import com.clownteam.components.PriceText
-import com.clownteam.components.utils.showToast
-import com.clownteam.components.utils.toDp
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.SResult
 import com.clownteam.profile_domain.*
 
 private sealed class NavigationRoute {
     object Login : NavigationRoute()
+    class Collection(val collectionId: String) : NavigationRoute()
+    class Course(val courseId: String) : NavigationRoute()
 }
 
 @Composable
 fun ProfileScreen(
     state: ProfileState,
     eventHandler: EventHandler<ProfileEvent>,
+    imageLoader: ImageLoader,
     navigateToLogin: () -> Unit = {},
-    imageLoader: ImageLoader
+    navigateToCourse: (String) -> Unit = {},
+    navigateToCollection: (String) -> Unit = {}
 ) {
     var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
 
@@ -60,6 +57,14 @@ fun ProfileScreen(
             when (it) {
                 NavigationRoute.Login -> {
                     navigateToLogin()
+                }
+
+                is NavigationRoute.Collection -> {
+                    navigateToCollection(it.collectionId)
+                }
+
+                is NavigationRoute.Course -> {
+                    navigateToCourse(it.courseId)
                 }
             }
         }
@@ -103,7 +108,9 @@ fun ProfileScreen(
                 ProfileScreenContent(
                     state = state,
                     eventHandler = eventHandler,
-                    imageLoader = imageLoader
+                    imageLoader = imageLoader,
+                    navigateToCourse = navigateToCourse,
+                    navigateToCollection = navigateToCollection
                 )
             }
         }
@@ -114,7 +121,9 @@ fun ProfileScreen(
 private fun ProfileScreenContent(
     state: ProfileState,
     eventHandler: EventHandler<ProfileEvent>,
-    imageLoader: ImageLoader
+    imageLoader: ImageLoader,
+    navigateToCourse: (String) -> Unit,
+    navigateToCollection: (String) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -153,7 +162,7 @@ private fun ProfileScreenContent(
                         imageLoader = imageLoader,
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         onOpenAllClick = {},
-                        onCourseClick = {}
+                        onCourseClick = { navigateToCourse(it.courseId) }
                     )
 
                     Spacer(Modifier.size(30.dp))
@@ -163,7 +172,7 @@ private fun ProfileScreenContent(
                         imageLoader = imageLoader,
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         onOpenAllClick = {},
-                        onCollectionClick = {}
+                        onCollectionClick = { navigateToCollection(it.collectionId) }
                     )
 
                     Spacer(Modifier.size(30.dp))
@@ -325,7 +334,7 @@ private fun ProfileActivity(
                 )
             }
 
-            var currentSelectedDayIndex by remember { mutableStateOf(-1)}
+            var currentSelectedDayIndex by remember { mutableStateOf(-1) }
 
             // Days column
             val rowsCount = 5
@@ -339,15 +348,16 @@ private fun ProfileActivity(
                 for (i in 0 until rowsCount) {
                     Row {
                         for (j in 0 until columnsCount) {
-                            Log.d("Kmem", "composed ${i*columnsCount + j}")
-                            val index = i*columnsCount + j
+                            Log.d("Kmem", "composed ${i * columnsCount + j}")
+                            val index = i * columnsCount + j
                             val day = activityList[index]
                             val bgColor = getColorByActivityDayType(type = day.type)
 
-                            Box(modifier = Modifier
-                                .size(20.dp)
-                                .clip(RoundedCornerShape(3.dp))
-                                .background(bgColor)
+                            Box(
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clip(RoundedCornerShape(3.dp))
+                                    .background(bgColor)
 //                                .onGloballyPositioned {
 //                                    activityListCoordinates[index] = ActivityDayCoordinates(
 //                                        top = it.boundsInRoot().top,
@@ -387,7 +397,7 @@ private fun ProfileActivity(
             }
 
             Spacer(Modifier.size(10.dp))
-            
+
             val totalCompletedTasksCount = activityList.sumOf { it.completedTasksCount }
             Text(
                 text = "$totalCompletedTasksCount задач решено",
@@ -408,7 +418,7 @@ private data class ActivityDayCoordinates(
 
 @Composable
 private fun getColorByActivityDayType(type: ActivityDayType): Color {
-    return when(type) {
+    return when (type) {
         ActivityDayType.Level0 -> {
             Color(0xFF2A2A2A)
         }

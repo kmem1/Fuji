@@ -17,13 +17,21 @@ fun ProfileContainer(
     externalRouter: Router,
     showBottomBar: (Boolean) -> Unit,
     imageLoader: ImageLoader,
-    navigateToLogin: () -> Unit
+    navigateToLogin: () -> Unit,
+    navigateToCourse: (String) -> Unit,
+    navigateToCollection: (String) -> Unit
 ) {
     NavigationController(
         startDestination = Route.ProfileRoute.route,
         router = externalRouter,
         screens = listOf(
-            createProfileNavigationControllerScreen(showBottomBar, imageLoader, navigateToLogin)
+            createProfileNavigationControllerScreen(
+                showBottomBar = showBottomBar,
+                imageLoader = imageLoader,
+                navigateToLogin = navigateToLogin,
+                navigateToCollection = navigateToCollection,
+                navigateToCourse = navigateToCourse
+            )
         )
     )
 }
@@ -32,13 +40,21 @@ fun ProfileContainer(
 private fun createProfileNavigationControllerScreen(
     showBottomBar: (Boolean) -> Unit,
     imageLoader: ImageLoader,
-    navigateToLogin: () -> Unit
+    navigateToLogin: () -> Unit,
+    navigateToCollection: (String) -> Unit,
+    navigateToCourse: (String) -> Unit
 ): NavigationControllerScreen {
     return NavigationControllerScreen(
         route = Route.ProfileRoute.route
     ) { navController, _, _ ->
         showBottomBar(true)
-        OpenProfileScreen(navController, imageLoader, navigateToLogin)
+        OpenProfileScreen(
+            navController = navController,
+            imageLoader = imageLoader,
+            navigateToLogin = navigateToLogin,
+            navigateToCollection = navigateToCollection,
+            navigateToCourse = navigateToCourse
+        )
     }
 }
 
@@ -46,13 +62,17 @@ private fun createProfileNavigationControllerScreen(
 private fun OpenProfileScreen(
     navController: NavController,
     imageLoader: ImageLoader,
-    navigateToLogin: () -> Unit
+    navigateToLogin: () -> Unit,
+    navigateToCollection: (String) -> Unit,
+    navigateToCourse: (String) -> Unit
 ) {
     val viewModel: ProfileViewModel = hiltViewModel()
     ProfileScreen(
         state = viewModel.state,
         eventHandler = viewModel,
         navigateToLogin = navigateToLogin,
-        imageLoader = imageLoader
+        imageLoader = imageLoader,
+        navigateToCollection = navigateToCollection,
+        navigateToCourse = navigateToCourse
     )
 }

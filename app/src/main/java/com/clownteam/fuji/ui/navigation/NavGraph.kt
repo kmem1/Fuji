@@ -149,12 +149,18 @@ fun SetupNavGraph(
 
         bottomItemComposable(BottomNavItem.Profile.route) {
             ProfileContainer(
-                createExternalRouter { route, params, builder ->
+                externalRouter = createExternalRouter { route, params, builder ->
                     navController.navigate(route, params, builder)
                 },
-                showBottomBar,
+                showBottomBar = showBottomBar,
                 imageLoader = imageLoader,
                 navigateToLogin = { defaultNavigateToLoginAction(navController) },
+                navigateToCourse = { courseId ->
+                    navController.navigate(Route.CourseRoute.getRouteWithArgument(courseId))
+                },
+                navigateToCollection = { id ->
+                    navController.navigate(Route.CourseCollectionRoute.getRouteWithArgument(id))
+                }
             )
             showBottomBar(true)
         }
