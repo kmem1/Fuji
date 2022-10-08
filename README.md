@@ -14,6 +14,7 @@
 ## Technology stack
   * Kotlin
   * MVI (Interactor - Android ViewModel)
+  * Rest API (Retrofit)
   * Jetpack Compose
   * Hilt
   * Kotlin Flow + Coroutines
