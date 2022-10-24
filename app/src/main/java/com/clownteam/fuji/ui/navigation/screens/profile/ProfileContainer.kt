@@ -9,8 +9,10 @@ import com.clownteam.fuji.ui.navigation.NavigationController
 import com.clownteam.fuji.ui.navigation.NavigationControllerScreen
 import com.clownteam.fuji.ui.navigation.Route
 import com.clownteam.fuji.ui.navigation.Router
-import com.clownteam.ui_profile.ProfileScreen
-import com.clownteam.ui_profile.ProfileViewModel
+import com.clownteam.ui_profile.profile.ProfileScreen
+import com.clownteam.ui_profile.profile.ProfileViewModel
+import com.clownteam.ui_profile.settings.SettingsScreen
+import com.clownteam.ui_profile.settings.SettingsViewModel
 
 @Composable
 fun ProfileContainer(
@@ -19,7 +21,8 @@ fun ProfileContainer(
     imageLoader: ImageLoader,
     navigateToLogin: () -> Unit,
     navigateToCourse: (String) -> Unit,
-    navigateToCollection: (String) -> Unit
+    navigateToCollection: (String) -> Unit,
+    navigateToSettings: () -> Unit
 ) {
     NavigationController(
         startDestination = Route.ProfileRoute.route,
@@ -30,7 +33,13 @@ fun ProfileContainer(
                 imageLoader = imageLoader,
                 navigateToLogin = navigateToLogin,
                 navigateToCollection = navigateToCollection,
-                navigateToCourse = navigateToCourse
+                navigateToCourse = navigateToCourse,
+                navigateToSettings = navigateToSettings
+            ),
+            createSettingsNavigationControllerScreen(
+                showBottomBar,
+                imageLoader,
+                navigateToLogin
             )
         )
     )
@@ -42,7 +51,8 @@ private fun createProfileNavigationControllerScreen(
     imageLoader: ImageLoader,
     navigateToLogin: () -> Unit,
     navigateToCollection: (String) -> Unit,
-    navigateToCourse: (String) -> Unit
+    navigateToCourse: (String) -> Unit,
+    navigateToSettings: () -> Unit
 ): NavigationControllerScreen {
     return NavigationControllerScreen(
         route = Route.ProfileRoute.route
@@ -53,7 +63,10 @@ private fun createProfileNavigationControllerScreen(
             imageLoader = imageLoader,
             navigateToLogin = navigateToLogin,
             navigateToCollection = navigateToCollection,
-            navigateToCourse = navigateToCourse
+            navigateToCourse = navigateToCourse,
+            navigateToSettings = {
+                navController.navigate(Route.SettingsRoute.route)
+            }
         )
     }
 }
@@ -64,7 +77,8 @@ private fun OpenProfileScreen(
     imageLoader: ImageLoader,
     navigateToLogin: () -> Unit,
     navigateToCollection: (String) -> Unit,
-    navigateToCourse: (String) -> Unit
+    navigateToCourse: (String) -> Unit,
+    navigateToSettings: () -> Unit
 ) {
     val viewModel: ProfileViewModel = hiltViewModel()
     ProfileScreen(
@@ -73,6 +87,37 @@ private fun OpenProfileScreen(
         navigateToLogin = navigateToLogin,
         imageLoader = imageLoader,
         navigateToCollection = navigateToCollection,
-        navigateToCourse = navigateToCourse
+        navigateToCourse = navigateToCourse,
+        navigateToSettings = navigateToSettings
+    )
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+private fun createSettingsNavigationControllerScreen(
+    showBottomBar: (Boolean) -> Unit,
+    imageLoader: ImageLoader,
+    navigateToLogin: () -> Unit
+): NavigationControllerScreen {
+    return NavigationControllerScreen(
+        route = Route.SettingsRoute.route
+    ) { navController, _, _ ->
+        showBottomBar(true)
+        OpenSettingsScreen(
+            navController = navController,
+            navigateToLogin = navigateToLogin
+        )
+    }
+}
+
+@Composable
+private fun OpenSettingsScreen(
+    navController: NavController,
+    navigateToLogin: () -> Unit
+) {
+    val viewModel: SettingsViewModel = hiltViewModel()
+    SettingsScreen(
+        state = viewModel.state,
+        eventHandler = viewModel,
+        navigateToLogin = navigateToLogin
     )
 }

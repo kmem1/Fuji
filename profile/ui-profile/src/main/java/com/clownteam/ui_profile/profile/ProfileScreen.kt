@@ -1,4 +1,4 @@
-package com.clownteam.ui_profile
+package com.clownteam.ui_profile.profile
 
 import android.util.Log
 import androidx.compose.animation.animateContentSize
@@ -9,9 +9,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,11 +32,13 @@ import com.clownteam.components.PriceText
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.SResult
 import com.clownteam.profile_domain.*
+import com.clownteam.ui_profile.R
 
 private sealed class NavigationRoute {
     object Login : NavigationRoute()
     class Collection(val collectionId: String) : NavigationRoute()
     class Course(val courseId: String) : NavigationRoute()
+    object Settings : NavigationRoute()
 }
 
 @Composable
@@ -48,7 +48,8 @@ fun ProfileScreen(
     imageLoader: ImageLoader,
     navigateToLogin: () -> Unit = {},
     navigateToCourse: (String) -> Unit = {},
-    navigateToCollection: (String) -> Unit = {}
+    navigateToCollection: (String) -> Unit = {},
+    navigateToSettings: () -> Unit
 ) {
     var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
 
@@ -65,6 +66,10 @@ fun ProfileScreen(
 
                 is NavigationRoute.Course -> {
                     navigateToCourse(it.courseId)
+                }
+
+                is NavigationRoute.Settings -> {
+                    navigateToSettings()
                 }
             }
         }
@@ -109,8 +114,9 @@ fun ProfileScreen(
                     state = state,
                     eventHandler = eventHandler,
                     imageLoader = imageLoader,
-                    navigateToCourse = navigateToCourse,
-                    navigateToCollection = navigateToCollection
+                    navigateToCourse = { navigationRoute = NavigationRoute.Course(it) },
+                    navigateToCollection = { navigationRoute = NavigationRoute.Collection(it) },
+                    navigateToSettings = { navigationRoute = NavigationRoute.Settings }
                 )
             }
         }
@@ -123,7 +129,8 @@ private fun ProfileScreenContent(
     eventHandler: EventHandler<ProfileEvent>,
     imageLoader: ImageLoader,
     navigateToCourse: (String) -> Unit,
-    navigateToCollection: (String) -> Unit
+    navigateToCollection: (String) -> Unit,
+    navigateToSettings: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -133,7 +140,11 @@ private fun ProfileScreenContent(
         ) {
             when (state.profileData) {
                 is SResult.Success -> {
-                    ProfileHeader(state.profileData.data, imageLoader)
+                    ProfileHeader(
+                        profileData = state.profileData.data,
+                        imageLoader = imageLoader,
+                        onMoreButtonClick = { navigateToSettings() }
+                    )
 
                     Spacer(Modifier.size(24.dp))
 
@@ -194,10 +205,11 @@ private fun ProfileScreenContent(
 private fun ProfileHeader(
     profileData: ProfileData,
     imageLoader: ImageLoader,
-    modifier: Modifier = Modifier,
+    onMoreButtonClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     ConstraintLayout(modifier = modifier) {
-        val (bgImg, avatarColumn) = createRefs()
+        val (bgImg, avatarColumn, moreBtn) = createRefs()
 
         Image(
             modifier = Modifier
@@ -213,6 +225,24 @@ private fun ProfileHeader(
             contentDescription = null,
             contentScale = ContentScale.Crop
         )
+
+        IconButton(
+            onClick = { onMoreButtonClick() },
+            modifier = Modifier
+//                .padding(2.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colors.primary.copy(alpha = 0.9F))
+                .constrainAs(moreBtn) {
+                    top.linkTo(parent.top, margin = 16.dp)
+                    end.linkTo(parent.end, margin = 8.dp)
+                }
+        ) {
+            Icon(
+                modifier = Modifier.size(22.dp),
+                painter = painterResource(id = R.drawable.ic_more1),
+                contentDescription = "More"
+            )
+        }
 
         // Column with avatar and nickname
         Column(

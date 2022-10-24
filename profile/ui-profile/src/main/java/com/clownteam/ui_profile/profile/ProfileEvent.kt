@@ -1,4 +1,4 @@
-package com.clownteam.ui_profile
+package com.clownteam.ui_profile.profile
 
 sealed class ProfileEvent {
 

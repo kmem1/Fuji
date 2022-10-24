@@ -160,7 +160,8 @@ fun SetupNavGraph(
                 },
                 navigateToCollection = { id ->
                     navController.navigate(Route.CourseCollectionRoute.getRouteWithArgument(id))
-                }
+                },
+                navigateToSettings = { }
             )
             showBottomBar(true)
         }

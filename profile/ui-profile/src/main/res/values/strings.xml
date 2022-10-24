@@ -4,4 +4,8 @@
     <string name="open_all_text">Открыть все</string>
     <string name="profile_collection_item_author_text">Автор:</string>
     <string name="profile_collections_subtitle">Подборки</string>
+    <string name="change_profile_text">Изменить профиль</string>
+    <string name="change_password_text">Сменить пароль</string>
+    <string name="sign_out">Выйти</string>
+    <string name="settings_title">Настройки</string>
 </resources>

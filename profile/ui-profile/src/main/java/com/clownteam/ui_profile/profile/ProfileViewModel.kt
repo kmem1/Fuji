@@ -1,4 +1,4 @@
-package com.clownteam.ui_profile
+package com.clownteam.ui_profile.profile
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

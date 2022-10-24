@@ -1,4 +1,4 @@
-package com.clownteam.ui_profile
+package com.clownteam.ui_profile.profile
 
 import com.clownteam.core.domain.SResult
 import com.clownteam.profile_domain.ProfileCollection
