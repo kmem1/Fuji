@@ -14,7 +14,7 @@ object ProfileDataMapper : ImageUrlMapper by ImageUrlMapperImpl() {
         return ProfileData(
             username = profileItem.username ?: "",
             avatarUrl = mapImageUrl(baseUrl, profileItem.avatarUrl ?: ""),
-            backgroundImageUrl = "https://natureconservancy-h.assetsadobe.com/is/image/content/dam/tnc/nature/en/photos/Zugpsitze_mountain.jpg?crop=0%2C176%2C3008%2C1654&wid=4000&hei=2200&scl=0.752",
+            backgroundImageUrl = "https://cdn.mos.cms.futurecdn.net/jbCNvTM4gwr2qV8X8fW3ZB-1200-80.png",
             lastActivityList = createRandomActivityList()
         )
     }

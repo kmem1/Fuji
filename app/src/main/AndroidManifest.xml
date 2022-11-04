@@ -15,6 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Fuji"
         tools:targetApi="m">
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

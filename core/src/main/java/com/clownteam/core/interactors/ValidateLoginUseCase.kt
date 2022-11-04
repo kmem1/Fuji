@@ -1,7 +1,7 @@
-package com.clownteam.authorization_interactors
+package com.clownteam.core.interactors
 
-import com.clownteam.authorization_interactors.IValidateLoginUseCase.Companion.MIN_LOGIN_LENGTH
 import com.clownteam.core.domain.IUseCase
+import com.clownteam.core.interactors.IValidateLoginUseCase.Companion.MIN_LOGIN_LENGTH
 
 internal class ValidateLoginUseCase : IValidateLoginUseCase {
 
@@ -22,6 +22,8 @@ internal class ValidateLoginUseCase : IValidateLoginUseCase {
 interface IValidateLoginUseCase : IUseCase.InOut<String, ValidateLoginResult> {
     companion object {
         const val MIN_LOGIN_LENGTH = 3
+
+        fun create(): IValidateLoginUseCase = ValidateLoginUseCase()
     }
 }
 

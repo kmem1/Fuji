@@ -1,10 +1,12 @@
 package com.clownteam.fuji.ui
 
+import android.content.Context
+import android.content.ContextWrapper
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.*
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.getValue
@@ -13,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import coil.ImageLoader
@@ -22,6 +23,7 @@ import com.clownteam.fuji.ui.navigation.bottom_navigation.AppBottomNavigation
 import com.clownteam.fuji.ui.theme.FujiTheme
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -49,7 +51,9 @@ class MainActivity : AppCompatActivity() {
 //                var animateBottomBar by remember { mutableStateOf(false) }
 //                val isImeVisible = WindowInsets.isImeVisible
                 Scaffold(
-                    modifier = Modifier.systemBarsPadding().navigationBarsPadding(),
+                    modifier = Modifier
+                        .systemBarsPadding()
+                        .navigationBarsPadding(),
                     bottomBar = {
 //                        AnimatedVisibility(
 //                            visible = bottomBarState && !isImeVisible,
@@ -58,7 +62,9 @@ class MainActivity : AppCompatActivity() {
 //                        ) {
 //                            AppBottomNavigation(navController)
 //                        }
-                        if (bottomBarState) { AppBottomNavigation(navController) }
+                        if (bottomBarState) {
+                            AppBottomNavigation(navController)
+                        }
                     }
                 ) { innerPadding ->
 //                    val bottomBarPadding = if (isImeVisible) 0.dp else innerPadding.calculateBottomPadding()
@@ -75,4 +81,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(ContextWrapper(newBase?.setAppLocale("ru")))
+    }
+}
+
+fun Context.setAppLocale(language: String): Context {
+    val locale = Locale(language)
+    Locale.setDefault(locale)
+    val config = resources.configuration
+    config.setLocale(locale)
+    config.setLayoutDirection(locale)
+    return createConfigurationContext(config)
 }

@@ -1,5 +1,6 @@
 package com.clownteam.ui_profile.di
 
+import com.clownteam.core.interactors.IValidateLoginUseCase
 import com.clownteam.profile_interactors.*
 import dagger.Module
 import dagger.Provides

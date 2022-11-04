@@ -1,5 +1,6 @@
 package com.clownteam.profile_interactors
 
+import com.clownteam.core.interactors.IValidateLoginUseCase
 import com.clownteam.core.network.token.TokenManager
 import com.clownteam.core.user_data.UserDataManager
 import com.clownteam.profile_datasource.network.ProfileApi
@@ -9,7 +10,8 @@ class ProfileInteractors private constructor(
     val getProfile: IGetProfileUseCase,
     val getProfileCourses: IGetProfileCoursesUseCase,
     val getProfileCollections: IGetProfileCollectionsUseCase,
-    val signOut: ISignOutUseCase
+    val signOut: ISignOutUseCase,
+    val validateLogin: IValidateLoginUseCase
 ) {
 
     companion object Factory {
@@ -41,7 +43,8 @@ class ProfileInteractors private constructor(
                     tokenManager,
                     baseUrl
                 ),
-                signOut = SignOutUseCase(tokenManager, userDataManager)
+                signOut = SignOutUseCase(tokenManager, userDataManager),
+                validateLogin = IValidateLoginUseCase.create()
             )
         }
     }

@@ -24,8 +24,6 @@
     <string name="login_action">Войти</string>
     <string name="create_account_question">Нет аккаунта?</string>
     <string name="registration_action">Зарегистрироваться</string>
-    <string name="blank_login_error">Поле не должно быть пустым</string>
-    <string name="login_length_error">Псевдоним должен содержать минимум %1$d символов</string>
     <string name="blank_repeated_password_error">Поле не должно быть пустым</string>
     <string name="passwords_do_not_match">Пароли не совпадают</string>
     <string name="registration_title">Регистрация</string>

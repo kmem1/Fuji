@@ -33,13 +33,15 @@ private val bottomItems = listOf(
 
 private sealed class NavigationRoute {
     object Login : NavigationRoute()
+    object ChangeProfile : NavigationRoute()
 }
 
 @Composable
 fun SettingsScreen(
     state: SettingsScreenState,
     eventHandler: EventHandler<SettingsScreenEvent>,
-    navigateToLogin: () -> Unit
+    navigateToLogin: () -> Unit,
+    navigateToChangeProfile: () -> Unit
 ) {
 
     var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
@@ -49,6 +51,11 @@ fun SettingsScreen(
             NavigationRoute.Login -> {
                 navigateToLogin()
             }
+
+            NavigationRoute.ChangeProfile -> {
+                navigateToChangeProfile()
+            }
+
             null -> {}
         }
     }
@@ -57,8 +64,14 @@ fun SettingsScreen(
 
     val onSettingsItemClick: (UiSettingsItem) -> Unit = {
         when (it) {
-            is UiSettingsItem.ChangePassword -> {}
-            is UiSettingsItem.ChangeProfile -> {}
+            is UiSettingsItem.ChangePassword -> {
+
+            }
+
+            is UiSettingsItem.ChangeProfile -> {
+                navigationRoute = NavigationRoute.ChangeProfile
+            }
+
             is UiSettingsItem.SignOut -> {
                 eventHandler.obtainEvent(SettingsScreenEvent.SignOut)
             }

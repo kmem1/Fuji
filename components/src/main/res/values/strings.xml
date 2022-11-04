@@ -14,4 +14,13 @@
     <string name="unknown_error">Неизвестная ошибка</string>
     <string name="search_icon_content_description">Search Icon</string>
     <string name="nothing_found_message">По вашему запросу ничего не найдено</string>
+    <string name="blank_login_error">Поле не должно быть пустым</string>
+
+    <plurals name="login_length_error">
+        <item quantity="one">Псевдоним должен содержать минимум %1$d символ</item>
+        <item quantity="two">Псевдоним должен содержать минимум %1$d символа</item>
+        <item quantity="few">Псевдоним должен содержать минимум %1$d символа</item>
+        <item quantity="many">Псевдоним должен содержать минимум %1$d символов</item>
+        <item quantity="other">Псевдоним должен содержать минимум %1$d символов</item>
+    </plurals>
 </resources>

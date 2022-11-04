@@ -9,6 +9,8 @@ import com.clownteam.authorization_domain.registration.RegistrationData
 import com.clownteam.authorization_interactors.*
 import com.clownteam.components.UiText
 import com.clownteam.core.domain.EventHandler
+import com.clownteam.core.interactors.IValidateLoginUseCase
+import com.clownteam.core.interactors.ValidateLoginResult
 import com.clownteam.ui_authorization.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -165,8 +167,9 @@ class RegistrationViewModel @Inject constructor(
             ValidateLoginResult.ShortLoginError -> {
                 state =
                     state.copy(
-                        loginError = UiText.StringResource(
-                            R.string.login_length_error,
+                        loginError = UiText.PluralsStringResource(
+                            R.plurals.login_length_error,
+                            IValidateLoginUseCase.MIN_LOGIN_LENGTH,
                             IValidateLoginUseCase.MIN_LOGIN_LENGTH
                         )
                     )

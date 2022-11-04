@@ -9,6 +9,8 @@ import com.clownteam.fuji.ui.navigation.NavigationController
 import com.clownteam.fuji.ui.navigation.NavigationControllerScreen
 import com.clownteam.fuji.ui.navigation.Route
 import com.clownteam.fuji.ui.navigation.Router
+import com.clownteam.ui_profile.change_profile.ChangeProfileScreen
+import com.clownteam.ui_profile.change_profile.ChangeProfileViewModel
 import com.clownteam.ui_profile.profile.ProfileScreen
 import com.clownteam.ui_profile.profile.ProfileViewModel
 import com.clownteam.ui_profile.settings.SettingsScreen
@@ -37,9 +39,14 @@ fun ProfileContainer(
                 navigateToSettings = navigateToSettings
             ),
             createSettingsNavigationControllerScreen(
-                showBottomBar,
-                imageLoader,
-                navigateToLogin
+                showBottomBar = showBottomBar,
+                imageLoader = imageLoader,
+                navigateToLogin = navigateToLogin
+            ),
+            createChangeProfileNavigationControllerScreen(
+                showBottomBar = showBottomBar,
+                imageLoader = imageLoader,
+                navigateToLogin = navigateToLogin
             )
         )
     )
@@ -118,6 +125,36 @@ private fun OpenSettingsScreen(
     SettingsScreen(
         state = viewModel.state,
         eventHandler = viewModel,
-        navigateToLogin = navigateToLogin
+        navigateToLogin = navigateToLogin,
+        navigateToChangeProfile = {
+            navController.navigate(Route.ChangeProfileRoute.route)
+        }
+    )
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+private fun createChangeProfileNavigationControllerScreen(
+    showBottomBar: (Boolean) -> Unit,
+    imageLoader: ImageLoader,
+    navigateToLogin: () -> Unit
+): NavigationControllerScreen {
+    return NavigationControllerScreen(
+        route = Route.ChangeProfileRoute.route
+    ) { navController, _, _ ->
+        showBottomBar(true)
+        OpenChangeProfileScreen(navController = navController, imageLoader = imageLoader)
+    }
+}
+
+@Composable
+private fun OpenChangeProfileScreen(
+    navController: NavController,
+    imageLoader: ImageLoader
+) {
+    val viewModel: ChangeProfileViewModel = hiltViewModel()
+    ChangeProfileScreen(
+        state = viewModel.state,
+        eventHandler = viewModel,
+        imageLoader = imageLoader
     )
 }
