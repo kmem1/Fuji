@@ -10,7 +10,9 @@ import com.clownteam.authorization_interactors.*
 import com.clownteam.components.UiText
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.interactors.IValidateLoginUseCase
+import com.clownteam.core.interactors.IValidatePasswordUseCase
 import com.clownteam.core.interactors.ValidateLoginResult
+import com.clownteam.core.interactors.ValidatePasswordResult
 import com.clownteam.ui_authorization.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

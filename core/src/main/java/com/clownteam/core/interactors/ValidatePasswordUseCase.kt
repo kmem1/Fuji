@@ -1,10 +1,9 @@
-package com.clownteam.authorization_interactors
+package com.clownteam.core.interactors
 
-import com.clownteam.authorization_interactors.IValidatePasswordUseCase.Companion.MIN_PASSWORD_LENGTH
 import com.clownteam.core.domain.IUseCase
+import com.clownteam.core.interactors.IValidatePasswordUseCase.Companion.MIN_PASSWORD_LENGTH
 
 internal class ValidatePasswordUseCase : IValidatePasswordUseCase {
-
 
     override suspend fun invoke(param: String): ValidatePasswordResult {
 
@@ -38,6 +37,8 @@ internal class ValidatePasswordUseCase : IValidatePasswordUseCase {
 interface IValidatePasswordUseCase : IUseCase.InOut<String, ValidatePasswordResult> {
     companion object {
         const val MIN_PASSWORD_LENGTH = 8
+
+        fun create(): IValidatePasswordUseCase = ValidatePasswordUseCase()
     }
 }
 

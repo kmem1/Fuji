@@ -2,6 +2,7 @@ package com.clownteam.ui_authorization.di
 
 import com.clownteam.authorization_interactors.*
 import com.clownteam.core.interactors.IValidateLoginUseCase
+import com.clownteam.core.interactors.IValidatePasswordUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

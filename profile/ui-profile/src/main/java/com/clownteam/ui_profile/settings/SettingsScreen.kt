@@ -34,6 +34,7 @@ private val bottomItems = listOf(
 private sealed class NavigationRoute {
     object Login : NavigationRoute()
     object ChangeProfile : NavigationRoute()
+    object ChangePassword : NavigationRoute()
 }
 
 @Composable
@@ -41,7 +42,9 @@ fun SettingsScreen(
     state: SettingsScreenState,
     eventHandler: EventHandler<SettingsScreenEvent>,
     navigateToLogin: () -> Unit,
-    navigateToChangeProfile: () -> Unit
+    navigateToChangeProfile: () -> Unit,
+    navigateToChangePassword: () -> Unit,
+    navigateBack: () -> Unit
 ) {
 
     var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
@@ -56,6 +59,10 @@ fun SettingsScreen(
                 navigateToChangeProfile()
             }
 
+            NavigationRoute.ChangePassword -> {
+                navigateToChangePassword()
+            }
+
             null -> {}
         }
     }
@@ -65,7 +72,7 @@ fun SettingsScreen(
     val onSettingsItemClick: (UiSettingsItem) -> Unit = {
         when (it) {
             is UiSettingsItem.ChangePassword -> {
-
+                navigationRoute = NavigationRoute.ChangePassword
             }
 
             is UiSettingsItem.ChangeProfile -> {
@@ -79,7 +86,7 @@ fun SettingsScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        DefaultHeader(titleText = stringResource(R.string.settings_title))
+        DefaultHeader(titleText = stringResource(R.string.settings_title), onArrowClick = { navigateBack() })
 
         Spacer(Modifier.size(32.dp))
 

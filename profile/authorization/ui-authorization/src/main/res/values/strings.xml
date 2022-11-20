@@ -2,10 +2,7 @@
 <resources>
     <string name="blank_email_error_string">Адрес электронной почты не может быть пустым</string>
     <string name="invalid_email_error">Неправильный формат электронной почты</string>
-    <string name="password_length_error">Пароль должен содержать минимум %1$d символов</string>
-    <string name="password_should_contain_letters_and_digits_error">Пароль должен иметь буквы и числа</string>
-    <string name="password_should_contain_lower_and_upper_cases">Пароль должен содержать буквы в верхнем и нижнем регистрах</string>
-    <string name="password_should_contains_symbols">Пароль должен содержать символы</string>
+
 
     <string name="login_title">Вход</string>
 

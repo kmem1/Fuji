@@ -9,6 +9,8 @@ import com.clownteam.fuji.ui.navigation.NavigationController
 import com.clownteam.fuji.ui.navigation.NavigationControllerScreen
 import com.clownteam.fuji.ui.navigation.Route
 import com.clownteam.fuji.ui.navigation.Router
+import com.clownteam.ui_profile.change_password.ChangePasswordScreen
+import com.clownteam.ui_profile.change_password.ChangePasswordViewModel
 import com.clownteam.ui_profile.change_profile.ChangeProfileScreen
 import com.clownteam.ui_profile.change_profile.ChangeProfileViewModel
 import com.clownteam.ui_profile.profile.ProfileScreen
@@ -45,8 +47,10 @@ fun ProfileContainer(
             ),
             createChangeProfileNavigationControllerScreen(
                 showBottomBar = showBottomBar,
-                imageLoader = imageLoader,
-                navigateToLogin = navigateToLogin
+                imageLoader = imageLoader
+            ),
+            createChangePasswordNavigationControllerScreen(
+                showBottomBar = showBottomBar
             )
         )
     )
@@ -128,15 +132,18 @@ private fun OpenSettingsScreen(
         navigateToLogin = navigateToLogin,
         navigateToChangeProfile = {
             navController.navigate(Route.ChangeProfileRoute.route)
-        }
+        },
+        navigateToChangePassword = {
+            navController.navigate(Route.ChangePasswordRoute.route)
+        },
+        navigateBack = { navController.navigateUp() }
     )
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 private fun createChangeProfileNavigationControllerScreen(
     showBottomBar: (Boolean) -> Unit,
-    imageLoader: ImageLoader,
-    navigateToLogin: () -> Unit
+    imageLoader: ImageLoader
 ): NavigationControllerScreen {
     return NavigationControllerScreen(
         route = Route.ChangeProfileRoute.route
@@ -155,6 +162,31 @@ private fun OpenChangeProfileScreen(
     ChangeProfileScreen(
         state = viewModel.state,
         eventHandler = viewModel,
-        imageLoader = imageLoader
+        imageLoader = imageLoader,
+        navigateBack = { navController.navigateUp() }
+    )
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+private fun createChangePasswordNavigationControllerScreen(
+    showBottomBar: (Boolean) -> Unit
+): NavigationControllerScreen {
+    return NavigationControllerScreen(
+        route = Route.ChangePasswordRoute.route
+    ) { navController, _, _ ->
+        showBottomBar(true)
+        OpenChangePasswordScreen(navController = navController)
+    }
+}
+
+@Composable
+private fun OpenChangePasswordScreen(
+    navController: NavController
+) {
+    val viewModel: ChangePasswordViewModel = hiltViewModel()
+    ChangePasswordScreen(
+        state = viewModel.state,
+        eventHandler = viewModel,
+        navigateBack = { navController.navigateUp() }
     )
 }

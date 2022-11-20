@@ -3,6 +3,7 @@ package com.clownteam.authorization_interactors
 import com.clownteam.authorization_datasource.network.AuthorizationApi
 import com.clownteam.authorization_datasource.network.AuthorizationServiceImpl
 import com.clownteam.core.interactors.IValidateLoginUseCase
+import com.clownteam.core.interactors.IValidatePasswordUseCase
 import com.clownteam.core.network.token.TokenManager
 import com.clownteam.core.user_data.UserDataManager
 
@@ -25,7 +26,7 @@ class AuthorizationInteractors private constructor(
             return AuthorizationInteractors(
                 IValidateLoginUseCase.create(),
                 ValidateEmailUseCase(),
-                ValidatePasswordUseCase(),
+                IValidatePasswordUseCase.create(),
                 ValidateRepeatedPasswordUseCase(),
                 RegistrationUseCase(authorizationService),
                 LoginUseCase(authorizationService, tokenManager, userDataManager),
