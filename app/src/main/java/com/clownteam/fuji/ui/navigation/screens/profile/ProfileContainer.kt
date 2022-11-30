@@ -9,6 +9,8 @@ import com.clownteam.fuji.ui.navigation.NavigationController
 import com.clownteam.fuji.ui.navigation.NavigationControllerScreen
 import com.clownteam.fuji.ui.navigation.Route
 import com.clownteam.fuji.ui.navigation.Router
+import com.clownteam.ui_profile.all_courses.AllProfileCoursesScreen
+import com.clownteam.ui_profile.all_courses.AllProfileCoursesViewModel
 import com.clownteam.ui_profile.change_password.ChangePasswordScreen
 import com.clownteam.ui_profile.change_password.ChangePasswordViewModel
 import com.clownteam.ui_profile.change_profile.ChangeProfileScreen
@@ -19,65 +21,44 @@ import com.clownteam.ui_profile.settings.SettingsScreen
 import com.clownteam.ui_profile.settings.SettingsViewModel
 
 @Composable
-fun ProfileContainer(
-    externalRouter: Router,
-    showBottomBar: (Boolean) -> Unit,
-    imageLoader: ImageLoader,
-    navigateToLogin: () -> Unit,
-    navigateToCourse: (String) -> Unit,
-    navigateToCollection: (String) -> Unit,
-    navigateToSettings: () -> Unit
-) {
+fun ProfileContainer(params: ProfileContainerParams) {
     NavigationController(
         startDestination = Route.ProfileRoute.route,
-        router = externalRouter,
+        router = params.externalRouter,
         screens = listOf(
-            createProfileNavigationControllerScreen(
-                showBottomBar = showBottomBar,
-                imageLoader = imageLoader,
-                navigateToLogin = navigateToLogin,
-                navigateToCollection = navigateToCollection,
-                navigateToCourse = navigateToCourse,
-                navigateToSettings = navigateToSettings
-            ),
-            createSettingsNavigationControllerScreen(
-                showBottomBar = showBottomBar,
-                imageLoader = imageLoader,
-                navigateToLogin = navigateToLogin
-            ),
+            createProfileNavigationControllerScreen(params),
+            createSettingsNavigationControllerScreen(params),
             createChangeProfileNavigationControllerScreen(
-                showBottomBar = showBottomBar,
-                imageLoader = imageLoader
+                showBottomBar = params.showBottomBar,
+                imageLoader = params.imageLoader
             ),
-            createChangePasswordNavigationControllerScreen(
-                showBottomBar = showBottomBar
+            createChangePasswordNavigationControllerScreen(showBottomBar = params.showBottomBar),
+            createAllProfileCoursesNavigationControllerScreen(
+                params.showBottomBar,
+                params.imageLoader
             )
         )
     )
 }
 
+class ProfileContainerParams(
+    val externalRouter: Router,
+    val showBottomBar: (Boolean) -> Unit,
+    val imageLoader: ImageLoader,
+    val navigateToLogin: () -> Unit,
+    val navigateToCourse: (String) -> Unit,
+    val navigateToCollection: (String) -> Unit
+)
+
 @OptIn(ExperimentalAnimationApi::class)
-private fun createProfileNavigationControllerScreen(
-    showBottomBar: (Boolean) -> Unit,
-    imageLoader: ImageLoader,
-    navigateToLogin: () -> Unit,
-    navigateToCollection: (String) -> Unit,
-    navigateToCourse: (String) -> Unit,
-    navigateToSettings: () -> Unit
-): NavigationControllerScreen {
+private fun createProfileNavigationControllerScreen(params: ProfileContainerParams): NavigationControllerScreen {
     return NavigationControllerScreen(
         route = Route.ProfileRoute.route
     ) { navController, _, _ ->
-        showBottomBar(true)
+        params.showBottomBar(true)
         OpenProfileScreen(
             navController = navController,
-            imageLoader = imageLoader,
-            navigateToLogin = navigateToLogin,
-            navigateToCollection = navigateToCollection,
-            navigateToCourse = navigateToCourse,
-            navigateToSettings = {
-                navController.navigate(Route.SettingsRoute.route)
-            }
+            params = params
         )
     }
 }
@@ -85,37 +66,34 @@ private fun createProfileNavigationControllerScreen(
 @Composable
 private fun OpenProfileScreen(
     navController: NavController,
-    imageLoader: ImageLoader,
-    navigateToLogin: () -> Unit,
-    navigateToCollection: (String) -> Unit,
-    navigateToCourse: (String) -> Unit,
-    navigateToSettings: () -> Unit
+    params: ProfileContainerParams
 ) {
     val viewModel: ProfileViewModel = hiltViewModel()
     ProfileScreen(
         state = viewModel.state,
         eventHandler = viewModel,
-        navigateToLogin = navigateToLogin,
-        imageLoader = imageLoader,
-        navigateToCollection = navigateToCollection,
-        navigateToCourse = navigateToCourse,
-        navigateToSettings = navigateToSettings
+        navigateToLogin = params.navigateToLogin,
+        imageLoader = params.imageLoader,
+        navigateToCollection = params.navigateToCollection,
+        navigateToCourse = params.navigateToCourse,
+        navigateToSettings = {
+            navController.navigate(Route.SettingsRoute.route)
+        },
+        navigateToAllCourses = {
+            navController.navigate(Route.AllProfileCoursesRoute.route)
+        }
     )
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-private fun createSettingsNavigationControllerScreen(
-    showBottomBar: (Boolean) -> Unit,
-    imageLoader: ImageLoader,
-    navigateToLogin: () -> Unit
-): NavigationControllerScreen {
+private fun createSettingsNavigationControllerScreen(params: ProfileContainerParams): NavigationControllerScreen {
     return NavigationControllerScreen(
         route = Route.SettingsRoute.route
     ) { navController, _, _ ->
-        showBottomBar(true)
+        params.showBottomBar(true)
         OpenSettingsScreen(
             navController = navController,
-            navigateToLogin = navigateToLogin
+            navigateToLogin = params.navigateToLogin
         )
     }
 }
@@ -187,6 +165,33 @@ private fun OpenChangePasswordScreen(
     ChangePasswordScreen(
         state = viewModel.state,
         eventHandler = viewModel,
+        navigateBack = { navController.navigateUp() }
+    )
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+private fun createAllProfileCoursesNavigationControllerScreen(
+    showBottomBar: (Boolean) -> Unit,
+    imageLoader: ImageLoader
+): NavigationControllerScreen {
+    return NavigationControllerScreen(
+        route = Route.AllProfileCoursesRoute.route
+    ) { navController, _, _ ->
+        showBottomBar(true)
+        OpenAllProfileCoursesScreen(navController = navController, imageLoader)
+    }
+}
+
+@Composable
+private fun OpenAllProfileCoursesScreen(
+    navController: NavController,
+    imageLoader: ImageLoader
+) {
+    val viewModel: AllProfileCoursesViewModel = hiltViewModel()
+    AllProfileCoursesScreen(
+        state = viewModel.state,
+        eventHandler = viewModel,
+        imageLoader = imageLoader,
         navigateBack = { navController.navigateUp() }
     )
 }

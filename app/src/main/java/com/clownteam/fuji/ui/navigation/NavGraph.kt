@@ -16,6 +16,7 @@ import com.clownteam.fuji.ui.navigation.animation.defaultPopExitTransition
 import com.clownteam.fuji.ui.navigation.bottom_navigation.BottomNavItem
 import com.clownteam.fuji.ui.navigation.screens.course.CourseScreen
 import com.clownteam.fuji.ui.navigation.screens.profile.ProfileContainer
+import com.clownteam.fuji.ui.navigation.screens.profile.ProfileContainerParams
 import com.clownteam.ui_authorization.login.LoginScreen
 import com.clownteam.ui_authorization.login.LoginViewModel
 import com.clownteam.ui_authorization.registration.RegistrationScreen
@@ -148,7 +149,7 @@ fun SetupNavGraph(
         }
 
         bottomItemComposable(BottomNavItem.Profile.route) {
-            ProfileContainer(
+            val params = ProfileContainerParams(
                 externalRouter = createExternalRouter { route, params, builder ->
                     navController.navigate(route, params, builder)
                 },
@@ -160,9 +161,10 @@ fun SetupNavGraph(
                 },
                 navigateToCollection = { id ->
                     navController.navigate(Route.CourseCollectionRoute.getRouteWithArgument(id))
-                },
-                navigateToSettings = { }
+                }
             )
+
+            ProfileContainer(params)
             showBottomBar(true)
         }
 

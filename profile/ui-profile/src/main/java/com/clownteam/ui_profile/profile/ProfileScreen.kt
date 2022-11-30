@@ -39,6 +39,7 @@ private sealed class NavigationRoute {
     class Collection(val collectionId: String) : NavigationRoute()
     class Course(val courseId: String) : NavigationRoute()
     object Settings : NavigationRoute()
+    object AllCourses : NavigationRoute()
 }
 
 @Composable
@@ -49,7 +50,8 @@ fun ProfileScreen(
     navigateToLogin: () -> Unit = {},
     navigateToCourse: (String) -> Unit = {},
     navigateToCollection: (String) -> Unit = {},
-    navigateToSettings: () -> Unit
+    navigateToSettings: () -> Unit,
+    navigateToAllCourses: () -> Unit
 ) {
     var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
 
@@ -70,6 +72,10 @@ fun ProfileScreen(
 
                 is NavigationRoute.Settings -> {
                     navigateToSettings()
+                }
+
+                is NavigationRoute.AllCourses -> {
+                    navigateToAllCourses()
                 }
             }
         }
@@ -116,7 +122,8 @@ fun ProfileScreen(
                     imageLoader = imageLoader,
                     navigateToCourse = { navigationRoute = NavigationRoute.Course(it) },
                     navigateToCollection = { navigationRoute = NavigationRoute.Collection(it) },
-                    navigateToSettings = { navigationRoute = NavigationRoute.Settings }
+                    navigateToSettings = { navigationRoute = NavigationRoute.Settings },
+                    navigateToAllCourses = { navigationRoute = NavigationRoute.AllCourses }
                 )
             }
         }
@@ -130,7 +137,8 @@ private fun ProfileScreenContent(
     imageLoader: ImageLoader,
     navigateToCourse: (String) -> Unit,
     navigateToCollection: (String) -> Unit,
-    navigateToSettings: () -> Unit
+    navigateToSettings: () -> Unit,
+    navigateToAllCourses: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -172,7 +180,7 @@ private fun ProfileScreenContent(
                         state = state,
                         imageLoader = imageLoader,
                         contentPadding = PaddingValues(horizontal = 16.dp),
-                        onOpenAllClick = {},
+                        onOpenAllClick = { navigateToAllCourses() },
                         onCourseClick = { navigateToCourse(it.courseId) }
                     )
 

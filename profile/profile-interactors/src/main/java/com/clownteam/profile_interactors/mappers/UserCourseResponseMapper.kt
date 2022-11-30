@@ -16,6 +16,7 @@ object UserCourseResponseMapper : ImageUrlMapper by ImageUrlMapperImpl() {
             rating = input.rating?.toFloat() ?: 0F,
             price = input.price?.toInt() ?: 0,
             marksAmount = 0,
+            membersAmount = input.membersAmount ?: 0
         )
     }
 }

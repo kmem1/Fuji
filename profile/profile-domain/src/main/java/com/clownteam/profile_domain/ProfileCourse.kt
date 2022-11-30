@@ -7,5 +7,6 @@ data class ProfileCourse(
     val rating: Float,
     val marksAmount: Int,
     val price: Int,
-    val imageUrl: String
+    val imageUrl: String,
+    val membersAmount: Int
 )
