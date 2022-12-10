@@ -2,6 +2,7 @@ package com.clownteam.ui_profile.all_courses
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,7 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,13 +33,30 @@ import com.clownteam.core.domain.EventHandler
 import com.clownteam.profile_domain.ProfileCourse
 import com.clownteam.ui_profile.R
 
+private sealed class NavigationRoute {
+    class Course(val courseId: String) : NavigationRoute()
+}
+
 @Composable
 fun AllProfileCoursesScreen(
     state: AllProfileCoursesScreenState,
     eventHandler: EventHandler<AllProfileCoursesScreenEvent>,
     imageLoader: ImageLoader,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    navigateToCourse: (String) -> Unit = {},
 ) {
+    var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
+
+    LaunchedEffect(key1 = navigationRoute) {
+        navigationRoute?.let {
+            when (it) {
+                is NavigationRoute.Course -> {
+                    navigateToCourse(it.courseId)
+                }
+            }
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         DefaultHeader(
             titleText = stringResource(R.string.all_courses_title),
@@ -76,7 +94,8 @@ fun AllProfileCoursesScreen(
                     imageLoader,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 10.dp)
+                        .padding(horizontal = 10.dp),
+                    onItemClick = { navigationRoute = NavigationRoute.Course(it.courseId) }
                 )
             }
         }
@@ -87,7 +106,8 @@ fun AllProfileCoursesScreen(
 fun CoursesList(
     courses: List<ProfileCourse>,
     imageLoader: ImageLoader,
-    modifier: Modifier = Modifier
+    onItemClick: (ProfileCourse) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
@@ -96,7 +116,10 @@ fun CoursesList(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         items(courses) { course ->
-            CourseListItem(item = course, imageLoader = imageLoader)
+            CourseListItem(
+                item = course,
+                imageLoader = imageLoader,
+                modifier = Modifier.clickable { onItemClick(course) })
         }
     }
 }
@@ -130,15 +153,17 @@ fun CourseListItem(item: ProfileCourse, modifier: Modifier = Modifier, imageLoad
             modifier = Modifier.padding(top = 10.dp, bottom = 8.dp)
         )
 
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            contentAlignment = Alignment.Center
         ) {
             // Members count
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.align(Alignment.TopStart)
+            ) {
                 Image(
                     modifier = Modifier.height(20.dp),
                     painter = painterResource(id = R.drawable.ic_baseline_people_24),
@@ -152,10 +177,13 @@ fun CourseListItem(item: ProfileCourse, modifier: Modifier = Modifier, imageLoad
                 )
             }
 
-            PriceText(item.price)
+            PriceText(item.price, modifier = Modifier.align(Alignment.TopCenter))
 
             // Rating
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.align(Alignment.TopEnd)
+            ) {
                 Text(
                     text = item.rating.toString(),
                     style = MaterialTheme.typography.body2,
@@ -177,6 +205,7 @@ fun CourseListItem(item: ProfileCourse, modifier: Modifier = Modifier, imageLoad
             text = item.authorName,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
+            color = Color.Gray,
             modifier = Modifier.padding(vertical = 10.dp)
         )
     }

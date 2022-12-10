@@ -33,10 +33,7 @@ fun ProfileContainer(params: ProfileContainerParams) {
                 imageLoader = params.imageLoader
             ),
             createChangePasswordNavigationControllerScreen(showBottomBar = params.showBottomBar),
-            createAllProfileCoursesNavigationControllerScreen(
-                params.showBottomBar,
-                params.imageLoader
-            )
+            createAllProfileCoursesNavigationControllerScreen(params)
         )
     )
 }
@@ -171,27 +168,32 @@ private fun OpenChangePasswordScreen(
 
 @OptIn(ExperimentalAnimationApi::class)
 private fun createAllProfileCoursesNavigationControllerScreen(
-    showBottomBar: (Boolean) -> Unit,
-    imageLoader: ImageLoader
+    params: ProfileContainerParams
 ): NavigationControllerScreen {
     return NavigationControllerScreen(
         route = Route.AllProfileCoursesRoute.route
     ) { navController, _, _ ->
-        showBottomBar(true)
-        OpenAllProfileCoursesScreen(navController = navController, imageLoader)
+        params.showBottomBar(true)
+        OpenAllProfileCoursesScreen(
+            navController = navController,
+            params.imageLoader,
+            params.navigateToCourse
+        )
     }
 }
 
 @Composable
 private fun OpenAllProfileCoursesScreen(
     navController: NavController,
-    imageLoader: ImageLoader
+    imageLoader: ImageLoader,
+    navigateToCourse: (String) -> Unit
 ) {
     val viewModel: AllProfileCoursesViewModel = hiltViewModel()
     AllProfileCoursesScreen(
         state = viewModel.state,
         eventHandler = viewModel,
         imageLoader = imageLoader,
-        navigateBack = { navController.navigateUp() }
+        navigateBack = { navController.navigateUp() },
+        navigateToCourse = navigateToCourse
     )
 }
