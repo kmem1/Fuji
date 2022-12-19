@@ -2,8 +2,6 @@
 <resources>
     <string name="search_bar_hint">Поиск</string>
     <string name="empty_search_query_message">По вашему запросу ничего не найдено</string>
-    <string name="course_collection_item_img_content_description">Collection logo</string>
-    <string name="course_collection_item_author_text">Автор:</string>
     <string name="get_archive_items_failed_message">Не удалось получить данные</string>
     <string name="no_added_courses_message">У вас нет добавленных курсов</string>
     <string name="no_added_collections_message">У вас нет добавленных подборок</string>

@@ -45,6 +45,8 @@ sealed class Route(val route: String, val arguments: List<NamedNavArgument> = em
 
     object AllProfileCoursesRoute: Route(route = "all_profile_courses_route")
 
+    object AllProfileCollectionsRoute: Route(route = "all_profile_collections_route")
+
     object LoginRoute : Route(route = "login_route")
 
     object RegistrationRoute : Route(route = "registration_route")

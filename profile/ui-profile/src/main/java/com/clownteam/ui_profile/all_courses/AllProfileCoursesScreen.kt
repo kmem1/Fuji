@@ -74,7 +74,7 @@ fun AllProfileCoursesScreen(
 
                     Spacer(Modifier.size(8.dp))
 
-                    DefaultButton(text = "Повторить") {
+                    DefaultButton(text = stringResource(R.string.retry)) {
                         eventHandler.obtainEvent(AllProfileCoursesScreenEvent.GetCourses)
                     }
                 }
@@ -83,7 +83,7 @@ fun AllProfileCoursesScreen(
             if (state.courses.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = "Нет добавленных курсов",
+                        text = stringResource(R.string.no_courses_added),
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Medium
                     )

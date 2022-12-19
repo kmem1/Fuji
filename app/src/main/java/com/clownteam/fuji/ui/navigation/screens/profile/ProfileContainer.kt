@@ -9,6 +9,8 @@ import com.clownteam.fuji.ui.navigation.NavigationController
 import com.clownteam.fuji.ui.navigation.NavigationControllerScreen
 import com.clownteam.fuji.ui.navigation.Route
 import com.clownteam.fuji.ui.navigation.Router
+import com.clownteam.ui_profile.all_collections.AllProfileCollectionsScreen
+import com.clownteam.ui_profile.all_collections.AllProfileCollectionsViewModel
 import com.clownteam.ui_profile.all_courses.AllProfileCoursesScreen
 import com.clownteam.ui_profile.all_courses.AllProfileCoursesViewModel
 import com.clownteam.ui_profile.change_password.ChangePasswordScreen
@@ -33,7 +35,8 @@ fun ProfileContainer(params: ProfileContainerParams) {
                 imageLoader = params.imageLoader
             ),
             createChangePasswordNavigationControllerScreen(showBottomBar = params.showBottomBar),
-            createAllProfileCoursesNavigationControllerScreen(params)
+            createAllProfileCoursesNavigationControllerScreen(params),
+            createAllProfileCollectionsNavigationControllerScreen(params)
         )
     )
 }
@@ -78,6 +81,9 @@ private fun OpenProfileScreen(
         },
         navigateToAllCourses = {
             navController.navigate(Route.AllProfileCoursesRoute.route)
+        },
+        navigateToAllCollections = {
+            navController.navigate(Route.AllProfileCollectionsRoute.route)
         }
     )
 }
@@ -195,5 +201,37 @@ private fun OpenAllProfileCoursesScreen(
         imageLoader = imageLoader,
         navigateBack = { navController.navigateUp() },
         navigateToCourse = navigateToCourse
+    )
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+private fun createAllProfileCollectionsNavigationControllerScreen(
+    params: ProfileContainerParams
+): NavigationControllerScreen {
+    return NavigationControllerScreen(
+        route = Route.AllProfileCollectionsRoute.route
+    ) { navController, _, _ ->
+        params.showBottomBar(true)
+        OpenAllProfileCollectionsScreen(
+            navController = navController,
+            params.imageLoader,
+            params.navigateToCollection
+        )
+    }
+}
+
+@Composable
+private fun OpenAllProfileCollectionsScreen(
+    navController: NavController,
+    imageLoader: ImageLoader,
+    navigateToCollection: (String) -> Unit
+) {
+    val viewModel: AllProfileCollectionsViewModel = hiltViewModel()
+    AllProfileCollectionsScreen(
+        state = viewModel.state,
+        eventHandler = viewModel,
+        imageLoader = imageLoader,
+        navigateBack = { navController.navigateUp() },
+        navigateToCollection = navigateToCollection
     )
 }

@@ -40,6 +40,7 @@ private sealed class NavigationRoute {
     class Course(val courseId: String) : NavigationRoute()
     object Settings : NavigationRoute()
     object AllCourses : NavigationRoute()
+    object AllCollections : NavigationRoute()
 }
 
 @Composable
@@ -51,7 +52,8 @@ fun ProfileScreen(
     navigateToCourse: (String) -> Unit = {},
     navigateToCollection: (String) -> Unit = {},
     navigateToSettings: () -> Unit,
-    navigateToAllCourses: () -> Unit
+    navigateToAllCourses: () -> Unit,
+    navigateToAllCollections: () -> Unit
 ) {
     var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
 
@@ -76,6 +78,10 @@ fun ProfileScreen(
 
                 is NavigationRoute.AllCourses -> {
                     navigateToAllCourses()
+                }
+
+                is NavigationRoute.AllCollections -> {
+                    navigateToAllCollections()
                 }
             }
         }
@@ -123,7 +129,8 @@ fun ProfileScreen(
                     navigateToCourse = { navigationRoute = NavigationRoute.Course(it) },
                     navigateToCollection = { navigationRoute = NavigationRoute.Collection(it) },
                     navigateToSettings = { navigationRoute = NavigationRoute.Settings },
-                    navigateToAllCourses = { navigationRoute = NavigationRoute.AllCourses }
+                    navigateToAllCourses = { navigationRoute = NavigationRoute.AllCourses },
+                    navigateToAllCollections = { navigationRoute = NavigationRoute.AllCollections }
                 )
             }
         }
@@ -138,7 +145,8 @@ private fun ProfileScreenContent(
     navigateToCourse: (String) -> Unit,
     navigateToCollection: (String) -> Unit,
     navigateToSettings: () -> Unit,
-    navigateToAllCourses: () -> Unit
+    navigateToAllCourses: () -> Unit,
+    navigateToAllCollections: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -190,7 +198,7 @@ private fun ProfileScreenContent(
                         state = state,
                         imageLoader = imageLoader,
                         contentPadding = PaddingValues(horizontal = 16.dp),
-                        onOpenAllClick = {},
+                        onOpenAllClick = { navigateToAllCollections() },
                         onCollectionClick = { navigateToCollection(it.collectionId) }
                     )
 

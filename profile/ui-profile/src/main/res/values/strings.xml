@@ -11,4 +11,7 @@
     <string name="save">Сохранить</string>
     <string name="change_profile_title_text">Изменение профиля</string>
     <string name="all_courses_title">Все курсы</string>
+    <string name="all_collections_title">Все подборки</string>
+    <string name="no_collections_added">Нет добавленных подборок</string>
+    <string name="no_courses_added">Нет добавленных курсов</string>
 </resources>

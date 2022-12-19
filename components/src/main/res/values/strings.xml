@@ -28,4 +28,7 @@
     <string name="password_should_contain_letters_and_digits_error">Пароль должен содержать буквы и числа</string>
     <string name="password_should_contain_lower_and_upper_cases">Пароль должен содержать буквы в верхнем и нижнем регистрах</string>
     <string name="password_should_contains_symbols">Пароль должен содержать символы</string>
+
+    <string name="course_collection_item_img_content_description">Collection logo</string>
+    <string name="course_collection_item_author_text">Автор:</string>
 </resources>
