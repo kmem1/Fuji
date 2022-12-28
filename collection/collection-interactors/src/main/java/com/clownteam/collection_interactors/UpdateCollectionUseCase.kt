@@ -1,7 +1,7 @@
 package com.clownteam.collection_interactors
 
 import com.clownteam.collection_datasource.CollectionService
-import com.clownteam.collection_datasource.models.update_collection.UpdateCollectionResponseBody
+import com.clownteam.collection_datasource.models.update_collection.UpdateCollectionRequestBody
 import com.clownteam.core.domain.IUseCase
 import com.clownteam.core.network.authorizationRequest
 import com.clownteam.core.network.token.TokenManager
@@ -12,7 +12,7 @@ internal class UpdateCollectionUseCase(
 ) : IUpdateCollectionUseCase {
 
     override suspend fun invoke(param: UpdateCollectionUseCaseArgs): UpdateCollectionUseCaseResult {
-        val body = UpdateCollectionResponseBody(param.newTitle)
+        val body = UpdateCollectionRequestBody(param.newTitle, param.newDescription)
         val result = authorizationRequest(tokenManager) { token ->
             service.updateCollection(token, param.collectionId, body)
         }
@@ -30,7 +30,8 @@ internal class UpdateCollectionUseCase(
 
 data class UpdateCollectionUseCaseArgs(
     val collectionId: String,
-    val newTitle: String
+    val newTitle: String,
+    val newDescription: String = ""
 )
 
 interface IUpdateCollectionUseCase :

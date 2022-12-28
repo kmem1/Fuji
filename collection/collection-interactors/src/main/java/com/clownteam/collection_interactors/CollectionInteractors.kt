@@ -22,8 +22,8 @@ class CollectionInteractors private constructor(
         ): CollectionInteractors {
             val service = CollectionServiceImpl(api)
             return CollectionInteractors(
-                GetMyCollectionsUseCase(service, tokenManager, baseUrl),
-                GetCollectionUseCase(service, tokenManager, baseUrl),
+                GetMyCollectionsUseCase(service, tokenManager, userManager, baseUrl),
+                GetCollectionUseCase(service, tokenManager, userManager, baseUrl),
                 GetUserCollectionsUseCase(service, tokenManager, userManager, baseUrl),
                 AddCourseToCollectionUseCase(service, tokenManager),
                 CreateCollectionUseCase(service, tokenManager),

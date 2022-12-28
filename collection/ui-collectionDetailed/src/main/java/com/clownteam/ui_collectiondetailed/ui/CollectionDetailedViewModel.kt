@@ -26,14 +26,6 @@ class CollectionDetailedViewModel @Inject constructor(
 
     private val collectionId = savedStateHandle.get<String>(COLLECTION_ID_ARG_KEY)
 
-    init {
-        if (collectionId == null) {
-            updateState(CollectionDetailedState.Error)
-        } else {
-            obtainEvent(CollectionDetailedEvent.GetCollection)
-        }
-    }
-
     override fun obtainEvent(event: CollectionDetailedEvent) {
         when (event) {
             is CollectionDetailedEvent.GetCollection -> {

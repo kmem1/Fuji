@@ -277,7 +277,7 @@ private fun ScreenContent(
 
         Column(modifier = Modifier.fillMaxSize()) {
             DefaultHeader(
-                titleText = "Выбор подборки",
+                titleText = stringResource(id = R.string.add_to_collection_screen_title),
                 onArrowClick = { navigationRoute = NavigationRoute.Back }
             )
 

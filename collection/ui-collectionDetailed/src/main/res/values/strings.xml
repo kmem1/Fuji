@@ -2,4 +2,8 @@
 <resources>
     <string name="course_collection_item_img_content_description">Collection Logo</string>
     <string name="collection_detailed_header_text">Подборка</string>
+    <string name="edit_collection_header_text">Изменение подборки</string>
+    <string name="description">Описание</string>
+    <string name="description_hint">Добавить описание</string>
+    <string name="title">Название</string>
 </resources>

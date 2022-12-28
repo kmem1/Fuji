@@ -15,7 +15,7 @@ internal class GetProfileCollectionsUseCase(
     private val baseUrl: String
 ) : IGetProfileCollectionsUseCase {
 
-    override suspend fun invoke(): GetProfileCollectionsUseCaseResult {
+    override suspend fun invoke(param: GetProfileCollectionsUseCaseParams): GetProfileCollectionsUseCaseResult {
         val username =
             userDataManager.getUserPath() ?: return GetProfileCollectionsUseCaseResult.Unauthorized
 
@@ -28,8 +28,14 @@ internal class GetProfileCollectionsUseCase(
 
         return if (result.isSuccessCode && result.data != null) {
             result.data?.results?.let {
-                val mappedResult =
+                var mappedResult =
                     it.map { model -> UserCollectionResponseMapper.map(model, baseUrl) }
+
+                // TODO Pass limit to the backend
+                if (param.limit > 0) {
+                    mappedResult = mappedResult.take(param.limit)
+                }
+
                 GetProfileCollectionsUseCaseResult.Success(mappedResult)
             } ?: GetProfileCollectionsUseCaseResult.Failed
         } else {
@@ -38,7 +44,10 @@ internal class GetProfileCollectionsUseCase(
     }
 }
 
-interface IGetProfileCollectionsUseCase : IUseCase.Out<GetProfileCollectionsUseCaseResult>
+data class GetProfileCollectionsUseCaseParams(val limit: Int = -1)
+
+interface IGetProfileCollectionsUseCase :
+    IUseCase.InOut<GetProfileCollectionsUseCaseParams, GetProfileCollectionsUseCaseResult>
 
 sealed class GetProfileCollectionsUseCaseResult {
 

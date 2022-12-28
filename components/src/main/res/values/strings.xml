@@ -31,4 +31,5 @@
 
     <string name="course_collection_item_img_content_description">Collection logo</string>
     <string name="course_collection_item_author_text">Автор:</string>
+    <string name="save">Сохранить</string>
 </resources>

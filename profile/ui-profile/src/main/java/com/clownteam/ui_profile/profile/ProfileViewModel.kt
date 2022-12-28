@@ -95,7 +95,7 @@ class ProfileViewModel @Inject constructor(
         state = state.copy(profileCourses = SResult.Loading(), isNetworkError = false)
 
         viewModelScope.launch {
-            val result = getProfileCoursesUseCase.invoke()
+            val result = getProfileCoursesUseCase.invoke(GetProfileCoursesUseCaseParams(limit = 5))
 
             handleGetProfileCoursesUseCaseResult(result)
         }
@@ -131,7 +131,8 @@ class ProfileViewModel @Inject constructor(
         state = state.copy(profileCourses = SResult.Loading(), isNetworkError = false)
 
         viewModelScope.launch {
-            val result = getProfileCollectionsUseCase.invoke()
+            val result =
+                getProfileCollectionsUseCase.invoke(GetProfileCollectionsUseCaseParams(limit = 5))
 
             handleGetProfileCollectionsUseCaseResult(result)
         }

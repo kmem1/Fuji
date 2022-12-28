@@ -6,10 +6,12 @@ import com.clownteam.collection_interactors.mappers.GetCollectionResponseItemMap
 import com.clownteam.core.domain.IUseCase
 import com.clownteam.core.network.authorizationRequest
 import com.clownteam.core.network.token.TokenManager
+import com.clownteam.core.user_data.UserDataManager
 
 internal class GetCollectionUseCase(
     private val service: CollectionService,
     private val tokenManager: TokenManager,
+    private val userDataManager: UserDataManager,
     private val baseUrl: String
 ) : IGetCollectionUseCase {
 
@@ -23,7 +25,8 @@ internal class GetCollectionUseCase(
 
         return if (result.isSuccessCode && result.data != null) {
             result.data?.let {
-                val mappedResult = GetCollectionResponseItemMapper.map(it, baseUrl)
+                val userPath = userDataManager.getUserPath() ?: ""
+                val mappedResult = GetCollectionResponseItemMapper.map(it, baseUrl, userPath)
                 GetCollectionUseCaseResult.Success(mappedResult)
             } ?: GetCollectionUseCaseResult.Failed
         } else {

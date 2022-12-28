@@ -8,6 +8,7 @@ import com.clownteam.fuji.ui.navigation.nav_types.CourseStepsNavType
 import com.clownteam.ui_collectionaction.add_to_collection.AddToCollectionScreenViewModel
 import com.clownteam.ui_collectionaction.create_collection.CreateCollectionViewModel
 import com.clownteam.ui_collectiondetailed.ui.CollectionDetailedViewModel
+import com.clownteam.ui_collectiondetailed.ui.edit.EditCollectionViewModel
 import com.clownteam.ui_coursedetailed.ui.CourseDetailedViewModel
 import com.clownteam.ui_coursepassing.course_lessons.CourseLessonsViewModel
 import com.clownteam.ui_coursepassing.course_modules.CourseModulesViewModel
@@ -65,6 +66,21 @@ sealed class Route(val route: String, val arguments: List<NamedNavArgument> = em
         fun getRouteWithArgument(collectionId: String): String {
             return route.replace(
                 "{${CollectionDetailedViewModel.COLLECTION_ID_ARG_KEY}}",
+                collectionId
+            )
+        }
+    }
+
+    object EditCollectionRoute : Route(
+        route = "edit_collection/{${CollectionDetailedViewModel.COLLECTION_ID_ARG_KEY}}",
+        arguments = listOf(
+            navArgument(EditCollectionViewModel.COLLECTION_ID_ARG_KEY) {
+                type = NavType.StringType
+            })
+    ) {
+        fun getRouteWithArgument(collectionId: String): String {
+            return route.replace(
+                "{${EditCollectionViewModel.COLLECTION_ID_ARG_KEY}}",
                 collectionId
             )
         }

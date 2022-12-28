@@ -15,7 +15,7 @@ internal class GetProfileCoursesUseCase(
     private val baseUrl: String
 ) : IGetProfileCoursesUseCase {
 
-    override suspend fun invoke(): GetProfileCoursesUseCaseResult {
+    override suspend fun invoke(param: GetProfileCoursesUseCaseParams): GetProfileCoursesUseCaseResult {
         val username =
             userDataManager.getUserPath() ?: return GetProfileCoursesUseCaseResult.Unauthorized
 
@@ -28,7 +28,13 @@ internal class GetProfileCoursesUseCase(
 
         return if (result.isSuccessCode && result.data != null) {
             result.data?.results?.let {
-                val mappedResult = it.map { model -> UserCourseResponseMapper.map(model, baseUrl) }
+                var mappedResult = it.map { model -> UserCourseResponseMapper.map(model, baseUrl) }
+
+                // TODO Pass limit to the backend
+                if (param.limit > 0) {
+                    mappedResult = mappedResult.take(param.limit)
+                }
+
                 GetProfileCoursesUseCaseResult.Success(mappedResult)
             } ?: GetProfileCoursesUseCaseResult.Failed
         } else {
@@ -37,7 +43,10 @@ internal class GetProfileCoursesUseCase(
     }
 }
 
-interface IGetProfileCoursesUseCase : IUseCase.Out<GetProfileCoursesUseCaseResult>
+data class GetProfileCoursesUseCaseParams(val limit: Int = -1)
+
+interface IGetProfileCoursesUseCase :
+    IUseCase.InOut<GetProfileCoursesUseCaseParams, GetProfileCoursesUseCaseResult>
 
 sealed class GetProfileCoursesUseCaseResult {
 

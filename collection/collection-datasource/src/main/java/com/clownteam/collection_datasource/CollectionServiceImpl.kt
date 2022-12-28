@@ -6,7 +6,7 @@ import com.clownteam.collection_datasource.models.create_collection.CreateCollec
 import com.clownteam.collection_datasource.models.get_collection.GetCollectionResponse
 import com.clownteam.collection_datasource.models.get_collections.GetCollectionsResponse
 import com.clownteam.collection_datasource.models.get_user_collections.GetUserCollectionsResponse
-import com.clownteam.collection_datasource.models.update_collection.UpdateCollectionResponseBody
+import com.clownteam.collection_datasource.models.update_collection.UpdateCollectionRequestBody
 import com.clownteam.collection_domain.CollectionSortOption
 import com.clownteam.core.network.NetworkResponse
 import com.clownteam.core.network.baseRequest
@@ -54,7 +54,7 @@ class CollectionServiceImpl(private val api: CollectionApi) : CollectionService 
     override suspend fun updateCollection(
         token: String,
         collectionId: String,
-        body: UpdateCollectionResponseBody
+        body: UpdateCollectionRequestBody
     ): NetworkResponse<Any> =
         baseRequest { api.updateCollection(token, collectionId, body) }
 

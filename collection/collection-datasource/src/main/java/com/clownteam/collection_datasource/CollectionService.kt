@@ -4,7 +4,7 @@ import com.clownteam.collection_datasource.models.create_collection.CreateCollec
 import com.clownteam.collection_datasource.models.get_collection.GetCollectionResponse
 import com.clownteam.collection_datasource.models.get_collections.GetCollectionsResponse
 import com.clownteam.collection_datasource.models.get_user_collections.GetUserCollectionsResponse
-import com.clownteam.collection_datasource.models.update_collection.UpdateCollectionResponseBody
+import com.clownteam.collection_datasource.models.update_collection.UpdateCollectionRequestBody
 import com.clownteam.collection_domain.CollectionSortOption
 import com.clownteam.core.network.NetworkResponse
 
@@ -36,6 +36,6 @@ interface CollectionService {
     suspend fun updateCollection(
         token: String,
         collectionId: String,
-        body: UpdateCollectionResponseBody
+        body: UpdateCollectionRequestBody
     ): NetworkResponse<Any>
 }

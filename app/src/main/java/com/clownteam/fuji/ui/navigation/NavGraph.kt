@@ -29,6 +29,8 @@ import com.clownteam.ui_collectionaction.create_collection.CreateCollectionScree
 import com.clownteam.ui_collectionaction.create_collection.CreateCollectionViewModel
 import com.clownteam.ui_collectiondetailed.ui.CollectionDetailed
 import com.clownteam.ui_collectiondetailed.ui.CollectionDetailedViewModel
+import com.clownteam.ui_collectiondetailed.ui.edit.EditCollectionScreen
+import com.clownteam.ui_collectiondetailed.ui.edit.EditCollectionViewModel
 import com.clownteam.ui_courselist.ui.CourseList
 import com.clownteam.ui_courselist.ui.CourseListViewModel
 import com.clownteam.ui_coursepassing.course_lessons.CourseLessons
@@ -273,7 +275,22 @@ fun SetupNavGraph(
                 imageLoader = imageLoader,
                 onBackPressed = { navController.popBackStack() },
                 navigateToLogin = { defaultNavigateToLoginAction(navController) },
-                openCourse = { navController.navigate(Route.CourseRoute.getRouteWithArgument(it)) }
+                openCourse = { navController.navigate(Route.CourseRoute.getRouteWithArgument(it)) },
+                navigateToEdit = {
+                    navController.navigate(Route.EditCollectionRoute.getRouteWithArgument(it))
+                }
+            )
+            showBottomBar(false)
+        }
+
+        composable(Route.EditCollectionRoute.route) {
+            val viewModel: EditCollectionViewModel = hiltViewModel()
+            EditCollectionScreen(
+                state = viewModel.state,
+                eventHandler = viewModel,
+                imageLoader = imageLoader,
+                navigateBack = { navController.popBackStack() },
+                navigateToLogin = { defaultNavigateToLoginAction(navController) }
             )
             showBottomBar(false)
         }

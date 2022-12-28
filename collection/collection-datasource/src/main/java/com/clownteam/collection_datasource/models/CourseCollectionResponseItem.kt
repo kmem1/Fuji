@@ -27,5 +27,7 @@ open class CourseCollectionResponseItem {
 
     @SerializedName("title")
     val title: String? = null
-}
 
+    @SerializedName("description")
+    val description: String? = null
+}

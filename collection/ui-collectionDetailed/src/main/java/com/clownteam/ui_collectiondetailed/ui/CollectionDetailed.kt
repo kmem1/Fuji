@@ -1,5 +1,6 @@
 package com.clownteam.ui_collectiondetailed.ui
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,11 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import com.clownteam.collection_domain.CourseCollection
@@ -36,6 +41,7 @@ import com.example.ui_collectiondetailed.R
 private sealed class NavigationRoute {
     object Login : NavigationRoute()
     class CourseDetailed(val courseId: String) : NavigationRoute()
+    class EditCollection(val collectionId: String) : NavigationRoute()
 }
 
 @Composable
@@ -45,7 +51,8 @@ fun CollectionDetailed(
     imageLoader: ImageLoader,
     onBackPressed: () -> Unit,
     navigateToLogin: () -> Unit,
-    openCourse: (String) -> Unit
+    openCourse: (String) -> Unit,
+    navigateToEdit: (String) -> Unit
 ) {
     var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
 
@@ -58,7 +65,30 @@ fun CollectionDetailed(
                 is NavigationRoute.CourseDetailed -> {
                     openCourse(it.courseId)
                 }
+                is NavigationRoute.EditCollection -> {
+                    navigateToEdit(it.collectionId)
+                }
             }
+        }
+    }
+
+//    LaunchedEffect(key1 = true) {
+//        eventHandler.obtainEvent(CollectionDetailedEvent.GetCollection)
+//    }
+
+//    val lifecycleState = LocalLifecycleOwner.current.lifecycle.observeAsState()
+//
+//    if (lifecycleState.value == Lifecycle.Event.ON_RESUME) {
+//        eventHandler.obtainEvent(CollectionDetailedEvent.GetCollection)
+//    }
+    
+    OnLifecycleEvent { owner, event ->
+        when (event) {
+            Lifecycle.Event.ON_RESUME -> {
+                Log.d("Kmem", "onResume")
+                eventHandler.obtainEvent(CollectionDetailedEvent.GetCollection)
+            }
+            else -> {  }
         }
     }
 
@@ -69,7 +99,10 @@ fun CollectionDetailed(
                     collection = state.collection,
                     imageLoader = imageLoader,
                     onBackPressed = onBackPressed,
-                    openCourse = { navigationRoute = NavigationRoute.CourseDetailed(it) }
+                    openCourse = { navigationRoute = NavigationRoute.CourseDetailed(it) },
+                    navigateToEdit = {
+                        navigationRoute = NavigationRoute.EditCollection(state.collection.id)
+                    }
                 )
             }
 
@@ -110,12 +143,15 @@ fun CollectionDetailedContent(
     collection: CourseCollection,
     imageLoader: ImageLoader,
     onBackPressed: () -> Unit,
-    openCourse: (String) -> Unit
+    openCourse: (String) -> Unit,
+    navigateToEdit: () -> Unit
 ) {
     DefaultHeader(
         titleText = stringResource(R.string.collection_detailed_header_text),
         onArrowClick = { onBackPressed() },
-        bgColor = MaterialTheme.colors.primary
+        bgColor = MaterialTheme.colors.primary,
+        additionalIconResId = if (collection.isEditable) R.drawable.ic_edit else null,
+        onAdditionalIconClick = { navigateToEdit() }
     )
 
     CollectionDetailedHeader(collection, imageLoader)
@@ -248,6 +284,39 @@ fun CollectionCoursesList(
             if (index == courses.lastIndex) {
                 Spacer(modifier = Modifier.size(12.dp))
             }
+        }
+    }
+}
+
+@Composable
+fun Lifecycle.observeAsState(): State<Lifecycle.Event> {
+    val state = remember { mutableStateOf(Lifecycle.Event.ON_ANY) }
+    DisposableEffect(this) {
+        val observer = LifecycleEventObserver { _, event ->
+            state.value = event
+        }
+        this@observeAsState.addObserver(observer)
+        onDispose {
+            this@observeAsState.removeObserver(observer)
+        }
+    }
+    return state
+}
+
+@Composable
+fun OnLifecycleEvent(onEvent: (owner: LifecycleOwner, event: Lifecycle.Event) -> Unit) {
+    val eventHandler = rememberUpdatedState(onEvent)
+    val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
+
+    DisposableEffect(lifecycleOwner.value) {
+        val lifecycle = lifecycleOwner.value.lifecycle
+        val observer = LifecycleEventObserver { owner, event ->
+            eventHandler.value(owner, event)
+        }
+
+        lifecycle.addObserver(observer)
+        onDispose {
+            lifecycle.removeObserver(observer)
         }
     }
 }

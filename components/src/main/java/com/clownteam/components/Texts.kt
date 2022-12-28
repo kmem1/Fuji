@@ -4,9 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -35,23 +33,33 @@ import com.clownteam.components.utils.pluralResource
 @Composable
 fun DefaultTextField(
     modifier: Modifier = Modifier,
+    textFieldModifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     hint: String,
     isError: Boolean,
+    hintActiveColor: Color = Color.Gray,
+    hintDisabledColor: Color = Color.White,
     enabled: Boolean = true,
     errorText: String = "",
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
+    val textStyle = TextStyle(
+        fontSize = 16.sp,
+        color = Color.White,
+        fontWeight = FontWeight.Medium,
+        letterSpacing = 0.56.sp
+    )
+
     Column(modifier = modifier) {
         var isTextFieldFocused by remember { mutableStateOf(false) }
 
         val borderColor by animateBorderColorAsState(error = isError)
 
         BasicTextField(
-            modifier = Modifier
+            modifier = textFieldModifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(corner = CornerSize(12.dp)))
                 .background(MaterialTheme.colors.primary)
@@ -60,11 +68,7 @@ fun DefaultTextField(
                 .onFocusChanged { isTextFieldFocused = it.isFocused },
             value = value,
             onValueChange = onValueChange,
-            textStyle = TextStyle(
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Medium
-            ),
+            textStyle = textStyle,
             enabled = enabled,
             cursorBrush = SolidColor(Color.White),
             keyboardOptions = keyboardOptions,
@@ -73,11 +77,16 @@ fun DefaultTextField(
             maxLines = 1,
             singleLine = true,
             decorationBox = { innerTextView ->
-                val animatedColor =
-                    animateColorAsState(if (isTextFieldFocused) Color.Gray else Color.White)
+                val animatedColor = animateColorAsState(
+                    if (isTextFieldFocused) hintActiveColor else hintDisabledColor
+                )
 
                 if (value.isEmpty()) {
-                    Text(hint, color = animatedColor.value)
+                    Text(
+                        hint,
+                        color = animatedColor.value,
+                        style = textStyle
+                    )
                 }
 
                 innerTextView()

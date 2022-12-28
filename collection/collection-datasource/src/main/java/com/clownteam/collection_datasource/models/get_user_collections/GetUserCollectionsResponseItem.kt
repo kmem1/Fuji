@@ -13,7 +13,9 @@ data class GetUserCollectionsResponseItem(
     @SerializedName("path")
     val path: String?,
     @SerializedName("title")
-    val title: String?
+    val title: String?,
+    @SerializedName("description")
+    val description: String?
 )
 
 data class AuthorModel(

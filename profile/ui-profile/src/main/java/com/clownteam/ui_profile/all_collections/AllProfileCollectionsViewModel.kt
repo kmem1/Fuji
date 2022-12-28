@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clownteam.components.UiText
 import com.clownteam.core.domain.EventHandler
+import com.clownteam.profile_interactors.GetProfileCollectionsUseCaseParams
 import com.clownteam.profile_interactors.GetProfileCollectionsUseCaseResult
 import com.clownteam.profile_interactors.IGetProfileCollectionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,7 +37,7 @@ class AllProfileCollectionsViewModel @Inject constructor(
         state = state.copy(isLoading = true)
 
         viewModelScope.launch {
-            val result = getProfileCollectionsUseCase.invoke()
+            val result = getProfileCollectionsUseCase.invoke(GetProfileCollectionsUseCaseParams())
 
             handleGetProfileCollectionsUseCaseResult(result)
         }

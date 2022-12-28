@@ -11,6 +11,7 @@ import com.clownteam.core.user_data.UserDataManager
 internal class GetMyCollectionsUseCase(
     private val service: CollectionService,
     private val tokenManager: TokenManager,
+    private val userDataManager: UserDataManager,
     private val baseUrl: String
 ) : IGetMyCollectionsUseCase {
 
@@ -24,8 +25,10 @@ internal class GetMyCollectionsUseCase(
 
         return if (result.isSuccessCode && result.data != null) {
             result.data?.results?.let {
-                val mappedResult =
-                    it.map { model -> GetCollectionResponseItemMapper.map(model, baseUrl) }
+                val userPath = userDataManager.getUserPath() ?: ""
+                val mappedResult = it.map { model ->
+                    GetCollectionResponseItemMapper.map(model, baseUrl, userPath)
+                }
                 GetMyCollectionsUseCaseResult.Success(mappedResult)
             } ?: GetMyCollectionsUseCaseResult.Failed
         } else {

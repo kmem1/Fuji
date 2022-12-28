@@ -32,7 +32,9 @@ internal class GetUserCollectionsUseCase(
         return if (result.isSuccessCode && result.data != null) {
             result.data?.results?.let {
                 val mappedResult =
-                    it.map { model -> GetUserCollectionsResponseItemMapper.map(model, baseUrl) }
+                    it.map { model ->
+                        GetUserCollectionsResponseItemMapper.map(model, baseUrl, userPath)
+                    }
 
                 val hasNextPage = result.data?.hasNextPage ?: false
 

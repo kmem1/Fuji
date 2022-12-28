@@ -11,7 +11,9 @@ data class CourseCollection(
     val isAdded: Boolean,
     val id: String,
     val rating: Double,
-    val title: String
+    val title: String,
+    val description: String,
+    val isEditable: Boolean
 )
 
 data class CourseCollectionAuthor(

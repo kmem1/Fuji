@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.clownteam.components.UiText
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.SResult
+import com.clownteam.profile_interactors.GetProfileCoursesUseCaseParams
 import com.clownteam.profile_interactors.GetProfileCoursesUseCaseResult
 import com.clownteam.profile_interactors.IGetProfileCoursesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +38,7 @@ class AllProfileCoursesViewModel @Inject constructor(
         state = state.copy(isLoading = true)
 
         viewModelScope.launch {
-            val result = getProfileCoursesUseCase.invoke()
+            val result = getProfileCoursesUseCase.invoke(GetProfileCoursesUseCaseParams())
 
             handleGetProfileCoursesUseCaseResult(result)
         }

@@ -8,7 +8,11 @@ import com.clownteam.collection_domain.CourseCollectionAuthor
 import com.clownteam.course_domain.Course
 
 object GetCollectionResponseItemMapper {
-    fun map(input: CourseCollectionResponseItem, baseUrl: String): CourseCollection {
+    fun map(
+        input: CourseCollectionResponseItem,
+        baseUrl: String,
+        currentUserPath: String
+    ): CourseCollection {
         var imgUrl =
             if (baseUrl.last() == '/') baseUrl.substring(0 until baseUrl.lastIndex) else baseUrl
         imgUrl += input.imageUrl
@@ -23,6 +27,8 @@ object GetCollectionResponseItemMapper {
             title = input.title ?: "",
             courses = input.courses?.map { mapCollectionCourseResponseItem(it, baseUrl) }
                 ?: emptyList(),
+            description = input.description ?: "",
+            isEditable = currentUserPath == input.author?.path
         )
     }
 
