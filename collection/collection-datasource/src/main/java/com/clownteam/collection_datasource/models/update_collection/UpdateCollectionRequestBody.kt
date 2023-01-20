@@ -1,11 +1,10 @@
 package com.clownteam.collection_datasource.models.update_collection
 
 import com.google.gson.annotations.SerializedName
+import java.io.File
 
 data class UpdateCollectionRequestBody(
-    @SerializedName("title")
     val title: String,
-
-    @SerializedName("description")
-    val description: String
+    val description: String,
+    val image: File? = null
 )

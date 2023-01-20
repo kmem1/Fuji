@@ -2,10 +2,12 @@ package com.clownteam.collection_datasource
 
 import com.clownteam.collection_datasource.models.add_course_to_collection.AddCourseToCollectionBody
 import com.clownteam.collection_datasource.models.create_collection.CreateCollectionResponse
+import com.clownteam.collection_datasource.models.create_grade_collection.CreateCollectionGradeRequestBody
 import com.clownteam.collection_datasource.models.get_collection.GetCollectionResponse
 import com.clownteam.collection_datasource.models.get_collections.GetCollectionsResponse
 import com.clownteam.collection_datasource.models.get_user_collections.GetUserCollectionsResponse
-import com.clownteam.collection_datasource.models.update_collection.UpdateCollectionRequestBody
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -39,10 +41,20 @@ interface CollectionApi {
     @POST("api/collections/create/")
     fun createCollection(@Header("Authorization") token: String): Call<CreateCollectionResponse>
 
+    @Multipart
     @PUT("api/collections/update/{collectionId}/")
     fun updateCollection(
         @Header("Authorization") token: String,
         @Path("collectionId") collectionID: String,
-        @Body body: UpdateCollectionRequestBody
+        @Part("title") title: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part image: MultipartBody.Part?
+    ): Call<Any>
+
+    @POST("api/collections/create/grade/{collectionId}")
+    fun createCollectionGrade(
+        @Header("Authorization") token: String,
+        @Path("collectionId") collectionID: String,
+        @Body body: CreateCollectionGradeRequestBody
     ): Call<Any>
 }

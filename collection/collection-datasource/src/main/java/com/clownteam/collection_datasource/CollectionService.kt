@@ -1,6 +1,7 @@
 package com.clownteam.collection_datasource
 
 import com.clownteam.collection_datasource.models.create_collection.CreateCollectionResponse
+import com.clownteam.collection_datasource.models.create_grade_collection.CreateCollectionGradeRequestBody
 import com.clownteam.collection_datasource.models.get_collection.GetCollectionResponse
 import com.clownteam.collection_datasource.models.get_collections.GetCollectionsResponse
 import com.clownteam.collection_datasource.models.get_user_collections.GetUserCollectionsResponse
@@ -37,5 +38,11 @@ interface CollectionService {
         token: String,
         collectionId: String,
         body: UpdateCollectionRequestBody
+    ): NetworkResponse<Any>
+
+    suspend fun createCollectionGrade(
+        token: String,
+        collectionId: String,
+        body: CreateCollectionGradeRequestBody
     ): NetworkResponse<Any>
 }

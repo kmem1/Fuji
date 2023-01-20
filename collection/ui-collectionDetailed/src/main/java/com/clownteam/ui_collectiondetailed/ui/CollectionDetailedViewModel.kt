@@ -1,6 +1,5 @@
 package com.clownteam.ui_collectiondetailed.ui
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -11,6 +10,7 @@ import com.clownteam.collection_interactors.IGetCollectionUseCase
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.StateHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,19 +29,23 @@ class CollectionDetailedViewModel @Inject constructor(
     override fun obtainEvent(event: CollectionDetailedEvent) {
         when (event) {
             is CollectionDetailedEvent.GetCollection -> {
-                getCollection()
+                getCollection(event.showLoading)
+            }
+
+            is CollectionDetailedEvent.RateCollection -> {
+                rateCollection(event.mark)
             }
         }
     }
 
-    private fun getCollection() {
+    private fun getCollection(showLoading: Boolean) {
         viewModelScope.launch {
             if (collectionId == null) {
                 updateState(CollectionDetailedState.Error)
                 return@launch
             }
 
-            updateState(CollectionDetailedState.Loading)
+            if (showLoading) updateState(CollectionDetailedState.Loading)
 
             val collectionResult = getCollection.invoke(collectionId)
 
@@ -65,6 +69,22 @@ class CollectionDetailedViewModel @Inject constructor(
 
             GetCollectionUseCaseResult.Unauthorized -> {
                 updateState(CollectionDetailedState.Unauthorized)
+            }
+        }
+    }
+
+    private fun rateCollection(mark: Int) {
+        viewModelScope.launch {
+            setRateCollectionLoading(true)
+            delay(1000)
+            setRateCollectionLoading(false)
+        }
+    }
+
+    private fun setRateCollectionLoading(isLoading: Boolean) {
+        state.value.let {
+            if (it is CollectionDetailedState.Data) {
+                updateState(it.copy(isRateCollectionLoading = isLoading))
             }
         }
     }

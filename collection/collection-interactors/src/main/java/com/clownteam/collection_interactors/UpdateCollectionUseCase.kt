@@ -5,6 +5,7 @@ import com.clownteam.collection_datasource.models.update_collection.UpdateCollec
 import com.clownteam.core.domain.IUseCase
 import com.clownteam.core.network.authorizationRequest
 import com.clownteam.core.network.token.TokenManager
+import java.io.File
 
 internal class UpdateCollectionUseCase(
     private val service: CollectionService,
@@ -12,7 +13,12 @@ internal class UpdateCollectionUseCase(
 ) : IUpdateCollectionUseCase {
 
     override suspend fun invoke(param: UpdateCollectionUseCaseArgs): UpdateCollectionUseCaseResult {
-        val body = UpdateCollectionRequestBody(param.newTitle, param.newDescription)
+        val body = UpdateCollectionRequestBody(
+            title = param.newTitle,
+            description = param.newDescription,
+            image = param.newImage
+        )
+
         val result = authorizationRequest(tokenManager) { token ->
             service.updateCollection(token, param.collectionId, body)
         }
@@ -31,7 +37,8 @@ internal class UpdateCollectionUseCase(
 data class UpdateCollectionUseCaseArgs(
     val collectionId: String,
     val newTitle: String,
-    val newDescription: String = ""
+    val newDescription: String = "",
+    val newImage: File? = null
 )
 
 interface IUpdateCollectionUseCase :

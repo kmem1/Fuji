@@ -3,6 +3,7 @@ package com.clownteam.collection_datasource
 import com.clownteam.collection_datasource.mappers.CollectionSortOptionApiMapper
 import com.clownteam.collection_datasource.models.add_course_to_collection.AddCourseToCollectionBody
 import com.clownteam.collection_datasource.models.create_collection.CreateCollectionResponse
+import com.clownteam.collection_datasource.models.create_grade_collection.CreateCollectionGradeRequestBody
 import com.clownteam.collection_datasource.models.get_collection.GetCollectionResponse
 import com.clownteam.collection_datasource.models.get_collections.GetCollectionsResponse
 import com.clownteam.collection_datasource.models.get_user_collections.GetUserCollectionsResponse
@@ -10,6 +11,9 @@ import com.clownteam.collection_datasource.models.update_collection.UpdateCollec
 import com.clownteam.collection_domain.CollectionSortOption
 import com.clownteam.core.network.NetworkResponse
 import com.clownteam.core.network.baseRequest
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 @Suppress("BlockingMethodInNonBlockingContext")
 class CollectionServiceImpl(private val api: CollectionApi) : CollectionService {
@@ -56,6 +60,30 @@ class CollectionServiceImpl(private val api: CollectionApi) : CollectionService 
         collectionId: String,
         body: UpdateCollectionRequestBody
     ): NetworkResponse<Any> =
-        baseRequest { api.updateCollection(token, collectionId, body) }
+        baseRequest {
+            val multipartBody = body.image?.let { imageFile ->
+                val imageRequestBody =
+                    RequestBody.create(MediaType.parse("multipart/form-data"), imageFile)
 
+                MultipartBody.Part.createFormData("image_url", body.image.name, imageRequestBody)
+            }
+
+            val titleBody =
+                RequestBody.create(MediaType.parse("multipart/form-data"), body.title)
+
+            val descriptionBody =
+                RequestBody.create(MediaType.parse("multipart/form-data"), body.description)
+
+            api.updateCollection(
+                token, collectionId, titleBody, descriptionBody, multipartBody
+            )
+        }
+
+    override suspend fun createCollectionGrade(
+        token: String,
+        collectionId: String,
+        body: CreateCollectionGradeRequestBody
+    ): NetworkResponse<Any> = baseRequest {
+        api.createCollectionGrade(token, collectionId, body)
+    }
 }

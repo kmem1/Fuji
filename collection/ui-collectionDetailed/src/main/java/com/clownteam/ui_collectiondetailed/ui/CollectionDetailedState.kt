@@ -6,7 +6,10 @@ sealed class CollectionDetailedState {
 
     object Loading : CollectionDetailedState()
 
-    data class Data(val collection: CourseCollection) : CollectionDetailedState()
+    data class Data(
+        val collection: CourseCollection,
+        val isRateCollectionLoading: Boolean = false
+    ) : CollectionDetailedState()
 
     object Error : CollectionDetailedState()
 

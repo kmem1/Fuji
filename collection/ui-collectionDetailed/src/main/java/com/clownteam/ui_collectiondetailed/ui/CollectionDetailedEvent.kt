@@ -2,6 +2,7 @@ package com.clownteam.ui_collectiondetailed.ui
 
 sealed class CollectionDetailedEvent {
 
-    object GetCollection : CollectionDetailedEvent()
+    class GetCollection(val showLoading: Boolean = true) : CollectionDetailedEvent()
 
+    class RateCollection(val mark: Int) : CollectionDetailedEvent()
 }

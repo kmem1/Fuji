@@ -1,8 +1,16 @@
 package com.clownteam.ui_collectiondetailed.ui.edit
 
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,9 +34,12 @@ import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import com.clownteam.components.DefaultButton
 import com.clownteam.components.DefaultTextField
+import com.clownteam.components.ImagesProviderUtils
 import com.clownteam.components.header.DefaultHeader
 import com.clownteam.core.domain.EventHandler
 import com.example.ui_collectiondetailed.R
+import java.io.File
+import java.io.FileOutputStream
 
 private sealed class NavigationRoute {
     object Login : NavigationRoute()
@@ -44,6 +56,17 @@ fun EditCollectionScreen(
     val context = LocalContext.current
 
     var navigationRoute by remember { mutableStateOf<NavigationRoute?>(null) }
+
+    val getPhotoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            val bitmap = ImagesProviderUtils.getImageBitmapByUri(context, uri)
+            val imageFile = ImagesProviderUtils.getImageFileByUri(context, uri)
+
+            eventHandler.obtainEvent(EditCollectionScreenEvent.SetImageFile(imageFile, bitmap))
+        }
+    }
 
     LaunchedEffect(key1 = navigationRoute) {
         navigationRoute?.let {
@@ -91,7 +114,9 @@ fun EditCollectionScreen(
             AvatarView(
                 avatarUrl = state.collectionImgUrl,
                 imageLoader = imageLoader,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                onClick = { getPhotoLauncher.launch("image/*") },
+                newImageBitmap = state.imageFileBitmap
             )
 
             TitleTextField(
@@ -128,18 +153,28 @@ fun EditCollectionScreen(
 }
 
 @Composable
-fun AvatarView(avatarUrl: String?, imageLoader: ImageLoader, modifier: Modifier = Modifier) {
+fun AvatarView(
+    avatarUrl: String?,
+    imageLoader: ImageLoader,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    newImageBitmap: Bitmap? = null
+) {
+    val imagePainterModel = newImageBitmap ?: avatarUrl
+
     Box(
         modifier = modifier
             .width(120.dp)
             .height(126.dp)
     ) {
         Image(
-            painter = rememberAsyncImagePainter(avatarUrl, imageLoader = imageLoader),
+            painter = rememberAsyncImagePainter(imagePainterModel, imageLoader = imageLoader),
             contentDescription = null,
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
+                .clickable { onClick() },
+            contentScale = ContentScale.Crop
         )
 
         Box(
@@ -148,12 +183,14 @@ fun AvatarView(avatarUrl: String?, imageLoader: ImageLoader, modifier: Modifier 
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color(0xFF404040))
                 .align(Alignment.BottomEnd)
+                .clickable { onClick() }
                 .padding(7.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_edit),
                 contentDescription = null,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier
+                    .size(18.dp)
             )
         }
     }

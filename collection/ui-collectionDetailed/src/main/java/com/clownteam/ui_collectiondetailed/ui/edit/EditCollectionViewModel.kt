@@ -1,5 +1,6 @@
 package com.clownteam.ui_collectiondetailed.ui.edit
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -40,6 +41,11 @@ class EditCollectionViewModel @Inject constructor(
 
             is EditCollectionScreenEvent.SetTitle -> {
                 state = state.copy(title = event.title)
+            }
+
+            is EditCollectionScreenEvent.SetImageFile -> {
+                Log.d("Kmem", "${event.file.totalSpace}")
+                state = state.copy(imageFile = event.file, imageFileBitmap = event.bitmap)
             }
 
             EditCollectionScreenEvent.ApplyChanges -> {
@@ -101,7 +107,8 @@ class EditCollectionViewModel @Inject constructor(
                     UpdateCollectionUseCaseArgs(
                         collectionId = collectionId ?: "",
                         newTitle = state.title,
-                        newDescription = state.description
+                        newDescription = state.description,
+                        newImage = state.imageFile
                     )
                 )
 

@@ -1,8 +1,8 @@
 package com.clownteam.ui_collectiondetailed.ui
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -72,23 +73,12 @@ fun CollectionDetailed(
         }
     }
 
-//    LaunchedEffect(key1 = true) {
-//        eventHandler.obtainEvent(CollectionDetailedEvent.GetCollection)
-//    }
-
-//    val lifecycleState = LocalLifecycleOwner.current.lifecycle.observeAsState()
-//
-//    if (lifecycleState.value == Lifecycle.Event.ON_RESUME) {
-//        eventHandler.obtainEvent(CollectionDetailedEvent.GetCollection)
-//    }
-    
-    OnLifecycleEvent { owner, event ->
+    OnLifecycleEvent { _, event ->
         when (event) {
             Lifecycle.Event.ON_RESUME -> {
-                Log.d("Kmem", "onResume")
-                eventHandler.obtainEvent(CollectionDetailedEvent.GetCollection)
+                eventHandler.obtainEvent(CollectionDetailedEvent.GetCollection(showLoading = false))
             }
-            else -> {  }
+            else -> {}
         }
     }
 
@@ -102,6 +92,10 @@ fun CollectionDetailed(
                     openCourse = { navigationRoute = NavigationRoute.CourseDetailed(it) },
                     navigateToEdit = {
                         navigationRoute = NavigationRoute.EditCollection(state.collection.id)
+                    },
+                    isRateCollectionLoading = state.isRateCollectionLoading,
+                    rateCollection = {
+                        eventHandler.obtainEvent(CollectionDetailedEvent.RateCollection(it))
                     }
                 )
             }
@@ -114,7 +108,10 @@ fun CollectionDetailed(
 
                     DefaultButton(
                         text = "Повторить",
-                        onClick = { eventHandler.obtainEvent(CollectionDetailedEvent.GetCollection) })
+                        onClick = {
+                            eventHandler.obtainEvent(CollectionDetailedEvent.GetCollection())
+                        }
+                    )
                 }
             }
 
@@ -144,8 +141,20 @@ fun CollectionDetailedContent(
     imageLoader: ImageLoader,
     onBackPressed: () -> Unit,
     openCourse: (String) -> Unit,
-    navigateToEdit: () -> Unit
+    navigateToEdit: () -> Unit,
+    isRateCollectionLoading: Boolean,
+    rateCollection: (Int) -> Unit
 ) {
+    var showRateDialog by remember { mutableStateOf(false) }
+
+    if (showRateDialog) {
+        RateCollectionDialog(
+            onDismiss = { showRateDialog = false },
+            onRateClick = rateCollection,
+            isLoading = isRateCollectionLoading
+        )
+    }
+
     DefaultHeader(
         titleText = stringResource(R.string.collection_detailed_header_text),
         onArrowClick = { onBackPressed() },
@@ -154,13 +163,98 @@ fun CollectionDetailedContent(
         onAdditionalIconClick = { navigateToEdit() }
     )
 
-    CollectionDetailedHeader(collection, imageLoader)
+    CollectionDetailedHeader(collection, imageLoader, onRatingClick = { showRateDialog = true })
 
     CollectionCoursesList(collection.courses, imageLoader, openCourse)
 }
 
 @Composable
-fun CollectionDetailedHeader(collection: CourseCollection, imageLoader: ImageLoader) {
+fun RateCollectionDialog(
+    onDismiss: () -> Unit,
+    onRateClick: (Int) -> Unit,
+    isLoading: Boolean
+) {
+    var currentSelectedRating by remember { mutableStateOf(0) }
+
+    Dialog(onDismissRequest = { onDismiss() }) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+//                    .padding(horizontal = 34.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color(0xFF1F1F1F))
+                .padding(vertical = 28.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Вы ещё не оценили подборку",
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Medium
+            )
+
+            Spacer(Modifier.size(26.dp))
+
+            SelectRatingRow(onMarkSelected = { currentSelectedRating = it })
+
+            Spacer(Modifier.size(26.dp))
+
+            DefaultButton(text = "Оценить", enabled = currentSelectedRating != 0 && !isLoading) {
+                onRateClick(currentSelectedRating)
+            }
+        }
+    }
+}
+
+@Composable
+fun SelectRatingRow(onMarkSelected: (Int) -> Unit) {
+    var currentSelectedRating by remember { mutableStateOf(0) }
+
+    Row(
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(MaterialTheme.colors.primary)
+            .padding(6.dp)
+    ) {
+        repeat(5) { index ->
+            if (index != 0) {
+                Spacer(Modifier.size(6.dp))
+            }
+
+            val mark = index + 1
+
+            Box(
+                modifier = Modifier
+                    .width(27.dp)
+                    .height(31.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (currentSelectedRating == mark)
+                            getCollectionRatingColor(rating = mark.toDouble())
+                        else
+                            Color.Transparent
+                    )
+                    .clickable {
+                        currentSelectedRating = mark
+                        onMarkSelected(mark)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    "${index + 1}",
+                    style = MaterialTheme.typography.body1,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CollectionDetailedHeader(
+    collection: CourseCollection,
+    imageLoader: ImageLoader,
+    onRatingClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -222,25 +316,22 @@ fun CollectionDetailedHeader(collection: CourseCollection, imageLoader: ImageLoa
             }
         }
 
-        var ratingTextColor = Color.White
+        val ratingTextColor = getCollectionRatingColor(collection.rating)
         var ratingBackgroundColor = Color.Gray
 
         when (collection.rating) {
             // Green
             in 4.0.rangeTo(5.0) -> {
-                ratingTextColor = Color(0xFF2ED573)
                 ratingBackgroundColor = Color(0xFF224430)
             }
 
             // Yellow
             in 3.0.rangeTo(3.99) -> {
-                ratingTextColor = Color(0xFFFFC312)
                 ratingBackgroundColor = Color(0xFF4C401D)
             }
 
             // Red
             in 1.0.rangeTo(2.99) -> {
-                ratingTextColor = Color(0xFFFF5252)
                 ratingBackgroundColor = Color(0xFF4C2929)
             }
         }
@@ -252,6 +343,7 @@ fun CollectionDetailedHeader(collection: CourseCollection, imageLoader: ImageLoa
                 .width(46.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(ratingBackgroundColor)
+                .clickable { onRatingClick() }
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
@@ -262,6 +354,28 @@ fun CollectionDetailedHeader(collection: CourseCollection, imageLoader: ImageLoa
             )
         }
     }
+}
+
+@Composable
+fun getCollectionRatingColor(rating: Double): Color {
+    when (rating) {
+        // Green
+        in 4.0.rangeTo(5.0) -> {
+            return Color(0xFF2ED573)
+        }
+
+        // Yellow
+        in 3.0.rangeTo(3.99) -> {
+            return Color(0xFFFFC312)
+        }
+
+        // Red
+        in 1.0.rangeTo(2.99) -> {
+            return Color(0xFFFF5252)
+        }
+    }
+
+    return Color.White
 }
 
 @Composable
@@ -286,21 +400,6 @@ fun CollectionCoursesList(
             }
         }
     }
-}
-
-@Composable
-fun Lifecycle.observeAsState(): State<Lifecycle.Event> {
-    val state = remember { mutableStateOf(Lifecycle.Event.ON_ANY) }
-    DisposableEffect(this) {
-        val observer = LifecycleEventObserver { _, event ->
-            state.value = event
-        }
-        this@observeAsState.addObserver(observer)
-        onDispose {
-            this@observeAsState.removeObserver(observer)
-        }
-    }
-    return state
 }
 
 @Composable
