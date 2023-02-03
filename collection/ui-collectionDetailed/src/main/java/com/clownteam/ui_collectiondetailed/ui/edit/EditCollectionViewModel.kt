@@ -43,7 +43,7 @@ class EditCollectionViewModel @Inject constructor(
                 state = state.copy(title = event.title)
             }
 
-            is EditCollectionScreenEvent.SetImageFile -> {
+            is EditCollectionScreenEvent.SetImage -> {
                 Log.d("Kmem", "${event.file.totalSpace}")
                 state = state.copy(imageFile = event.file, imageFileBitmap = event.bitmap)
             }

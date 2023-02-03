@@ -111,11 +111,12 @@ fun RegistrationScreen(
             start.linkTo(parent.start)
             end.linkTo(parent.end)
         }) {
+            val login = state.login.collectAsState(initial = "")
             AuthorizationTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp),
-                value = state.login,
+                value = { login.value },
                 onValueChange = { eventHandler.obtainEvent(RegistrationEvent.LoginChanged(it)) },
                 hint = stringResource(R.string.login_hint),
                 isError = state.loginError != null,
@@ -130,11 +131,12 @@ fun RegistrationScreen(
 
             Spacer(modifier = Modifier.size(18.dp))
 
+            val email = state.email.collectAsState(initial = "")
             AuthorizationTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp),
-                value = state.email,
+                value = { email.value },
                 onValueChange = { eventHandler.obtainEvent(RegistrationEvent.EmailChanged(it)) },
                 hint = stringResource(R.string.email_hint),
                 isError = state.emailError != null,
@@ -152,11 +154,12 @@ fun RegistrationScreen(
 
             Spacer(modifier = Modifier.size(18.dp))
 
+            val password = state.password.collectAsState(initial = "")
             AuthorizationTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp),
-                value = state.password,
+                value = { password.value },
                 onValueChange = { eventHandler.obtainEvent(RegistrationEvent.PasswordChanged(it)) },
                 hint = stringResource(R.string.password_hint),
                 isError = state.passwordError != null,
@@ -175,11 +178,12 @@ fun RegistrationScreen(
 
             Spacer(modifier = Modifier.size(18.dp))
 
+            val repeatedPassword = state.repeatedPassword.collectAsState(initial = "")
             AuthorizationTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp),
-                value = state.repeatedPassword,
+                value = { repeatedPassword.value },
                 onValueChange = {
                     eventHandler.obtainEvent(
                         RegistrationEvent.RepeatedPasswordChanged(

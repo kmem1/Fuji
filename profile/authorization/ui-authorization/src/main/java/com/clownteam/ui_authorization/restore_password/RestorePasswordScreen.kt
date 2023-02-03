@@ -8,6 +8,7 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -72,11 +73,13 @@ private fun RestorePasswordEmailScreen(
 
         Spacer(modifier = Modifier.size(26.dp))
 
+        val email = state.email.collectAsState(initial = "")
+
         AuthorizationTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp),
-            value = state.email,
+            value = { email.value },
             onValueChange = { eventHandler.obtainEvent(RestorePasswordEvent.EmailChanged(it)) },
             hint = stringResource(R.string.email_hint),
             isError = state.emailError != null,

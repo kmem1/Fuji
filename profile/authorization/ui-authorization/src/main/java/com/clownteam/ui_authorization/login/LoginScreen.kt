@@ -91,6 +91,9 @@ fun LoginScreen(
     ) {
         val (title, centerLayout, bottomLayout) = createRefs()
 
+        val email = state.email.collectAsState(initial = "")
+        val password = state.password.collectAsState(initial = "")
+
         Text(
             modifier = Modifier.constrainAs(title) {
                 top.linkTo(parent.top)
@@ -113,7 +116,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp),
-                value = state.email,
+                value = { email.value },
                 onValueChange = { eventHandler.obtainEvent(LoginEvent.EmailChanged(it)) },
                 hint = stringResource(R.string.email_hint),
                 isError = state.emailError != null,
@@ -132,7 +135,7 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp)
                     .focusRequester(focusRequester),
-                value = state.password,
+                value = { password.value },
                 onValueChange = { eventHandler.obtainEvent(LoginEvent.PasswordChanged(it)) },
                 hint = stringResource(R.string.password_hint),
                 isError = state.passwordError != null,

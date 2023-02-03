@@ -32,7 +32,7 @@ import com.clownteam.components.utils.animateBorderColorAsState
 @Composable
 internal fun AuthorizationTextField(
     modifier: Modifier = Modifier,
-    value: String,
+    value: () -> String,
     onValueChange: (String) -> Unit,
     hint: String,
     isError: Boolean,
@@ -53,7 +53,7 @@ internal fun AuthorizationTextField(
                 .border(1.dp, borderColor, RoundedCornerShape(12.dp))
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .onFocusChanged { isTextFieldFocused = it.isFocused },
-            value = value,
+            value = value(),
             onValueChange = onValueChange,
             textStyle = TextStyle(fontSize = 16.sp, color = Color.White),
             cursorBrush = SolidColor(Color.White),
@@ -66,7 +66,7 @@ internal fun AuthorizationTextField(
                 val animatedColor =
                     animateColorAsState(if (isTextFieldFocused) Color.Gray else Color.White)
 
-                if (value.isEmpty()) {
+                if (value().isEmpty()) {
                     Text(hint, color = animatedColor.value)
                 }
 

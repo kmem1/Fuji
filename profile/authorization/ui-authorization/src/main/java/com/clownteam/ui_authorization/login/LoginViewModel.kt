@@ -14,6 +14,7 @@ import com.clownteam.core.domain.EventHandler
 import com.clownteam.core.domain.StateHolder
 import com.clownteam.ui_authorization.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,16 +24,19 @@ class LoginViewModel @Inject constructor(
     private val loginUseCase: ILoginUseCase
 ) : ViewModel(), EventHandler<LoginEvent>, StateHolder<MutableState<LoginState>> {
 
-    override val state = mutableStateOf(LoginState())
+    private val emailFlow = MutableStateFlow("")
+    private val passwordFlow = MutableStateFlow("")
+
+    override val state = mutableStateOf(LoginState(email = emailFlow, password = passwordFlow))
 
     override fun obtainEvent(event: LoginEvent) {
         when (event) {
             is LoginEvent.EmailChanged -> {
-                state.value = state.value.copy(email = event.email)
+                emailFlow.value = event.email
             }
 
             is LoginEvent.PasswordChanged -> {
-                state.value = state.value.copy(password = event.password)
+                passwordFlow.value = event.password
             }
 
             is LoginEvent.Submit -> {
@@ -49,7 +53,7 @@ class LoginViewModel @Inject constructor(
         state.value = state.value.copy(isLoading = true, isNetworkError = false)
 
         viewModelScope.launch {
-            val isEmailValid = handleEmailValidationResult(state.value.email)
+            val isEmailValid = handleEmailValidationResult(emailFlow.value)
 
             if (isEmailValid) {
                 tryToLogin()
@@ -81,7 +85,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private suspend fun tryToLogin() {
-        val data = LoginData(state.value.email, state.value.password)
+        val data = LoginData(emailFlow.value, passwordFlow.value)
 
         when (loginUseCase.invoke(data)) {
             is LoginUseCaseResult.Failed -> {

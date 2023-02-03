@@ -15,6 +15,7 @@ import com.clownteam.core.interactors.ValidateLoginResult
 import com.clownteam.core.interactors.ValidatePasswordResult
 import com.clownteam.ui_authorization.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,21 +28,33 @@ class RegistrationViewModel @Inject constructor(
     private val registerUserCase: IRegistrationUseCase
 ) : ViewModel(), EventHandler<RegistrationEvent> {
 
-    var state by mutableStateOf(RegistrationState())
+    private val emailFlow = MutableStateFlow("")
+    private val loginFlow = MutableStateFlow("")
+    private val passwordFlow = MutableStateFlow("")
+    private val repeatedPasswordFlow = MutableStateFlow("")
+
+    var state by mutableStateOf(
+        RegistrationState(
+            email = emailFlow,
+            login = loginFlow,
+            password = passwordFlow,
+            repeatedPassword = repeatedPasswordFlow
+        )
+    )
 
     override fun obtainEvent(event: RegistrationEvent) {
         when (event) {
             is RegistrationEvent.EmailChanged -> {
-                state = state.copy(email = event.email)
+                emailFlow.value = event.email
             }
             is RegistrationEvent.LoginChanged -> {
-                state = state.copy(login = event.login)
+                loginFlow.value = event.login
             }
             is RegistrationEvent.PasswordChanged -> {
-                state = state.copy(password = event.password)
+                passwordFlow.value = event.password
             }
             is RegistrationEvent.RepeatedPasswordChanged -> {
-                state = state.copy(repeatedPassword = event.repeatedPassword)
+                repeatedPasswordFlow.value = event.repeatedPassword
             }
             RegistrationEvent.Submit -> {
                 submitData()
@@ -54,11 +67,13 @@ class RegistrationViewModel @Inject constructor(
 
     private fun submitData() {
         viewModelScope.launch {
-            val isEmailValid = handleEmailValidationResult(state.email)
-            val isPasswordValid = handlePasswordValidationResult(state.password)
-            val isLoginValid = handleLoginValidationResult(state.login)
-            val isRepeatedPasswordValid =
-                handleRepeatedPasswordValidationResult(state.password, state.repeatedPassword)
+            val isEmailValid = handleEmailValidationResult(emailFlow.value)
+            val isPasswordValid = handlePasswordValidationResult(passwordFlow.value)
+            val isLoginValid = handleLoginValidationResult(loginFlow.value)
+            val isRepeatedPasswordValid = handleRepeatedPasswordValidationResult(
+                passwordFlow.value,
+                repeatedPasswordFlow.value
+            )
 
             if (isEmailValid && isPasswordValid && isLoginValid && isRepeatedPasswordValid) {
                 tryToRegister()
@@ -69,7 +84,7 @@ class RegistrationViewModel @Inject constructor(
     private suspend fun tryToRegister() {
         state = state.copy(isLoading = true)
 
-        val data = RegistrationData(state.login, state.email, state.password)
+        val data = RegistrationData(loginFlow.value, emailFlow.value, passwordFlow.value)
 
         state = when (registerUserCase.invoke(data)) {
             is RegistrationUseCaseResult.Failed -> {

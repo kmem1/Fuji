@@ -11,5 +11,5 @@ data class ProfileState(
     val isNetworkError: Boolean = false,
     val isUnauthorized: Boolean = false,
     val profileCourses: SResult<List<ProfileCourse>> = SResult.Success(emptyList()),
-    val profileCollections:  SResult<List<ProfileCollection>> = SResult.Success(emptyList())
+    val profileCollections: SResult<List<ProfileCollection>> = SResult.Success(emptyList())
 )

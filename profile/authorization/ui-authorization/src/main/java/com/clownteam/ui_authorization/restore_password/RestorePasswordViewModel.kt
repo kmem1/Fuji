@@ -13,6 +13,7 @@ import com.clownteam.components.UiText
 import com.clownteam.core.domain.EventHandler
 import com.clownteam.ui_authorization.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,12 +23,13 @@ class RestorePasswordViewModel @Inject constructor(
     private val restorePassword: IRestorePasswordUseCase
 ) : ViewModel(), EventHandler<RestorePasswordEvent> {
 
-    var state by mutableStateOf(RestorePasswordState())
+    private val emailFlow = MutableStateFlow("")
 
+    var state by mutableStateOf(RestorePasswordState(email = emailFlow))
     override fun obtainEvent(event: RestorePasswordEvent) {
         when (event) {
             is RestorePasswordEvent.EmailChanged -> {
-                state = state.copy(email = event.email)
+                emailFlow.value = event.email
             }
 
             RestorePasswordEvent.Submit -> {
@@ -54,7 +56,7 @@ class RestorePasswordViewModel @Inject constructor(
     }
 
     private suspend fun tryToRestorePassword() {
-        state = when (restorePassword.invoke(state.email)) {
+        state = when (restorePassword.invoke(emailFlow.value)) {
             RestorePasswordUseCaseResult.Failed -> {
                 state.copy(failedMessage = "Error")
             }
@@ -72,7 +74,7 @@ class RestorePasswordViewModel @Inject constructor(
     }
 
     private suspend fun isEmailValid(): Boolean {
-        when (validateEmail.invoke(state.email)) {
+        when (validateEmail.invoke(emailFlow.value)) {
             ValidateEmailResult.BlankEmailError -> {
                 state =
                     state.copy(emailError = UiText.StringResource(R.string.blank_email_error_string))

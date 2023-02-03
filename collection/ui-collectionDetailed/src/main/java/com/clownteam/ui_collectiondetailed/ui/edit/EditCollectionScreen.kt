@@ -1,10 +1,6 @@
 package com.clownteam.ui_collectiondetailed.ui.edit
 
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.os.Build
-import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,8 +34,6 @@ import com.clownteam.components.ImagesProviderUtils
 import com.clownteam.components.header.DefaultHeader
 import com.clownteam.core.domain.EventHandler
 import com.example.ui_collectiondetailed.R
-import java.io.File
-import java.io.FileOutputStream
 
 private sealed class NavigationRoute {
     object Login : NavigationRoute()
@@ -64,7 +58,7 @@ fun EditCollectionScreen(
             val bitmap = ImagesProviderUtils.getImageBitmapByUri(context, uri)
             val imageFile = ImagesProviderUtils.getImageFileByUri(context, uri)
 
-            eventHandler.obtainEvent(EditCollectionScreenEvent.SetImageFile(imageFile, bitmap))
+            eventHandler.obtainEvent(EditCollectionScreenEvent.SetImage(imageFile, bitmap))
         }
     }
 

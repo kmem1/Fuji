@@ -46,6 +46,10 @@ class ChangeProfileViewModel @Inject constructor(
             ChangeProfileScreenEvent.MessageShown -> {
                 state = state.copy(message = null)
             }
+
+            is ChangeProfileScreenEvent.SetImage -> {
+                state = state.copy(imageFile = event.file, imageFileBitmap = event.bitmap)
+            }
         }
     }
 
